@@ -309,7 +309,7 @@ Backend: master / owner                          ← Incompletas
 | Endpoints sem interface (sidebar) | 5 módulos | **0** |
 | Endpoints backend-only (sem frontend) | 3 | **0** (todos implementados) |
 | Módulos frontend com CRUD completo | 13/18 | **17/22** |
-| Páginas frontend | 30 | **34** |
+| Páginas frontend | 30 | **37** |
 | Módulos usando localStorage | 1 (`account.js`) | **0** (migrado para API) |
 | Modais CRUD faltando | 0 | **0** |
 | Itens no sidebar (OWNER) | 9 | **18** |
@@ -321,6 +321,9 @@ Backend: master / owner                          ← Incompletas
 - `src/features/professionals/pages/professional-details.js` — CRUD detalhes profissionais
 - `src/features/financial/pages/payment-transactions.js` — Transações de pagamento
 - `src/features/financial/pages/payment-methods.js` — CRUD formas de pagamento
+- `src/features/public/privacy-policy.js` — Página pública de Política de Privacidade
+- `src/features/public/data-deletion.js` — Página pública de Exclusão de Dados
+- `src/features/public/terms-of-service.js` — Página pública de Termos de Serviço
 
 ### Arquivos modificados:
 - `src/core/router.js` — 4 novas rotas + lazy imports

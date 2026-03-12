@@ -319,6 +319,9 @@ curl -X POST http://localhost:5001/api/public/register \
 | Página | Rota | Auth | Role |
 |--------|------|------|------|
 | Landing | `/` | Não | — |
+| Política de Privacidade | `/privacy-policy` | Não | — |
+| Exclusão de Dados | `/data-deletion` | Não | — |
+| Termos de Serviço | `/terms-of-service` | Não | — |
 | Login | `/login` | Não | — |
 | Registro | `/register` | Não | — |
 | Dashboard | `/dashboard` | Sim | OWNER+ |

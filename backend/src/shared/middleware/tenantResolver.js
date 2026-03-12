@@ -12,6 +12,9 @@ const logger = require('../utils/logger');
 const tenantCache = new Map();
 const CACHE_TTL = 60000; // 1 minute
 
+// Slugs that must never be resolved as tenants
+const RESERVED_SLUGS = ['www', 'api', 'app', 'adm', 'admin', 'mail', 'ftp', 'smtp', 'cdn', 'static', 'assets'];
+
 /**
  * Clear tenant from cache
  * @param {string} slug - Tenant slug
@@ -104,7 +107,7 @@ function extractTenantSlug(req) {
   // 2. Subdomain
   const host = req.headers.host || '';
   const subdomain = extractSubdomain(host);
-  if (subdomain && subdomain !== 'www' && subdomain !== 'api') {
+  if (subdomain && !RESERVED_SLUGS.includes(subdomain.toLowerCase())) {
     return subdomain.toLowerCase();
   }
 

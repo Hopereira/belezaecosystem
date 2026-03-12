@@ -126,6 +126,11 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Sequelize instance (needed for health/schema check below)
+// ─────────────────────────────────────────────────────────────────────────────
+const { sequelize } = modules;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Health Check
 // ─────────────────────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -181,7 +186,6 @@ const tenantResolver = createTenantResolver(modules.tenants.getTenantBySlug);
 // ─────────────────────────────────────────────────────────────────────────────
 // Brute Force Protection
 // ─────────────────────────────────────────────────────────────────────────────
-const { sequelize } = modules;
 const bruteForceProtection = createBruteForceProtection(sequelize);
 
 // ─────────────────────────────────────────────────────────────────────────────

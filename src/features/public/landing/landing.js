@@ -379,7 +379,7 @@ function renderRegistrationForm() {
             <div class="form-section">
                 <label class="checkbox-label">
                     <input type="checkbox" id="acceptTerms" required>
-                    Aceito os <a href="#" target="_blank">Termos de Uso</a> e a <a href="#" target="_blank">Política de Privacidade</a>
+                    Aceito os <a href="/terms-of-service" target="_blank">Termos de Serviço</a> e a <a href="/privacy-policy" target="_blank">Política de Privacidade</a>. Saiba como solicitar <a href="/data-deletion" target="_blank">Exclusão de Dados</a>.
                 </label>
             </div>
         </div>

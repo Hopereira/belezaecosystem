@@ -13,6 +13,9 @@ import { showToast } from '../shared/utils/toast.js';
 
 const routes = {
     '/': { title: 'Beauty Hub', page: 'landing', auth: false },
+    '/privacy-policy': { title: 'Política de Privacidade - Beauty Hub', page: 'privacy-policy', auth: false },
+    '/data-deletion': { title: 'Exclusão de Dados - Beauty Hub', page: 'data-deletion', auth: false },
+    '/terms-of-service': { title: 'Termos de Serviço - Beauty Hub', page: 'terms-of-service', auth: false },
     '/login': { title: 'Entrar - Beauty Hub', page: 'login', auth: false },
     '/register': { title: 'Cadastro - Beauty Hub', page: 'register', auth: false },
     '/dashboard': { title: 'Dashboard - Beauty Hub', page: 'dashboard', auth: true },
@@ -132,6 +135,9 @@ async function loadPageModule(page) {
 
     const moduleMap = {
         'landing': () => import('../features/public/landing/landing.js'),
+        'privacy-policy': () => import('../features/public/privacy-policy.js'),
+        'data-deletion': () => import('../features/public/data-deletion.js'),
+        'terms-of-service': () => import('../features/public/terms-of-service.js'),
         'login': () => import('../features/auth/pages/login.js'),
         'register': () => import('../features/auth/pages/register.js'),
         'dashboard': () => import('../features/dashboard/pages/dashboard.js'),
