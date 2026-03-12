@@ -9,6 +9,7 @@ import { formatCurrency, formatDate, parseCurrency } from '../../../shared/utils
 import { openModal, closeModal } from '../../../shared/components/modal/modal.js';
 import { showToast } from '../../../shared/utils/toast.js';
 import { isSubscriptionBlocked } from '../../../core/state.js';
+import { mapFinancialEntryFromAPI, mapFinancialExitFromAPI, mapFinancialExitToAPI, extractPaginatedResponse } from '../../../shared/utils/api-mappers.js';
 
 let transactions = [];
 let summary = null;
@@ -51,9 +52,11 @@ async function loadData() {
             api.get('/financial/summary').catch(() => ({ data: null })),
         ]);
 
-        // Combine entries and exits into transactions
-        const entries = (entriesRes.data || []).map(e => ({ ...e, type: 'income' }));
-        const exits = (exitsRes.data || []).map(e => ({ ...e, type: 'expense' }));
+        // Combine entries and exits into transactions using mappers
+        const entriesData = extractPaginatedResponse(entriesRes);
+        const exitsData = extractPaginatedResponse(exitsRes);
+        const entries = entriesData.data.map(mapFinancialEntryFromAPI);
+        const exits = exitsData.data.map(mapFinancialExitFromAPI);
         transactions = [...entries, ...exits].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
         summary = summaryRes.data;
     } catch (error) {
@@ -395,20 +398,20 @@ function bindEvents() {
         const originalText = submitBtn?.textContent || 'Salvar';
         
         const status = document.querySelector('input[name="expStatus"]:checked')?.value || 'pending';
-        const data = {
+        const formData = {
             description: document.getElementById('expTitle').value.trim(),
             amount: parseCurrency(document.getElementById('expValue').value),
             date: document.getElementById('expDate').value,
             status,
             category: document.getElementById('expCategory').value,
-            payment_method: document.getElementById('expPayment').value,
-            notes: document.getElementById('expDescription').value.trim() || undefined,
         };
 
-        if (!data.description || !data.amount) {
+        if (!formData.description || !formData.amount) {
             showToast('Preencha título e valor.', 'error');
             return;
         }
+
+        const data = mapFinancialExitToAPI(formData);
 
         if (submitBtn) {
             submitBtn.disabled = true;

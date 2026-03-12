@@ -15,8 +15,13 @@ module.exports = (sequelize) => {
     },
     establishment_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: { model: 'establishments', key: 'id' },
+    },
+    tenant_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: 'tenants', key: 'id' },
     },
     specialty: {
       type: DataTypes.STRING(255),

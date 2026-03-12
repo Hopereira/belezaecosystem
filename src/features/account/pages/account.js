@@ -5,7 +5,8 @@
 
 import { renderShell, getContentArea } from '../../../shared/components/shell/shell.js';
 import { getCurrentUser, setCurrentUser } from '../../../core/state.js';
-import { getCollection, updateInCollection, KEYS, getItem, saveItem } from '../../../shared/utils/localStorage.js';
+import { api } from '../../../shared/utils/http.js';
+import { getItem, saveItem, KEYS } from '../../../shared/utils/localStorage.js';
 import { openModal, closeModal } from '../../../shared/components/modal/modal.js';
 import { showToast } from '../../../shared/utils/toast.js';
 import { navigateTo } from '../../../core/router.js';
@@ -295,7 +296,7 @@ function bindEvents() {
     document.getElementById('btnSavePhone')?.addEventListener('click', handlePhoneSave);
 }
 
-function handleProfileSave(e) {
+async function handleProfileSave(e) {
     e.preventDefault();
     const firstName = document.getElementById('profileFirstName').value.trim();
     const lastName = document.getElementById('profileLastName').value.trim();
@@ -305,18 +306,19 @@ function handleProfileSave(e) {
         return;
     }
 
-    const user = getCurrentUser();
-    const updated = { ...user, firstName, lastName, name: `${firstName} ${lastName}`.trim() };
-
-    // Update in users collection
-    updateInCollection(KEYS.USERS, user.id, { firstName, lastName, name: updated.name });
-
-    // Update session
-    setCurrentUser(updated);
-    showToast('Perfil atualizado!', 'success');
+    try {
+        await api.put('/profile', { first_name: firstName, last_name: lastName });
+        const user = getCurrentUser();
+        const updated = { ...user, firstName, lastName, first_name: firstName, last_name: lastName, name: `${firstName} ${lastName}`.trim() };
+        setCurrentUser(updated);
+        showToast('Perfil atualizado!', 'success');
+    } catch (error) {
+        console.error('[Account] Profile save error:', error);
+        showToast('Erro ao salvar perfil.', 'error');
+    }
 }
 
-function handleEmailSave() {
+async function handleEmailSave() {
     const newEmail = document.getElementById('newEmail').value.trim();
     const confirmEmail = document.getElementById('confirmNewEmail').value.trim();
 
@@ -329,16 +331,21 @@ function handleEmailSave() {
         return;
     }
 
-    const user = getCurrentUser();
-    updateInCollection(KEYS.USERS, user.id, { email: newEmail });
-    setCurrentUser({ ...user, email: newEmail });
-
-    closeModal('email');
-    showToast('Email atualizado!', 'success');
-    renderTab('security');
+    try {
+        await api.put('/profile', { email: newEmail });
+        const user = getCurrentUser();
+        setCurrentUser({ ...user, email: newEmail });
+        closeModal('email');
+        showToast('Email atualizado!', 'success');
+        renderTab('security');
+    } catch (error) {
+        console.error('[Account] Email save error:', error);
+        showToast('Erro ao atualizar email.', 'error');
+    }
 }
 
-function handlePasswordSave() {
+async function handlePasswordSave() {
+    const currentPass = document.getElementById('currentPassword')?.value || '';
     const newPass = document.getElementById('newPassword').value;
     const confirmPass = document.getElementById('confirmNewPassword').value;
 
@@ -351,14 +358,17 @@ function handlePasswordSave() {
         return;
     }
 
-    const user = getCurrentUser();
-    updateInCollection(KEYS.USERS, user.id, { password: newPass });
-
-    closeModal('password');
-    showToast('Senha atualizada!', 'success');
+    try {
+        await api.put('/profile/password', { currentPassword: currentPass, newPassword: newPass });
+        closeModal('password');
+        showToast('Senha atualizada!', 'success');
+    } catch (error) {
+        console.error('[Account] Password save error:', error);
+        showToast(error.message || 'Erro ao atualizar senha.', 'error');
+    }
 }
 
-function handlePhoneSave() {
+async function handlePhoneSave() {
     const newPhone = document.getElementById('newPhone').value.trim();
 
     if (!newPhone || newPhone.replace(/\D/g, '').length < 10) {
@@ -366,11 +376,15 @@ function handlePhoneSave() {
         return;
     }
 
-    const user = getCurrentUser();
-    updateInCollection(KEYS.USERS, user.id, { phone: newPhone });
-    setCurrentUser({ ...user, phone: newPhone });
-
-    closeModal('phone');
-    showToast('Telefone atualizado!', 'success');
-    renderTab('security');
+    try {
+        await api.put('/profile', { phone: newPhone });
+        const user = getCurrentUser();
+        setCurrentUser({ ...user, phone: newPhone });
+        closeModal('phone');
+        showToast('Telefone atualizado!', 'success');
+        renderTab('security');
+    } catch (error) {
+        console.error('[Account] Phone save error:', error);
+        showToast('Erro ao atualizar telefone.', 'error');
+    }
 }

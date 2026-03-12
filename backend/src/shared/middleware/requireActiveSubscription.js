@@ -16,14 +16,14 @@ const logger = require('../../utils/logger');
  * Check if subscription allows write operations
  */
 function allowsWrite(status) {
-  return ['active', 'trialing'].includes(status?.toLowerCase());
+  return ['active', 'trial', 'trialing'].includes(status?.toLowerCase());
 }
 
 /**
  * Check if subscription allows read operations
  */
 function allowsRead(status) {
-  return ['active', 'trialing', 'past_due'].includes(status?.toLowerCase());
+  return ['active', 'trial', 'trialing', 'past_due'].includes(status?.toLowerCase());
 }
 
 /**

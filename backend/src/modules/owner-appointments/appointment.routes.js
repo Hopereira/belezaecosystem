@@ -38,6 +38,7 @@ function createAppointmentRoutes(controller, middleware = {}) {
 
   router.post('/', validate(createAppointmentSchema), controller.create);
   router.get('/', controller.getAll);
+  router.get('/stats', controller.getStats);
   router.get('/calendar', controller.getCalendar);
   router.get('/:id', controller.getById);
   router.put('/:id', validate(updateAppointmentSchema), controller.update);

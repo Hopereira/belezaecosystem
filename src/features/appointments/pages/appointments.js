@@ -9,6 +9,7 @@ import { api } from '../../../shared/utils/http.js';
 import { formatCurrency, formatDate, parseCurrency } from '../../../shared/utils/validation.js';
 import { openModal, closeModal } from '../../../shared/components/modal/modal.js';
 import { showToast } from '../../../shared/utils/toast.js';
+import { mapAppointmentFromAPI, mapAppointmentToAPI, mapClientFromAPI, mapServiceFromAPI, mapProfessionalFromAPI, extractPaginatedResponse } from '../../../shared/utils/api-mappers.js';
 
 let appointments = [];
 let clients = [];
@@ -46,20 +47,23 @@ async function loadData() {
 
     try {
         const [appsRes, clientsRes, servicesRes, profsRes] = await Promise.all([
-            api.get('/appointments'),
-            api.get('/clients'),
-            api.get('/services').catch(() => ({ data: [] })),
+            api.get('/appointments?limit=100'),
+            api.get('/clients?limit=200'),
+            api.get('/services?limit=100').catch(() => ({ data: [] })),
             api.get('/professionals').catch(() => ({ data: [] })),
         ]);
 
-        appointments = (appsRes.data || []).sort((a, b) => {
-            const da = (a.date || '') + (a.start_time || a.startTime || '');
-            const db = (b.date || '') + (b.start_time || b.startTime || '');
+        const appsData = extractPaginatedResponse(appsRes);
+        appointments = appsData.data.map(mapAppointmentFromAPI).sort((a, b) => {
+            const da = a.startTime || '';
+            const db = b.startTime || '';
             return da < db ? -1 : da > db ? 1 : 0;
         });
-        clients = clientsRes.data || [];
-        services = servicesRes.data || [];
-        professionals = profsRes.data || [];
+        const clientsData = extractPaginatedResponse(clientsRes);
+        clients = clientsData.data.map(mapClientFromAPI);
+        const servicesData = extractPaginatedResponse(servicesRes);
+        services = servicesData.data.map(mapServiceFromAPI);
+        professionals = (profsRes.data || []).map(mapProfessionalFromAPI);
     } catch (error) {
         console.error('[Appointments] Error loading data:', error);
         showToast('Erro ao carregar agendamentos', 'error');
@@ -81,10 +85,11 @@ function renderPage() {
                 <input type="date" id="filterDate" value="${today}" style="padding:10px 16px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;height:44px;">
                 <select id="filterStatus" style="padding:10px 16px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;height:44px;">
                     <option value="">Todos status</option>
-                    <option value="scheduled">Agendado</option>
-                    <option value="completed">Concluído</option>
-                    <option value="pending">Pendente</option>
-                    <option value="cancelled">Cancelado</option>
+                    <option value="PENDING">Pendente</option>
+                    <option value="CONFIRMED">Confirmado</option>
+                    <option value="COMPLETED">Concluído</option>
+                    <option value="CANCELLED">Cancelado</option>
+                    <option value="NO_SHOW">Não compareceu</option>
                 </select>
                 <button id="btnClearFilter" style="padding:10px 16px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-weight:600;height:44px;">Limpar</button>
                 <button id="btnAddAppointment" style="
@@ -116,13 +121,12 @@ function renderPage() {
                         <label style="display:block;margin-bottom:0.5rem;color:var(--text-dark);font-weight:500;font-size:0.9rem;">Serviço</label>
                         <select id="appService" required style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;font-family:inherit;">
                             <option value="">Selecione o serviço</option>
-                            <option value="Extensão de Cílios">Extensão de Cílios</option>
-                            <option value="Manutenção">Manutenção</option>
-                            <option value="Manicure">Manicure</option>
-                            <option value="Pedicure">Pedicure</option>
-                            <option value="Corte de Cabelo">Corte de Cabelo</option>
-                            <option value="Coloração">Coloração</option>
-                            <option value="Maquiagem">Maquiagem</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block;margin-bottom:0.5rem;color:var(--text-dark);font-weight:500;font-size:0.9rem;">Profissional</label>
+                        <select id="appProfessional" required style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;font-family:inherit;">
+                            <option value="">Selecione o profissional</option>
                         </select>
                     </div>
                     <div style="margin-bottom:1.5rem;">
@@ -143,10 +147,10 @@ function renderPage() {
                     <div style="margin-bottom:1.5rem;">
                         <label style="display:block;margin-bottom:0.5rem;color:var(--text-dark);font-weight:500;font-size:0.9rem;">Status</label>
                         <select id="appStatus" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;font-family:inherit;">
-                            <option value="scheduled">Agendado</option>
-                            <option value="completed">Concluído</option>
-                            <option value="pending">Pendente</option>
-                            <option value="cancelled">Cancelado</option>
+                            <option value="PENDING">Pendente</option>
+                            <option value="CONFIRMED">Confirmado</option>
+                            <option value="COMPLETED">Concluído</option>
+                            <option value="CANCELLED">Cancelado</option>
                         </select>
                     </div>
                     <div style="margin-bottom:1.5rem;">
@@ -218,17 +222,16 @@ function renderAppointmentsList() {
         return;
     }
 
-    const statusLabels = { scheduled: 'Agendado', confirmed: 'Confirmado', completed: 'Concluído', pending: 'Pendente', cancelled: 'Cancelado', no_show: 'Não compareceu' };
-    const statusClasses = { scheduled: 'color:#2196F3;background:#E3F2FD;', confirmed: 'color:#2196F3;background:#E3F2FD;', completed: 'color:#4CAF50;background:#E8F5E9;', pending: 'color:#F57C00;background:#FFF3E0;', cancelled: 'color:#F44336;background:#FFEBEE;', no_show: 'color:#9E9E9E;background:#F5F5F5;' };
+    const statusLabels = { PENDING: 'Pendente', CONFIRMED: 'Confirmado', COMPLETED: 'Concluído', CANCELLED: 'Cancelado', NO_SHOW: 'Não compareceu' };
+    const statusClasses = { PENDING: 'color:#F57C00;background:#FFF3E0;', CONFIRMED: 'color:#2196F3;background:#E3F2FD;', COMPLETED: 'color:#4CAF50;background:#E8F5E9;', CANCELLED: 'color:#F44336;background:#FFEBEE;', NO_SHOW: 'color:#9E9E9E;background:#F5F5F5;' };
 
     let html = '';
     filteredApps.forEach(app => {
-        const client = clients.find(c => c.id === app.client_id || c.id === app.clientId);
-        const clientName = client ? client.name : (app.client?.name || 'Cliente');
-        const service = services.find(s => s.id === app.service_id) || { name: app.service || 'Serviço' };
-        const startTime = app.start_time || app.startTime || '';
-        const endTime = app.end_time || app.endTime || '';
-        const value = app.price || app.value || 0;
+        const clientName = app.clientName || 'Cliente';
+        const serviceName = app.serviceName || 'Serviço';
+        const startTime = app.startTime ? new Date(app.startTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+        const endTime = app.endTime ? new Date(app.endTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+        const value = app.priceCharged || 0;
 
         html += `
             <div class="appointment-card" style="background:white;border:1px solid #e5e5e5;border-radius:12px;padding:1.5rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;transition:box-shadow 0.3s;" data-id="${app.id}">
@@ -236,7 +239,7 @@ function renderAppointmentsList() {
                     <h4 style="color:var(--text-dark);margin:0 0 0.5rem 0;">${clientName}</h4>
                     <div style="display:flex;gap:1.5rem;color:var(--text-muted);font-size:0.9rem;flex-wrap:wrap;">
                         <span><i class="far fa-clock"></i> ${startTime} - ${endTime}</span>
-                        <span><i class="fas fa-cut"></i> ${service.name || app.service}</span>
+                        <span><i class="fas fa-cut"></i> ${serviceName}</span>
                         <span><i class="fas fa-dollar-sign"></i> ${formatCurrency(value)}</span>
                         <span><i class="far fa-calendar"></i> ${formatDate(app.date)}</span>
                     </div>
@@ -267,30 +270,21 @@ function populateSelects() {
         });
     }
 
-    // Populate services
+    // Populate services dynamically from API
     const serviceSelect = document.getElementById('appService');
     if (serviceSelect) {
         serviceSelect.innerHTML = '<option value="">Selecione o serviço</option>';
-        if (services.length > 0) {
-            services.forEach(s => {
-                serviceSelect.innerHTML += `<option value="${s.id}" data-price="${s.price || 0}">${s.name} - ${formatCurrency(s.price || 0)}</option>`;
-            });
-        } else {
-            // Fallback services if none from API
-            const defaultServices = ['Extensão de Cílios', 'Manutenção', 'Manicure', 'Pedicure', 'Corte de Cabelo', 'Coloração', 'Maquiagem'];
-            defaultServices.forEach(s => {
-                serviceSelect.innerHTML += `<option value="${s}">${s}</option>`;
-            });
-        }
+        services.forEach(s => {
+            serviceSelect.innerHTML += `<option value="${s.id}" data-price="${s.price || 0}">${s.name} - ${formatCurrency(s.price || 0)}</option>`;
+        });
     }
 
-    // Populate professionals
+    // Populate professionals dynamically from API
     const profSelect = document.getElementById('appProfessional');
     if (profSelect) {
         profSelect.innerHTML = '<option value="">Selecione o profissional</option>';
         professionals.forEach(p => {
-            const name = p.name || `${p.first_name || ''} ${p.last_name || ''}`.trim();
-            profSelect.innerHTML += `<option value="${p.id}">${name}</option>`;
+            profSelect.innerHTML += `<option value="${p.id}">${p.name || p.specialty || 'Profissional'}</option>`;
         });
     }
 }
@@ -308,16 +302,21 @@ function openAppointmentModal(appointment = null) {
     populateSelects();
 
     const today = new Date().toISOString().split('T')[0];
-    const value = appointment?.price || appointment?.value || 0;
+    const value = appointment?.priceCharged || 0;
 
-    document.getElementById('appClient').value = appointment?.client_id || appointment?.clientId || '';
-    document.getElementById('appService').value = appointment?.service_id || appointment?.service || '';
+    document.getElementById('appClient').value = appointment?.clientId || '';
+    document.getElementById('appService').value = appointment?.serviceId || '';
     document.getElementById('appValue').value = value ? formatCurrency(value) : '';
     document.getElementById('appDate').value = appointment?.date || today;
-    document.getElementById('appStartTime').value = appointment?.start_time || appointment?.startTime || '12:00';
-    document.getElementById('appEndTime').value = appointment?.end_time || appointment?.endTime || '13:00';
-    document.getElementById('appStatus').value = appointment?.status || 'scheduled';
-    document.getElementById('appPayment').value = appointment?.payment_method || appointment?.paymentMethod || '';
+
+    // Extract time from ISO datetime
+    const startT = appointment?.startTime ? new Date(appointment.startTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false }) : '12:00';
+    const endT = appointment?.endTime ? new Date(appointment.endTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false }) : '13:00';
+
+    document.getElementById('appStartTime').value = startT;
+    document.getElementById('appEndTime').value = endT;
+    document.getElementById('appStatus').value = appointment?.status || 'PENDING';
+    document.getElementById('appProfessional').value = appointment?.professionalId || '';
     document.getElementById('appNotes').value = appointment?.notes || '';
 
     openModal('appointment');
@@ -394,27 +393,32 @@ async function saveAppointment() {
     const submitBtn = document.querySelector('#appointmentForm button[type="submit"]');
     const originalText = submitBtn?.textContent || 'Confirmar';
 
-    const user = getCurrentUser();
+    const dateVal = document.getElementById('appDate').value;
+    const startTimeVal = document.getElementById('appStartTime').value;
+    const endTimeVal = document.getElementById('appEndTime').value;
+    const clientId = document.getElementById('appClient').value;
     const serviceId = document.getElementById('appService').value;
-    
-    const data = {
-        client_id: document.getElementById('appClient').value,
-        professional_id: user?.id || undefined,
-        service_id: serviceId,
-        service: services.find(s => s.id === serviceId)?.name || serviceId,
-        price: parseCurrency(document.getElementById('appValue').value),
-        date: document.getElementById('appDate').value,
-        start_time: document.getElementById('appStartTime').value,
-        end_time: document.getElementById('appEndTime').value,
-        status: document.getElementById('appStatus').value,
-        payment_method: document.getElementById('appPayment').value || undefined,
-        notes: document.getElementById('appNotes').value || undefined,
-    };
+    const professionalId = document.getElementById('appProfessional').value;
 
-    if (!data.client_id || !data.date || !data.start_time) {
+    if (!clientId || !serviceId || !professionalId || !dateVal || !startTimeVal) {
         showToast('Preencha os campos obrigatórios.', 'error');
         return;
     }
+
+    // Build full ISO datetime from date + time
+    const startDateTime = new Date(`${dateVal}T${startTimeVal}:00`).toISOString();
+    const endDateTime = endTimeVal ? new Date(`${dateVal}T${endTimeVal}:00`).toISOString() : null;
+
+    const data = mapAppointmentToAPI({
+        clientId,
+        professionalId,
+        serviceId,
+        startTime: startDateTime,
+        endTime: endDateTime,
+        status: document.getElementById('appStatus').value,
+        notes: document.getElementById('appNotes').value || undefined,
+        priceCharged: parseCurrency(document.getElementById('appValue').value) || null,
+    });
 
     if (submitBtn) {
         submitBtn.disabled = true;

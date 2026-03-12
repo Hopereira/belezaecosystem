@@ -8,6 +8,7 @@ import { api } from '../../../shared/utils/http.js';
 import { showToast } from '../../../shared/utils/toast.js';
 import { formatCurrency } from '../../../shared/utils/validation.js';
 import { isSubscriptionBlocked } from '../../../core/state.js';
+import { mapServiceFromAPI, mapServiceToAPI, mapProfessionalFromAPI, extractPaginatedResponse } from '../../../shared/utils/api-mappers.js';
 
 let services = [];
 let professionals = [];
@@ -53,8 +54,9 @@ async function loadData() {
             api.get('/professionals').catch(() => ({ data: [] })),
         ]);
 
-        services = servicesRes.data || [];
-        professionals = professionalsRes.data || [];
+        const svcData = extractPaginatedResponse(servicesRes);
+        services = svcData.data.map(mapServiceFromAPI);
+        professionals = (professionalsRes.data || []).map(mapProfessionalFromAPI);
     } catch (error) {
         console.error('[Services] Error loading data:', error);
         showToast('Erro ao carregar serviços', 'error');
@@ -111,11 +113,11 @@ function renderContent() {
                                     <div style="font-size:0.85rem;color:var(--text-muted);">${service.description || ''}</div>
                                 </td>
                                 <td>${getCategoryLabel(service.category)}</td>
-                                <td>${service.duration || 30} min</td>
+                                <td>${service.durationMinutes || service.duration || 30} min</td>
                                 <td>${formatCurrency(service.price || 0)}</td>
                                 <td>
-                                    <span class="status-badge status-badge--${service.is_active !== false ? 'success' : 'default'}">
-                                        ${service.is_active !== false ? 'Ativo' : 'Inativo'}
+                                    <span class="status-badge status-badge--${service.isActive !== false ? 'success' : 'default'}">
+                                        ${service.isActive !== false ? 'Ativo' : 'Inativo'}
                                     </span>
                                 </td>
                                 <td>
@@ -151,8 +153,8 @@ function applyFilters(data) {
     return data.filter(item => {
         if (filters.search && !item.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
         if (filters.category && item.category !== filters.category) return false;
-        if (filters.status === 'active' && item.is_active === false) return false;
-        if (filters.status === 'inactive' && item.is_active !== false) return false;
+        if (filters.status === 'active' && item.isActive === false) return false;
+        if (filters.status === 'inactive' && item.isActive !== false) return false;
         return true;
     });
 }
@@ -239,7 +241,7 @@ function showServiceModal(service = null) {
                         </div>
                         <div class="modal-field">
                             <label class="modal-label">Duração (min) *</label>
-                            <input type="number" class="modal-input" id="serviceDuration" value="${service?.duration || 30}" min="5" step="5" required>
+                            <input type="number" class="modal-input" id="serviceDuration" value="${service?.durationMinutes || service?.duration || 30}" min="5" step="5" required>
                         </div>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
@@ -249,7 +251,7 @@ function showServiceModal(service = null) {
                         </div>
                         <div class="modal-field">
                             <label class="modal-label">Comissão (%)</label>
-                            <input type="number" class="modal-input" id="serviceCommission" value="${service?.commission || 0}" min="0" max="100">
+                            <input type="number" class="modal-input" id="serviceCommission" value="${service?.commission || service?.commissionRate || 0}" min="0" max="100">
                         </div>
                     </div>
                     <div class="modal-field">
@@ -258,14 +260,14 @@ function showServiceModal(service = null) {
                             ${professionals.map(p => `
                                 <label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem;cursor:pointer;">
                                     <input type="checkbox" name="professionals" value="${p.id}" ${service?.professional_ids?.includes(p.id) ? 'checked' : ''}>
-                                    ${p.name || `${p.first_name} ${p.last_name}`}
+                                    ${p.name || p.specialty || 'Profissional'}
                                 </label>
                             `).join('') || '<p class="text-muted" style="padding:0.5rem;">Nenhum profissional cadastrado</p>'}
                         </div>
                     </div>
                     <div class="modal-field">
                         <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
-                            <input type="checkbox" id="serviceActive" ${service?.is_active !== false ? 'checked' : ''}>
+                            <input type="checkbox" id="serviceActive" ${service?.isActive !== false ? 'checked' : ''}>
                             Serviço ativo
                         </label>
                     </div>
@@ -296,16 +298,15 @@ async function handleSave(serviceId = null) {
     const selectedProfessionals = Array.from(document.querySelectorAll('input[name="professionals"]:checked'))
         .map(cb => cb.value);
 
-    const data = {
+    const data = mapServiceToAPI({
         name: document.getElementById('serviceName').value,
         description: document.getElementById('serviceDescription').value,
         category: document.getElementById('serviceCategory').value,
         duration: parseInt(document.getElementById('serviceDuration').value),
         price: parseFloat(document.getElementById('servicePrice').value),
-        commission: parseFloat(document.getElementById('serviceCommission').value) || 0,
-        professional_ids: selectedProfessionals,
-        is_active: document.getElementById('serviceActive').checked,
-    };
+        isActive: document.getElementById('serviceActive').checked,
+    });
+    data.professional_ids = selectedProfessionals;
 
     try {
         if (serviceId) {

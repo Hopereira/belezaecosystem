@@ -97,13 +97,6 @@ class OwnerServiceService {
 
     const { count, rows } = await this.Service.findAndCountAll({
       where,
-      include: [
-        {
-          model: this.ServiceCategory,
-          as: 'serviceCategory',
-          attributes: ['id', 'name', 'color'],
-        },
-      ],
       order: [['name', 'ASC']],
       limit,
       offset,

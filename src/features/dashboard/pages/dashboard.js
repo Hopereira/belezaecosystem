@@ -9,6 +9,7 @@ import { api } from '../../../shared/utils/http.js';
 import { formatCurrency } from '../../../shared/utils/validation.js';
 import { navigateTo } from '../../../core/router.js';
 import { showToast } from '../../../shared/utils/toast.js';
+import { mapAppointmentFromAPI, mapClientFromAPI, extractPaginatedResponse } from '../../../shared/utils/api-mappers.js';
 
 let currentMonth = null;
 let currentYear = null;
@@ -50,13 +51,15 @@ async function loadDashboardData() {
 
     try {
         const [appointmentsRes, clientsRes, statsRes] = await Promise.all([
-            api.get('/appointments').catch(() => ({ data: [] })),
-            api.get('/clients').catch(() => ({ data: [] })),
+            api.get('/appointments?limit=100').catch(() => ({ data: [], pagination: {} })),
+            api.get('/clients?limit=200').catch(() => ({ data: [], pagination: {} })),
             api.get('/appointments/stats').catch(() => ({ data: null })),
         ]);
 
-        appointments = appointmentsRes.data || [];
-        clients = clientsRes.data || [];
+        const appsData = extractPaginatedResponse(appointmentsRes);
+        appointments = appsData.data.map(mapAppointmentFromAPI);
+        const clientsData = extractPaginatedResponse(clientsRes);
+        clients = clientsData.data.map(mapClientFromAPI);
         
         if (statsRes.data) {
             stats = statsRes.data;
@@ -76,17 +79,17 @@ function calculateStats() {
     const weekStart = getWeekStart(new Date());
     const weekEnd = getWeekEnd(new Date());
     
-    const todayApps = appointments.filter(a => a.date === today && a.status === 'completed');
-    const weekApps = appointments.filter(a => a.date >= weekStart && a.date <= weekEnd && a.status === 'completed');
+    const todayApps = appointments.filter(a => a.date === today && a.status === 'COMPLETED');
+    const weekApps = appointments.filter(a => a.date >= weekStart && a.date <= weekEnd && a.status === 'COMPLETED');
     const monthApps = appointments.filter(a => {
         const d = new Date(a.date);
-        return d.getMonth() === currentMonth && d.getFullYear() === currentYear && a.status === 'completed';
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear && a.status === 'COMPLETED';
     });
 
     stats = {
-        today: todayApps.reduce((s, a) => s + (a.value || a.price || 0), 0),
-        week: weekApps.reduce((s, a) => s + (a.value || a.price || 0), 0),
-        month: monthApps.reduce((s, a) => s + (a.value || a.price || 0), 0),
+        today: todayApps.reduce((s, a) => s + (a.priceCharged || 0), 0),
+        week: weekApps.reduce((s, a) => s + (a.priceCharged || 0), 0),
+        month: monthApps.reduce((s, a) => s + (a.priceCharged || 0), 0),
     };
 }
 
@@ -245,8 +248,9 @@ function renderCalendar(month, year, appointments) {
         let eventsHTML = '';
         const colors = ['#2196F3', '#00897B', '#9C27B0', '#E91E63'];
         dayApps.slice(0, 3).forEach((app, i) => {
-            const clientName = getClientName(app.clientId);
-            eventsHTML += `<div style="font-size:0.65rem;padding:2px 4px;border-radius:4px;margin-top:2px;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:${colors[i % colors.length]};">${app.startTime} ${clientName}</div>`;
+            const clientName = app.clientName || getClientName(app.clientId);
+            const timeStr = app.startTime ? new Date(app.startTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+            eventsHTML += `<div style="font-size:0.65rem;padding:2px 4px;border-radius:4px;margin-top:2px;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:${colors[i % colors.length]};">${timeStr} ${clientName}</div>`;
         });
         if (dayApps.length > 3) {
             eventsHTML += `<div style="font-size:0.6rem;color:var(--text-muted);margin-top:2px;">+${dayApps.length - 3} mais</div>`;

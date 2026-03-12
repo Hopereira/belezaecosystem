@@ -7,10 +7,14 @@ module.exports = (sequelize) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    tenant_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: 'tenants', key: 'id' },
+    },
     name: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
     },
     is_active: {
       type: DataTypes.BOOLEAN,

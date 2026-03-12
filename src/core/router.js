@@ -29,6 +29,10 @@ const routes = {
     '/suppliers': { title: 'Fornecedores - Beauty Hub', page: 'suppliers', auth: true },
     '/purchases': { title: 'Compras - Beauty Hub', page: 'purchases', auth: true },
     '/reports': { title: 'Relatórios - Beauty Hub', page: 'reports', auth: true },
+    '/users': { title: 'Usuários - Beauty Hub', page: 'users', auth: true },
+    '/professional-details': { title: 'Detalhes Profissionais - Beauty Hub', page: 'professional-details', auth: true },
+    '/payment-transactions': { title: 'Transações - Beauty Hub', page: 'payment-transactions', auth: true },
+    '/payment-methods': { title: 'Formas de Pagamento - Beauty Hub', page: 'payment-methods', auth: true },
     // Professional routes (PROFESSIONAL role)
     '/professional/dashboard': { title: 'Meu Dashboard - Beauty Hub', page: 'professional-dashboard', auth: true, role: 'professional' },
     '/professional/appointments': { title: 'Meus Agendamentos - Beauty Hub', page: 'professional-appointments', auth: true, role: 'professional' },
@@ -144,6 +148,10 @@ async function loadPageModule(page) {
         'suppliers': () => import('../features/suppliers/pages/suppliers.js'),
         'purchases': () => import('../features/purchases/pages/purchases.js'),
         'reports': () => import('../features/reports/pages/reports.js'),
+        'users': () => import('../features/users/pages/users.js'),
+        'professional-details': () => import('../features/professionals/pages/professional-details.js'),
+        'payment-transactions': () => import('../features/financial/pages/payment-transactions.js'),
+        'payment-methods': () => import('../features/financial/pages/payment-methods.js'),
         // Professional pages
         'professional-dashboard': () => import('../features/professional/pages/dashboard.js'),
         'professional-appointments': () => import('../features/professional/pages/appointments.js'),

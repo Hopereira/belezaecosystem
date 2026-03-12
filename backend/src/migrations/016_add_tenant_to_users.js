@@ -70,11 +70,13 @@ module.exports = {
       });
     }
 
-    // 3. Add MASTER, OWNER, CLIENT to existing role enum (if not exists)
+    // 3. Add lowercase roles used by seed/constants (idempotent)
     try {
       await queryInterface.sequelize.query(`ALTER TYPE "enum_users_role" ADD VALUE IF NOT EXISTS 'master';`);
       await queryInterface.sequelize.query(`ALTER TYPE "enum_users_role" ADD VALUE IF NOT EXISTS 'owner';`);
       await queryInterface.sequelize.query(`ALTER TYPE "enum_users_role" ADD VALUE IF NOT EXISTS 'client';`);
+      await queryInterface.sequelize.query(`ALTER TYPE "enum_users_role" ADD VALUE IF NOT EXISTS 'admin';`);
+      await queryInterface.sequelize.query(`ALTER TYPE "enum_users_role" ADD VALUE IF NOT EXISTS 'professional';`);
     } catch (e) { /* ignore if already exists */ }
 
     // 4. Add indexes (ignore if exists)

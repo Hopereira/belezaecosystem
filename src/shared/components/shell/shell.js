@@ -26,15 +26,34 @@ export function renderShell(activePage, contentHTML = '') {
     if (!app) return;
 
     // Menu items with role-based visibility
-    const menuItems = [
-        { id: 'dashboard', icon: 'fas fa-home', label: 'Início', path: '/dashboard', roles: ['master', 'owner', 'admin', 'professional', 'client'] },
-        { id: 'clients', icon: 'fas fa-users', label: 'Clientes', path: '/clients', roles: ['master', 'owner', 'admin', 'professional'] },
-        { id: 'appointments', icon: 'fas fa-calendar-alt', label: 'Agendamentos', path: '/appointments', roles: ['master', 'owner', 'admin', 'professional', 'client'] },
+    const menuItems = userRole === 'professional' ? [
+        // Professional-specific menu
+        { id: 'professional-dashboard', icon: 'fas fa-tachometer-alt', label: 'Meu Dashboard', path: '/professional/dashboard', roles: ['professional'] },
+        { id: 'professional-appointments', icon: 'fas fa-calendar-check', label: 'Meus Agendamentos', path: '/professional/appointments', roles: ['professional'] },
+        { id: 'professional-clients', icon: 'fas fa-user-friends', label: 'Meus Clientes', path: '/professional/clients', roles: ['professional'] },
+        { id: 'professional-earnings', icon: 'fas fa-money-bill-wave', label: 'Meus Ganhos', path: '/professional/earnings', roles: ['professional'] },
+        { id: 'professional-performance', icon: 'fas fa-chart-line', label: 'Minha Performance', path: '/professional/performance', roles: ['professional'] },
+        { id: 'professional-availability', icon: 'fas fa-clock', label: 'Disponibilidade', path: '/professional/availability', roles: ['professional'] },
+        { id: 'professional-profile', icon: 'fas fa-id-card', label: 'Meu Perfil', path: '/professional/profile', roles: ['professional'] },
+    ] : [
+        // Owner/Admin/Master menu
+        { id: 'dashboard', icon: 'fas fa-home', label: 'Início', path: '/dashboard', roles: ['master', 'owner', 'admin', 'client'] },
+        { id: 'clients', icon: 'fas fa-users', label: 'Clientes', path: '/clients', roles: ['master', 'owner', 'admin'] },
+        { id: 'appointments', icon: 'fas fa-calendar-alt', label: 'Agendamentos', path: '/appointments', roles: ['master', 'owner', 'admin', 'client'] },
         { id: 'services', icon: 'fas fa-cut', label: 'Serviços', path: '/services', roles: ['master', 'owner', 'admin'] },
         { id: 'professionals', icon: 'fas fa-user-tie', label: 'Profissionais', path: '/professionals', roles: ['master', 'owner', 'admin'] },
         { id: 'financial', icon: 'fas fa-dollar-sign', label: 'Financeiro', path: '/financial', roles: ['master', 'owner', 'admin'] },
+        { id: 'inventory', icon: 'fas fa-boxes', label: 'Estoque', path: '/inventory', roles: ['owner', 'admin'] },
+        { id: 'suppliers', icon: 'fas fa-truck', label: 'Fornecedores', path: '/suppliers', roles: ['owner', 'admin'] },
+        { id: 'purchases', icon: 'fas fa-shopping-cart', label: 'Compras', path: '/purchases', roles: ['owner', 'admin'] },
+        { id: 'reports', icon: 'fas fa-chart-bar', label: 'Relatórios', path: '/reports', roles: ['owner', 'admin'] },
+        { id: 'professional-details', icon: 'fas fa-id-badge', label: 'Detalhes Profissionais', path: '/professional-details', roles: ['owner', 'admin'] },
+        { id: 'payment-transactions', icon: 'fas fa-exchange-alt', label: 'Transações', path: '/payment-transactions', roles: ['owner', 'admin'] },
+        { id: 'payment-methods', icon: 'fas fa-wallet', label: 'Formas de Pagamento', path: '/payment-methods', roles: ['owner', 'admin'] },
+        { id: 'users', icon: 'fas fa-user-shield', label: 'Usuários', path: '/users', roles: ['owner', 'admin'] },
         { id: 'billing', icon: 'fas fa-credit-card', label: 'Assinatura', path: '/billing', roles: ['master', 'owner', 'admin'] },
         { id: 'settings', icon: 'fas fa-cog', label: 'Configurações', path: '/settings', roles: ['master', 'owner'] },
+        { id: 'account', icon: 'fas fa-user-circle', label: 'Minha Conta', path: '/account', roles: ['master', 'owner', 'admin', 'client'] },
         { id: 'master', icon: 'fas fa-crown', label: 'Master Admin', path: '/master', roles: ['master'] },
     ];
 

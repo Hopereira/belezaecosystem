@@ -14,6 +14,7 @@ class OwnerAppointmentController {
     this.getAll = this.getAll.bind(this);
     this.delete = this.delete.bind(this);
     this.getCalendar = this.getCalendar.bind(this);
+    this.getStats = this.getStats.bind(this);
   }
 
   async create(req, res, next) {
@@ -105,6 +106,20 @@ class OwnerAppointmentController {
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: 'Appointment deleted successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getStats(req, res, next) {
+    try {
+      const tenantId = req.tenant.id;
+      const stats = await this.service.getStats(tenantId);
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: stats,
       });
     } catch (error) {
       next(error);

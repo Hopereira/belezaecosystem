@@ -314,10 +314,12 @@ app.use('/api/professional-details', requireActiveSubscription(), ownerProfessio
 app.use('/api/payment-transactions', requireActiveSubscription(), ownerPaymentTransactionRoutes);
 
 // NEW: Refactored routes (replacing legacy establishment_id routes)
+const ownerProfessionalsRoutes = require('./routes/owner/professionals');
 app.use('/api/services', requireActiveSubscription(), ownerServicesRoutes);
 app.use('/api/clients', requireActiveSubscription(), ownerClientsRoutes);
 app.use('/api/appointments', requireActiveSubscription(), ownerAppointmentsRoutes);
 app.use('/api/financial', requireActiveSubscription(), ownerFinancialRoutes);
+app.use('/api/professionals', requireActiveSubscription(), ownerProfessionalsRoutes);
 app.use('/api/reports', requireActiveSubscription({ allowReadOnly: true }), ownerReportsRoutes);
 
 // ─────────────────────────────────────────────────────────────────────────────

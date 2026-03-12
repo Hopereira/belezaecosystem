@@ -101,13 +101,7 @@ module.exports = {
       },
     });
 
-    // Indexes
-    await queryInterface.addIndex('tenants', ['slug'], { unique: true });
-    await queryInterface.addIndex('tenants', ['email'], { unique: true });
-    await queryInterface.addIndex('tenants', ['document'], { unique: true });
-    await queryInterface.addIndex('tenants', ['status']);
-    await queryInterface.addIndex('tenants', ['type']);
-    await queryInterface.addIndex('tenants', ['created_at']);
+    // Indexes removed to avoid duplicate index names (unique constraints handled by column defs)
   },
 
   async down(queryInterface) {

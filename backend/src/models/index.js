@@ -43,6 +43,8 @@ const Purchase = require('../modules/purchases/purchase.model')(sequelize);
 const PurchaseItem = require('../modules/purchases/purchaseItem.model')(sequelize);
 const InventoryMovement = require('../modules/inventory/inventoryMovement.model')(sequelize);
 const PaymentTransaction = require('../modules/financial/paymentTransaction.model')(sequelize);
+const Subscription = require('../modules/billing/subscription.model')(sequelize);
+const SubscriptionPlan = require('../modules/billing/subscriptionPlan.model')(sequelize);
 
 // ── Associations ──
 
@@ -100,13 +102,35 @@ FinancialExit.belongsTo(Establishment, { foreignKey: 'establishment_id', as: 'es
 User.hasMany(Notification, { foreignKey: 'user_id', as: 'notifications' });
 Notification.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
+// ── Tenant Associations with Legacy Models (multi-tenant) ──
+Tenant.hasMany(Professional, { foreignKey: 'tenant_id', as: 'tenantProfessionals' });
+Professional.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+Tenant.hasMany(Service, { foreignKey: 'tenant_id', as: 'tenantServices' });
+Service.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+Tenant.hasMany(Client, { foreignKey: 'tenant_id', as: 'tenantClients' });
+Client.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+Tenant.hasMany(Appointment, { foreignKey: 'tenant_id', as: 'tenantAppointments' });
+Appointment.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+Tenant.hasMany(FinancialEntry, { foreignKey: 'tenant_id', as: 'tenantFinancialEntries' });
+FinancialEntry.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+Tenant.hasMany(FinancialExit, { foreignKey: 'tenant_id', as: 'tenantFinancialExits' });
+FinancialExit.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+Tenant.hasMany(PaymentMethod, { foreignKey: 'tenant_id', as: 'tenantPaymentMethods' });
+PaymentMethod.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
 // ── OWNER Module Associations ──
 const allModels = {
   User, Establishment, Professional, Service, Client, Appointment,
   PaymentMethod, FinancialEntry, FinancialExit, Notification,
   Tenant, ProfessionalDetail, ProfessionalSpecialty, ProfessionalServiceCommission,
   Supplier, Product, Purchase, PurchaseItem,
-  InventoryMovement, PaymentTransaction
+  InventoryMovement, PaymentTransaction, Subscription, SubscriptionPlan
 };
 
 // Call associate methods for OWNER models
@@ -120,6 +144,8 @@ if (Purchase.associate) Purchase.associate(allModels);
 if (PurchaseItem.associate) PurchaseItem.associate(allModels);
 if (InventoryMovement.associate) InventoryMovement.associate(allModels);
 if (PaymentTransaction.associate) PaymentTransaction.associate(allModels);
+if (Subscription.associate) Subscription.associate(allModels);
+if (SubscriptionPlan.associate) SubscriptionPlan.associate(allModels);
 
 module.exports = {
   sequelize,
@@ -145,4 +171,6 @@ module.exports = {
   PurchaseItem,
   InventoryMovement,
   PaymentTransaction,
+  Subscription,
+  SubscriptionPlan,
 };

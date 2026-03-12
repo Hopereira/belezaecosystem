@@ -9,8 +9,13 @@ module.exports = (sequelize) => {
     },
     establishment_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: { model: 'establishments', key: 'id' },
+    },
+    tenant_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: 'tenants', key: 'id' },
     },
     appointment_id: {
       type: DataTypes.UUID,
@@ -37,7 +42,7 @@ module.exports = (sequelize) => {
     },
     payment_method_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: { model: 'payment_methods', key: 'id' },
     },
     status: {

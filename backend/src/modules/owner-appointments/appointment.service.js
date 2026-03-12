@@ -213,6 +213,53 @@ class OwnerAppointmentService {
     await appointment.destroy();
   }
 
+  async getStats(tenantId) {
+    const now = new Date();
+
+    // Today: start and end of current day
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(now);
+    todayEnd.setHours(23, 59, 59, 999);
+
+    // Week: start of week (Monday) to end of week (Sunday)
+    const weekStart = new Date(now);
+    const dayOfWeek = weekStart.getDay();
+    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    weekStart.setDate(weekStart.getDate() - diffToMonday);
+    weekStart.setHours(0, 0, 0, 0);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    // Month: start and end of current month
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    const [today, week, month] = await Promise.all([
+      this.Appointment.count({
+        where: {
+          tenant_id: tenantId,
+          start_time: { [Op.between]: [todayStart, todayEnd] },
+        },
+      }),
+      this.Appointment.count({
+        where: {
+          tenant_id: tenantId,
+          start_time: { [Op.between]: [weekStart, weekEnd] },
+        },
+      }),
+      this.Appointment.count({
+        where: {
+          tenant_id: tenantId,
+          start_time: { [Op.between]: [monthStart, monthEnd] },
+        },
+      }),
+    ]);
+
+    return { today, week, month };
+  }
+
   async getCalendar(tenantId, filters) {
     const { date, professional_id } = filters;
 

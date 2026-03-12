@@ -19,9 +19,10 @@ module.exports = {
         allowNull: false,
       },
       role: {
-        type: Sequelize.ENUM('MASTER', 'ADMIN', 'PROFESSIONAL', 'CLIENT'),
+        // align with shared/constants (lowercase roles)
+        type: Sequelize.ENUM('master', 'admin', 'professional', 'client'),
         allowNull: false,
-        defaultValue: 'CLIENT',
+        defaultValue: 'client',
       },
       first_name: {
         type: Sequelize.STRING(100),

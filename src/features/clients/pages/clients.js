@@ -9,11 +9,14 @@ import { formatDate } from '../../../shared/utils/validation.js';
 import { openModal, closeModal } from '../../../shared/components/modal/modal.js';
 import { showToast } from '../../../shared/utils/toast.js';
 import { isSubscriptionBlocked } from '../../../core/state.js';
+import { mapClientFromAPI, mapClientToAPI, extractPaginatedResponse } from '../../../shared/utils/api-mappers.js';
 
 let clients = [];
 let editingId = null;
 let searchTerm = '';
 let currentPage = 1;
+let totalPages = 1;
+let totalClients = 0;
 let isLoading = false;
 const PAGE_SIZE = 10;
 
@@ -45,26 +48,30 @@ async function loadClients() {
     }
 
     try {
-        const response = await api.get('/clients');
-        clients = response.data || [];
-        clients.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        const params = new URLSearchParams();
+        params.set('page', currentPage);
+        params.set('limit', PAGE_SIZE);
+        if (searchTerm) params.set('search', searchTerm);
+
+        const response = await api.get(`/clients?${params.toString()}`);
+        const { data, pagination } = extractPaginatedResponse(response);
+        clients = data.map(mapClientFromAPI);
+        totalPages = pagination.pages || 1;
+        totalClients = pagination.total || clients.length;
     } catch (error) {
         console.error('[Clients] Error loading:', error);
         showToast('Erro ao carregar clientes', 'error');
         clients = [];
+        totalPages = 1;
+        totalClients = 0;
     } finally {
         isLoading = false;
     }
 }
 
 function getFilteredClients() {
-    if (!searchTerm) return clients;
-    const term = searchTerm.toLowerCase();
-    return clients.filter(c =>
-        (c.name || '').toLowerCase().includes(term) ||
-        (c.email || '').toLowerCase().includes(term) ||
-        (c.phone || '').includes(term)
-    );
+    // Server-side search is now handled via query params in loadClients
+    return clients;
 }
 
 function renderPage() {
@@ -143,11 +150,7 @@ function renderClientsTable() {
     const container = document.getElementById('clientsTableContainer');
     if (!container) return;
 
-    const clients = getFilteredClients();
-    const totalPages = Math.ceil(clients.length / PAGE_SIZE) || 1;
-    if (currentPage > totalPages) currentPage = totalPages;
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const pageClients = clients.slice(start, start + PAGE_SIZE);
+    const pageClients = getFilteredClients();
 
     if (clients.length === 0) {
         container.innerHTML = `
@@ -157,7 +160,7 @@ function renderClientsTable() {
                 <p style="color:var(--text-muted);font-size:0.9rem;">Clique em "Novo cliente" para adicionar</p>
             </div>
         `;
-        renderPagination(0, 1);
+        renderPagination(totalClients, totalPages);
         return;
     }
 
@@ -189,7 +192,7 @@ function renderClientsTable() {
     html += '</tbody></table>';
     container.innerHTML = html;
 
-    renderPagination(clients.length, totalPages);
+    renderPagination(totalClients, totalPages);
 }
 
 function renderPagination(total, totalPages) {
@@ -212,12 +215,13 @@ function renderPagination(total, totalPages) {
 
     container.innerHTML = html;
 
-    // Pagination click
+    // Pagination click (server-side)
     container.querySelectorAll('.pagination-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
             const page = parseInt(btn.dataset.page);
             if (page >= 1 && page <= totalPages) {
                 currentPage = page;
+                await loadClients();
                 renderClientsTable();
             }
         });
@@ -247,9 +251,10 @@ function bindEvents() {
     let searchTimeout;
     document.getElementById('clientSearch')?.addEventListener('input', (e) => {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
+        searchTimeout = setTimeout(async () => {
             searchTerm = e.target.value.trim();
             currentPage = 1;
+            await loadClients();
             renderClientsTable();
         }, 300);
     });
@@ -314,17 +319,19 @@ async function saveClient() {
     const submitBtn = document.querySelector('#clientForm button[type="submit"]');
     const originalText = submitBtn?.textContent || 'Salvar';
     
-    const data = {
+    const formData = {
         name: document.getElementById('clientName').value.trim(),
         phone: document.getElementById('clientPhone').value.trim(),
         email: document.getElementById('clientEmail').value.trim() || undefined,
         address: document.getElementById('clientAddress').value.trim() || undefined,
     };
 
-    if (!data.name || !data.phone) {
+    if (!formData.name || !formData.phone) {
         showToast('Preencha nome e telefone.', 'error');
         return;
     }
+
+    const data = mapClientToAPI(formData);
 
     if (submitBtn) {
         submitBtn.disabled = true;

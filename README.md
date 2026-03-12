@@ -37,34 +37,56 @@ beatyhub/
 │   ├── main.js                   # Entry point da aplicação
 │   ├── core/                     # Núcleo: router, state, auth, config
 │   ├── shared/                   # Código compartilhado
-│   │   ├── components/           # shell/, modal/ (UI reutilizável)
-│   │   ├── styles/               # main.css, components.css
-│   │   └── utils/                # localStorage, validation, toast, http
-│   ├── features/                 # Módulos de negócio (por domínio)
-│   │   ├── landing/              # Página inicial
-│   │   ├── auth/                 # Login + Registro + styles
-│   │   ├── dashboard/            # Dashboard + calendário + styles
-│   │   ├── appointments/         # CRUD agendamentos
-│   │   ├── financial/            # CRUD financeiro
+│   │   ├── components/           # shell/, modal/, subscription-banner/
+│   │   ├── styles/               # main.css, components.css, billing.css
+│   │   └── utils/                # http, api-mappers, validation, toast
+│   ├── features/                 # Módulos de negócio (18 módulos)
+│   │   ├── auth/                 # Login + Registro
+│   │   ├── dashboard/            # Dashboard + calendário
 │   │   ├── clients/              # CRUD clientes
-│   │   └── account/              # Minha Conta
+│   │   ├── appointments/         # CRUD agendamentos
+│   │   ├── services/             # CRUD serviços
+│   │   ├── professionals/        # CRUD profissionais
+│   │   ├── financial/            # CRUD financeiro (entradas + saídas)
+│   │   ├── inventory/            # CRUD estoque/produtos
+│   │   ├── suppliers/            # CRUD fornecedores
+│   │   ├── purchases/            # Registro de compras
+│   │   ├── reports/              # Relatórios administrativos
+│   │   ├── billing/              # Assinatura + Onboarding SaaS
+│   │   ├── settings/             # Configurações do tenant
+│   │   ├── account/              # Minha Conta (perfil + segurança)
+│   │   ├── professional/         # Área do Profissional (7 páginas)
+│   │   ├── master/               # Master Admin (5 submódulos)
+│   │   ├── public/               # Landing page pública
+│   │   └── landing/              # Landing page alternativa
 │   └── assets/logos/
 │
-├── backend/                      # API REST
+├── backend/                      # API REST Multi-Tenant
 │   ├── Dockerfile
-│   ├── server.js                 # Entry point
+│   ├── server.multitenant.js     # Entry point (produção)
 │   └── src/
-│       ├── app.js                # Express app (middleware + routes)
+│       ├── app.multitenant.js    # Express app multi-tenant (70+ endpoints)
 │       ├── config/               # env.js, database.js
-│       ├── models/               # 10 Sequelize models
-│       ├── controllers/          # 8 controllers
-│       ├── routes/               # 10 route files
-│       ├── middleware/            # auth, validation, errorHandler
-│       ├── utils/                # jwt, logger, validators
-│       ├── migrations/           # 10 migration files
-│       └── seeders/              # Seed data
+│       ├── models/               # 12 Sequelize models
+│       ├── modules/              # 15 módulos (clean architecture)
+│       │   ├── owner-*/          # 5 módulos CRUD (clients, services, appointments, financial, reports)
+│       │   ├── billing/          # Billing completo (planos, assinaturas, faturas)
+│       │   ├── tenants/          # Gestão de tenants + onboarding
+│       │   ├── users/            # Gestão de usuários + perfil
+│       │   ├── professionals/    # Detalhes profissionais
+│       │   ├── inventory/        # Produtos + movimentação de estoque
+│       │   ├── suppliers/        # Fornecedores
+│       │   ├── purchases/        # Compras + itens
+│       │   ├── financial/        # Payment transactions
+│       │   └── public/           # Registro público
+│       ├── controllers/          # 13 controllers (legacy, desativados)
+│       ├── routes/               # 13 legacy + 11 owner = 24 route files
+│       ├── shared/               # Middleware, errors, database, utils
+│       ├── middleware/            # auth, validation, errorHandler (legacy)
+│       ├── migrations/           # 31 migration files
+│       └── seeders/              # 3 seed files
 │
-└── docs/                         # Documentação
+└── docs/                         # 22 documentos técnicos
 ```
 
 ## ✨ Funcionalidades
@@ -245,19 +267,15 @@ Acesse: `http://localhost:3000`
 
 ## 🔑 Credenciais de Teste
 
-**Frontend (localStorage):**
-
-| Perfil | Email | Senha |
-|--------|-------|-------|
-| Admin | `adm@adm` | `123456` |
-| Profissional | `prof@prof` | `123456` |
-
-**Backend Multi-Tenant (PostgreSQL):**
+**Multi-Tenant (PostgreSQL via API):**
 
 | Perfil | Email | Senha | Tenant |
 |--------|-------|-------|--------|
 | MASTER | `master@beautyhub.com` | `123456` | — |
 | OWNER | `owner@belezapura.com` | `123456` | `beleza-pura` |
+| ADMIN | `admin@belezapura.com` | `123456` | `beleza-pura` |
+| PROFESSIONAL | `prof@belezapura.com` | `123456` | `beleza-pura` |
+| PROFESSIONAL | `carlos@belezapura.com` | `123456` | `beleza-pura` |
 
 **APIs Públicas (sem autenticação):**
 
@@ -298,29 +316,40 @@ curl -X POST http://localhost:5001/api/public/register \
 
 ## 📱 Rotas SPA
 
-| Página | Rota | Auth |
-|--------|------|------|
-| Landing | `/` | Não |
-| Login | `/login` | Não |
-| Registro | `/register` | Não |
-| Dashboard | `/dashboard` | Sim |
-| Agendamentos | `/appointments` | Sim |
-| Financeiro | `/financial` | Sim |
-| Clientes | `/clients` | Sim |
-| Serviços | `/services` | Sim |
-| Profissionais | `/professionals` | Sim |
-| Estoque | `/inventory` | Sim (OWNER) |
-| Fornecedores | `/suppliers` | Sim (OWNER) |
-| Compras | `/purchases` | Sim (OWNER) |
-| Relatórios | `/reports` | Sim (OWNER) |
-| Assinatura | `/billing` | Sim |
-| Configurações | `/settings` | Sim |
-| Minha Conta | `/account` | Sim |
-| Master Dashboard | `/master` | Sim (MASTER) |
-| Master Tenants | `/master/tenants` | Sim (MASTER) |
-| Master Planos | `/master/plans` | Sim (MASTER) |
-| Master Billing | `/master/billing` | Sim (MASTER) |
-| Master Sistema | `/master/system` | Sim (MASTER) |
+| Página | Rota | Auth | Role |
+|--------|------|------|------|
+| Landing | `/` | Não | — |
+| Login | `/login` | Não | — |
+| Registro | `/register` | Não | — |
+| Dashboard | `/dashboard` | Sim | OWNER+ |
+| Clientes | `/clients` | Sim | OWNER/ADMIN |
+| Agendamentos | `/appointments` | Sim | OWNER/ADMIN |
+| Serviços | `/services` | Sim | OWNER/ADMIN |
+| Profissionais | `/professionals` | Sim | OWNER/ADMIN |
+| Financeiro | `/financial` | Sim | OWNER/ADMIN |
+| Estoque | `/inventory` | Sim | OWNER/ADMIN |
+| Fornecedores | `/suppliers` | Sim | OWNER/ADMIN |
+| Compras | `/purchases` | Sim | OWNER/ADMIN |
+| Relatórios | `/reports` | Sim | OWNER/ADMIN |
+| Detalhes Profissionais | `/professional-details` | Sim | OWNER/ADMIN |
+| Transações Pagamento | `/payment-transactions` | Sim | OWNER/ADMIN |
+| Formas de Pagamento | `/payment-methods` | Sim | OWNER/ADMIN |
+| Usuários | `/users` | Sim | OWNER/ADMIN |
+| Assinatura | `/billing` | Sim | OWNER/ADMIN |
+| Configurações | `/settings` | Sim | OWNER |
+| Minha Conta | `/account` | Sim | Todos |
+| Meu Dashboard | `/professional/dashboard` | Sim | PROFESSIONAL |
+| Meus Agendamentos | `/professional/appointments` | Sim | PROFESSIONAL |
+| Meus Clientes | `/professional/clients` | Sim | PROFESSIONAL |
+| Meus Ganhos | `/professional/earnings` | Sim | PROFESSIONAL |
+| Minha Performance | `/professional/performance` | Sim | PROFESSIONAL |
+| Disponibilidade | `/professional/availability` | Sim | PROFESSIONAL |
+| Meu Perfil | `/professional/profile` | Sim | PROFESSIONAL |
+| Master Dashboard | `/master` | Sim | MASTER |
+| Master Tenants | `/master/tenants` | Sim | MASTER |
+| Master Planos | `/master/plans` | Sim | MASTER |
+| Master Billing | `/master/billing` | Sim | MASTER |
+| Master Sistema | `/master/system` | Sim | MASTER |
 
 ## 🏗️ Arquitetura
 
@@ -370,33 +399,47 @@ curl -X POST http://localhost:5001/api/public/register \
 | `PUT` | `/api/master/tenants/:id` | Atualizar tenant |
 | `DELETE` | `/api/master/tenants/:id` | Excluir tenant |
 
-## �� Estado & Próximos Passos
+## 📊 Estado & Próximos Passos
 
-- [x] Frontend SPA completo (8 páginas, CRUD, localStorage)
-- [x] Backend API REST (50+ endpoints, JWT, Joi, Winston)
+### Concluído
+- [x] Frontend SPA completo (34 páginas, 22 módulos, CRUD via API)
+- [x] Backend API REST (70+ endpoints, JWT, Joi, Winston)
 - [x] Docker Compose (Nginx + Backend + PostgreSQL)
-- [x] Migrations + Seed data
+- [x] 31 Migrations + 3 Seed files (multi-tenant demo data)
 - [x] Refatoração modular frontend (core/ + shared/ + features/)
 - [x] **Arquitetura Multi-Tenant SaaS** (tenants, billing, RBAC)
 - [x] **Self-Signup & Onboarding** (trial automático)
 - [x] **Brute Force Protection** (rate limiting + account lockout)
-- [x] **LGPD Compliance** (data export, anonymization, retention)
-- [x] **Webhook Resilience** (idempotency, DLQ, retry)
-- [x] **Pagar.me Integration** (PIX, cartão, boleto, split payments)
-- [x] **Gráficos Financeiros** (Chart.js - receitas vs despesas, categorias)
-- [x] **Categorias de Serviços** (campo + tabela de gestão)
-- [x] **Página de Onboarding SaaS** (escolha de plano para OWNER)
-- [x] **Configurações de Pagamento** (dados bancários + Pagar.me)
-- [x] **Módulos OWNER Completos** (estoque, fornecedores, compras)
+- [x] **Módulos OWNER Completos** (clients, services, appointments, financial, reports)
+- [x] **Módulos Estoque** (products, suppliers, purchases com CRUD frontend)
 - [x] **Landing Page de Vendas** (hero, features, planos dinâmicos, formulário)
 - [x] **APIs Públicas** (planos públicos + registro de tenant)
+- [x] **Área do Profissional** (7 páginas: dashboard, agendamentos, clientes, ganhos, performance, perfil, disponibilidade)
+- [x] **Master Admin** (5 páginas: dashboard, tenants, planos, billing, sistema)
+- [x] **Página de Onboarding SaaS** (escolha de plano para OWNER)
+- [x] **Configurações do Tenant** (negócio, branding, horários, pagamento)
+- [x] **Minha Conta** (perfil, segurança via API /api/profile)
 - [x] **Modal de Planos com Checkboxes** (13 funcionalidades selecionáveis)
-- [ ] **Integração frontend ↔ backend** (substituir localStorage por API)
+- [x] **Integração frontend ↔ backend** (todos módulos usam API REST)
+- [x] **Testes de integração multi-tenant** (48 testes passando)
+- [x] **Gestão de Usuários** (CRUD frontend para /api/users — admin+)
+- [x] **Detalhes Profissionais** (CRUD frontend para /api/professional-details)
+- [x] **Transações de Pagamento** (lista/filtros/detalhes para /api/payment-transactions)
+- [x] **Formas de Pagamento** (CRUD frontend para /api/financial/payment-methods)
+
+### Backend implementado (sem interface frontend dedicada)
+- [x] **LGPD Compliance** (lgpd.service.js — data export, anonymization)
+- [x] **Webhook Resilience** (webhookResilience.service.js — idempotency, DLQ, retry)
+- [x] **Pagar.me Provider** (pagarme.provider.js + mock + stripe providers)
+- [x] **Categorias de Serviços** (modelo + migration — sem UI de gestão)
+
+### Pendente
+- [ ] Gráficos financeiros (Chart.js — receitas vs despesas)
+- [ ] Exportação CSV/PDF (financeiro, estoque)
 - [ ] Email de boas-vindas após registro
 - [ ] Verificação de email
 - [ ] Upload de imagens (avatar, logo)
 - [ ] Notificações push
-- [ ] Testes automatizados (Jest + Supertest)
 
 ## 📄 Licença
 
