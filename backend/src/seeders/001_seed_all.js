@@ -70,10 +70,10 @@ module.exports = {
 
     // ── 1. Users ──
     await queryInterface.bulkInsert('users', [
-      { id: IDS.masterUser, email: 'master@master.com', password: hash, role: 'MASTER', first_name: 'Master', last_name: 'Admin', phone: '11900000000', is_active: true, ...ts },
-      { id: IDS.adminUser, email: 'admin@admin.com', password: hash, role: 'ADMIN', first_name: 'Admin', last_name: 'Salão', phone: '11911111111', is_active: true, ...ts },
-      { id: IDS.profUser1, email: 'prof@prof.com', password: hash, role: 'PROFESSIONAL', first_name: 'Ana', last_name: 'Silva', phone: '11922222222', is_active: true, ...ts },
-      { id: IDS.profUser2, email: 'prof2@prof.com', password: hash, role: 'PROFESSIONAL', first_name: 'Carlos', last_name: 'Santos', phone: '11933333333', is_active: true, ...ts },
+      { id: IDS.masterUser, email: 'master@master.com', password: hash, role: 'master', first_name: 'Master', last_name: 'Admin', phone: '11900000000', is_active: true, ...ts },
+      { id: IDS.adminUser, email: 'admin@admin.com', password: hash, role: 'admin', first_name: 'Admin', last_name: 'Salão', phone: '11911111111', is_active: true, ...ts },
+      { id: IDS.profUser1, email: 'prof@prof.com', password: hash, role: 'professional', first_name: 'Ana', last_name: 'Silva', phone: '11922222222', is_active: true, ...ts },
+      { id: IDS.profUser2, email: 'prof2@prof.com', password: hash, role: 'professional', first_name: 'Carlos', last_name: 'Santos', phone: '11933333333', is_active: true, ...ts },
     ]);
 
     // ── 2. Establishment ──
