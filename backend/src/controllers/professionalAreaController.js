@@ -55,18 +55,28 @@ async function getDashboard(req, res, next) {
     });
 
     // Próximo agendamento
-    const nextAppointment = await Appointment.findOne({
+    const nextAppointmentRaw = await Appointment.findOne({
       where: {
         professional_id: professionalId,
         start_time: { [Op.gte]: new Date() },
         status: { [Op.in]: ['PENDING', 'CONFIRMED'] },
       },
       include: [
-        { model: Client, as: 'client', attributes: ['id', 'name', 'phone'] },
-        { model: Service, as: 'service', attributes: ['id', 'name', 'duration'] },
+        { model: Client, as: 'client', attributes: ['id', 'first_name', 'last_name', 'phone'] },
+        { model: Service, as: 'service', attributes: ['id', 'name', 'duration_minutes'] },
       ],
       order: [['start_time', 'ASC']],
     });
+    // Map to friendly format
+    let nextAppointment = null;
+    if (nextAppointmentRaw) {
+      const na = nextAppointmentRaw.toJSON();
+      nextAppointment = {
+        ...na,
+        client: na.client ? { ...na.client, name: `${na.client.first_name || ''} ${na.client.last_name || ''}`.trim() } : null,
+        service: na.service ? { ...na.service, duration: na.service.duration_minutes } : null,
+      };
+    }
 
     // Total atendimentos mês
     const appointmentsMonth = await Appointment.count({
@@ -160,8 +170,8 @@ async function getAppointments(req, res, next) {
     const { count, rows } = await Appointment.findAndCountAll({
       where,
       include: [
-        { model: Client, as: 'client', attributes: ['id', 'name', 'phone', 'email'] },
-        { model: Service, as: 'service', attributes: ['id', 'name', 'duration', 'price'] },
+        { model: Client, as: 'client', attributes: ['id', 'first_name', 'last_name', 'phone', 'email'] },
+        { model: Service, as: 'service', attributes: ['id', 'name', 'duration_minutes', 'price'] },
       ],
       order: [[sort, order]],
       limit: parseInt(limit),
@@ -201,7 +211,7 @@ async function getClients(req, res, next) {
     const query = `
       SELECT DISTINCT
         c.id,
-        c.name,
+        CONCAT(c.first_name, ' ', COALESCE(c.last_name, '')) as name,
         c.phone,
         c.email,
         COUNT(a.id) as total_appointments,
@@ -211,8 +221,8 @@ async function getClients(req, res, next) {
       WHERE a.professional_id = :professionalId
         AND a.deleted_at IS NULL
         AND c.deleted_at IS NULL
-        ${search ? `AND c.name ILIKE :search` : ''}
-      GROUP BY c.id, c.name, c.phone, c.email
+        ${search ? `AND (c.first_name ILIKE :search OR c.last_name ILIKE :search)` : ''}
+      GROUP BY c.id, c.first_name, c.last_name, c.phone, c.email
       ORDER BY last_appointment DESC
       LIMIT :limit OFFSET :offset
     `;
@@ -224,7 +234,7 @@ async function getClients(req, res, next) {
       WHERE a.professional_id = :professionalId
         AND a.deleted_at IS NULL
         AND c.deleted_at IS NULL
-        ${search ? `AND c.name ILIKE :search` : ''}
+        ${search ? `AND (c.first_name ILIKE :search OR c.last_name ILIKE :search)` : ''}
     `;
 
     const replacements = {
@@ -306,7 +316,7 @@ async function getEarnings(req, res, next) {
         a.price_charged,
         (a.price_charged * (p.commission_rate / 100)) as commission,
         p.commission_rate,
-        c.name as client_name,
+        CONCAT(c.first_name, ' ', COALESCE(c.last_name, '')) as client_name,
         s.name as service_name
       FROM appointments a
       INNER JOIN professionals p ON a.professional_id = p.id
