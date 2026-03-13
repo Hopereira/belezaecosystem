@@ -7,27 +7,27 @@ const { Sequelize } = require('sequelize');
 const env = require('../../config/env');
 const logger = require('../utils/logger');
 
+const isProduction = env.nodeEnv === 'production';
+const useSSL = env.db.ssl || isProduction;
+
 const sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, {
   host: env.db.host,
   port: env.db.port,
   dialect: 'postgres',
-  logging: env.nodeEnv === 'development' ? (msg) => logger.debug(msg) : false,
+  logging: isProduction ? false : (msg) => logger.debug(msg),
   define: {
     timestamps: true,
     underscored: true,
     paranoid: true,
   },
   pool: {
-    max: env.nodeEnv === 'production' ? 50 : 20,
-    min: 5,
+    max: isProduction ? parseInt(process.env.DB_POOL_MAX || '10', 10) : 20,
+    min: isProduction ? 1 : 5,
     acquire: 60000,
     idle: 10000,
   },
-  dialectOptions: env.nodeEnv === 'production' ? {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
+  dialectOptions: useSSL ? {
+    ssl: { require: true, rejectUnauthorized: false },
   } : {},
 });
 
