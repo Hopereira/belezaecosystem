@@ -127,28 +127,30 @@ export async function handleRegister({
         return { success: false, message: 'Formato de email inválido.' };
     }
 
-    // Map role names
+    // Map role names (backend expects uppercase)
     const roleMap = {
-        'estabelecimento': 'owner',
-        'profissional': 'professional',
-        'cliente': 'client',
+        'estabelecimento': 'ADMIN',
+        'profissional': 'PROFESSIONAL',
+        'cliente': 'CLIENT',
+        'owner': 'ADMIN',
+        'professional': 'PROFESSIONAL',
+        'client': 'CLIENT',
     };
 
     const nameParts = name.trim().split(' ');
-    const firstName = nameParts[0];
-    const lastName = nameParts.slice(1).join(' ') || '';
+    const first_name = nameParts[0];
+    const last_name = nameParts.slice(1).join(' ') || '';
 
     try {
         const response = await api.post('/auth/register', {
-            firstName,
-            lastName,
+            first_name,
+            last_name,
             email,
             password,
-            role: roleMap[role] || role,
-            salonName: salonName || name,
+            role: roleMap[role] || role.toUpperCase(),
+            salon_name: salonName || name,
             cnpj: cnpj || undefined,
             specialty: specialty || undefined,
-            planSlug,
         }, { skipAuth: true, skipTenant: true });
 
         if (!response.success) {
