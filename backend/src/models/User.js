@@ -18,9 +18,9 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM('MASTER', 'ADMIN', 'PROFESSIONAL', 'CLIENT'),
+      type: DataTypes.ENUM('master', 'owner', 'admin', 'professional', 'client'),
       allowNull: false,
-      defaultValue: 'CLIENT',
+      defaultValue: 'client',
     },
     tenant_id: {
       type: DataTypes.UUID,
