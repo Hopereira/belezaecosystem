@@ -169,6 +169,15 @@ function bindShellEvents() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
 
+    const bindClickAndTouch = (el, handler) => {
+        ['click', 'touchstart'].forEach(evt => {
+            el?.addEventListener(evt, (e) => {
+                e.preventDefault();
+                handler();
+            }, { passive: false });
+        });
+    };
+
     const toggleMobileMenu = () => {
         sidebar?.classList.toggle('open');
         overlay?.classList.toggle('show');
@@ -179,12 +188,12 @@ function bindShellEvents() {
         overlay?.classList.remove('show');
     };
 
-    mobileMenuBtn?.addEventListener('click', toggleMobileMenu);
-    overlay?.addEventListener('click', closeMobileMenu);
+    bindClickAndTouch(mobileMenuBtn, toggleMobileMenu);
+    bindClickAndTouch(overlay, closeMobileMenu);
 
     // Close mobile menu on navigation
     document.querySelectorAll('.menu-item').forEach(item => {
-        item.addEventListener('click', closeMobileMenu);
+        bindClickAndTouch(item, closeMobileMenu);
     });
 
     // Profile dropdown toggle
