@@ -46,17 +46,21 @@ export async function handleLogin(email, password, tenantSlug = null) {
             setTenantSlug(tenant.slug);
         }
 
-        // Format user for frontend
+        // Format user for frontend (backend sends snake_case)
+        const fn = user.firstName || user.first_name || '';
+        const ln = user.lastName || user.last_name || '';
         const sessionUser = {
             id: user.id,
-            name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-            firstName: user.firstName || user.name?.split(' ')[0] || '',
-            lastName: user.lastName || user.name?.split(' ').slice(1).join(' ') || '',
+            name: user.name || `${fn} ${ln}`.trim() || user.email,
+            firstName: fn,
+            lastName: ln,
+            first_name: fn,
+            last_name: ln,
             email: user.email,
             role: user.role,
             phone: user.phone || '',
             avatar: user.avatar || '',
-            tenantId: user.tenantId || tenant?.id,
+            tenantId: user.tenantId || user.tenant_id || tenant?.id,
             tenant: tenant || null,
         };
 
@@ -212,16 +216,20 @@ export async function recoverSession() {
             const user = response.data.user || response.data;
             const subscription = response.data.subscription;
 
+            const fn = user.firstName || user.first_name || '';
+            const ln = user.lastName || user.last_name || '';
             const sessionUser = {
                 id: user.id,
-                name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-                firstName: user.firstName || '',
-                lastName: user.lastName || '',
+                name: user.name || `${fn} ${ln}`.trim() || user.email,
+                firstName: fn,
+                lastName: ln,
+                first_name: fn,
+                last_name: ln,
                 email: user.email,
                 role: user.role,
                 phone: user.phone || '',
                 avatar: user.avatar || '',
-                tenantId: user.tenantId,
+                tenantId: user.tenantId || user.tenant_id,
             };
 
             setCurrentUser(sessionUser);
