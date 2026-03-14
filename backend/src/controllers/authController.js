@@ -7,6 +7,7 @@ async function register(req, res, next) {
   const t = await sequelize.transaction();
   try {
     const { email, password, first_name, last_name, phone, role, salon_name, cnpj, specialty } = req.body;
+    const normalizedRole = (role || 'client').toLowerCase();
 
     const existing = await User.findOne({ where: { email } });
     if (existing) {
@@ -25,11 +26,11 @@ async function register(req, res, next) {
       first_name,
       last_name,
       phone,
-      role: role || 'CLIENT',
+      role: normalizedRole,
     }, { transaction: t });
 
-    // If ADMIN, create establishment
-    if (role === 'ADMIN' && salon_name) {
+    // If ADMIN/owner, create establishment
+    if ((normalizedRole === 'admin' || normalizedRole === 'owner') && salon_name) {
       await Establishment.create({
         user_id: user.id,
         name: salon_name,
