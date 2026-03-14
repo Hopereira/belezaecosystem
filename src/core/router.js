@@ -102,8 +102,33 @@ async function loadRoute(path) {
 
     // If authenticated and trying to access login/register, redirect to dashboard
     if (!route.auth && route.page !== 'landing' && isAuthenticated()) {
-        navigateTo('/dashboard', true);
+        const user = getCurrentUser();
+        const userRole = (user?.role || '').toLowerCase();
+        if (userRole === 'professional') {
+            navigateTo('/professional/dashboard', true);
+        } else if (userRole === 'master') {
+            navigateTo('/master', true);
+        } else {
+            navigateTo('/dashboard', true);
+        }
         return;
+    }
+
+    // Professional redirect: send professionals to their own area
+    if (isAuthenticated()) {
+        const user = getCurrentUser();
+        const userRole = (user?.role || '').toLowerCase();
+        if (userRole === 'professional') {
+            const professionalRedirects = {
+                '/dashboard': '/professional/dashboard',
+                '/appointments': '/professional/appointments',
+                '/clients': '/professional/clients',
+            };
+            if (professionalRedirects[path]) {
+                navigateTo(professionalRedirects[path], true);
+                return;
+            }
+        }
     }
 
     // Role guard (for master routes)
