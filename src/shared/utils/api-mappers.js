@@ -236,13 +236,19 @@ export function mapFinancialExitToAPI(formData) {
 export function mapProfessionalFromAPI(apiProf) {
     if (!apiProf) return null;
     const user = apiProf.user;
+    const firstName = user?.first_name || apiProf.first_name || '';
+    const lastName = user?.last_name || apiProf.last_name || '';
+    const fullName = apiProf.name || [firstName, lastName].filter(Boolean).join(' ');
     return {
         id: apiProf.id,
         userId: apiProf.user_id,
-        name: user ? [user.first_name, user.last_name].filter(Boolean).join(' ') : '',
-        firstName: user?.first_name || '',
-        lastName: user?.last_name || '',
+        name: fullName,
+        firstName,
+        lastName,
+        email: user?.email || apiProf.email || '',
+        phone: user?.phone || apiProf.phone || '',
         specialty: apiProf.specialty || '',
-        commissionRate: parseFloat(apiProf.commission_rate) || 0,
+        commissionRate: parseFloat(apiProf.commission_rate) || parseFloat(apiProf.commission) || 0,
+        isActive: apiProf.is_active !== false,
     };
 }
