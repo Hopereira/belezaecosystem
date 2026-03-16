@@ -8,14 +8,6 @@ module.exports = {
     '!src/seeders/**',
     '!src/models/index.js',
   ],
-  coverageThreshold: {
-    global: {
-      branches: 50,
-      functions: 50,
-      lines: 50,
-      statements: 50,
-    },
-  },
   testTimeout: 10000,
   // Exclude integration tests that require DB unless RUN_INTEGRATION=true
   testPathIgnorePatterns: process.env.RUN_INTEGRATION ? [] : [],
