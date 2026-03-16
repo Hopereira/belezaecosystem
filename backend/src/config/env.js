@@ -28,8 +28,19 @@ function parseDbConfig() {
   };
 }
 
+const nodeEnv = process.env.NODE_ENV || 'development';
+
+// Enforce required secrets in production
+if (nodeEnv === 'production') {
+  const requiredVars = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'DB_PASSWORD'];
+  const missing = requiredVars.filter((v) => !process.env[v]);
+  if (missing.length > 0) {
+    throw new Error(`[env] Missing required production environment variables: ${missing.join(', ')}`);
+  }
+}
+
 module.exports = {
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv,
   port: parseInt(process.env.PORT, 10) || 5001,
 
   db: parseDbConfig(),
