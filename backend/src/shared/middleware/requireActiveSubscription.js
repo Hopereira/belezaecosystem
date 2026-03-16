@@ -77,8 +77,8 @@ function requireActiveSubscription(options = {}, models = null) {
       const method = req.method.toUpperCase();
       const isWriteOperation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
 
-      // Check subscription status
-      if (status === 'suspended' || status === 'canceled') {
+      // Check subscription status — use includes() to handle both 'canceled' and 'cancelled' spellings
+      if (['suspended', 'canceled', 'cancelled', 'expired'].includes(status)) {
         logger.warn(`[Subscription] Access denied for tenant ${tenant.slug} - status: ${status}`);
         return res.status(402).json({
           success: false,
