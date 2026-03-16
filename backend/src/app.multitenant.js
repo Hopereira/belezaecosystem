@@ -17,6 +17,9 @@ const { createBruteForceProtection } = require('./shared/middleware');
 const logger = require('./shared/utils/logger');
 const OnboardingService = require('./modules/tenants/onboarding.service');
 const { createOnboardingRoutes } = require('./modules/tenants/onboarding.routes');
+const { initLgpdModule } = require('./modules/lgpd');
+const { initNotificationsModule } = require('./modules/notifications');
+const requireActiveSubscription = require('./shared/middleware/requireActiveSubscription');
 
 // Legacy routes (until fully migrated to modules)
 const authRoutes = require('./routes/auth');
@@ -276,6 +279,27 @@ app.use('/api/master/billing', masterBillingRoutes);
 app.use('/api', tenantResolver);
 app.use('/api', validateTenantConsistency);
 
+// LGPD module (compliance — Art. 18 LGPD)
+const lgpdMiddleware = {
+  authenticate: modules.users.middleware.authenticate,
+  authorize: modules.users.middleware.authorize,
+  ROLES: require('./shared/constants').ROLES,
+};
+const { routes: lgpdRoutes } = initLgpdModule({
+  models: modules.users.models,
+  sequelize: require('./shared/database/connection'),
+  middleware: lgpdMiddleware,
+});
+app.use('/api/lgpd', lgpdRoutes.tenant);
+app.use('/api/master/lgpd', lgpdRoutes.master);
+
+// Notifications module
+const { routes: notifRoutes } = initNotificationsModule({
+  models: require('./models'),
+  middleware: lgpdMiddleware,
+});
+app.use('/api/notifications', requireActiveSubscription(), notifRoutes);
+
 // Current tenant info
 app.use('/api/tenant', modules.tenants.routes.tenant);
 
@@ -299,10 +323,9 @@ app.use('/api/profile', modules.users.routes.profile);
 // app.use('/api/professionals', professionalRoutes);  // ❌ Uses establishment_id
 // app.use('/api/appointments', appointmentRoutes);  // ❌ Uses establishment_id
 // app.use('/api/financial', financialRoutes);  // ❌ Uses establishment_id
-app.use('/api/notifications', notificationRoutes);  // ✅ Safe (notifications only)
+// app.use('/api/notifications', notificationRoutes);  // ❌ Replaced by notifications module above
 
 // PROFESSIONAL Area Routes (tenant-scoped, PROFESSIONAL role only, Subscription enforced)
-const requireActiveSubscription = require('./shared/middleware/requireActiveSubscription');
 const professionalAreaRoutes = require('./routes/professionalArea');
 app.use('/api/professional', requireActiveSubscription(), professionalAreaRoutes);
 
