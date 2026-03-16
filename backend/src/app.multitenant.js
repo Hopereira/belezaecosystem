@@ -11,7 +11,7 @@ const rateLimit = require('express-rate-limit');
 
 const env = require('./config/env');
 const { initializeModules } = require('./modules');
-const { errorHandler, notFoundHandler } = require('./shared/middleware');
+const { errorHandler, notFoundHandler, asyncHandler } = require('./shared/middleware');
 const { createTenantResolver, validateTenantConsistency } = require('./shared/middleware');
 const { createBruteForceProtection } = require('./shared/middleware');
 const logger = require('./shared/utils/logger');
@@ -230,7 +230,7 @@ const onboardingRoutes = createOnboardingRoutes(onboardingService);
 app.use('/api', onboardingRoutes);
 
 // Billing public routes (plans listing)
-app.get('/api/billing/plans', async (req, res) => {
+app.get('/api/billing/plans', asyncHandler(async (req, res) => {
   const { SubscriptionPlan } = modules.billing.models;
   const plans = await SubscriptionPlan.findAll({
     where: { is_active: true, is_public: true },
@@ -240,9 +240,9 @@ app.get('/api/billing/plans', async (req, res) => {
     success: true,
     data: plans,
   });
-});
+}));
 
-app.get('/api/billing/plans/:slug', async (req, res) => {
+app.get('/api/billing/plans/:slug', asyncHandler(async (req, res) => {
   const { SubscriptionPlan } = modules.billing.models;
   const plan = await SubscriptionPlan.findOne({
     where: { slug: req.params.slug, is_active: true },
@@ -251,7 +251,7 @@ app.get('/api/billing/plans/:slug', async (req, res) => {
     return res.status(404).json({ success: false, message: 'Plan not found' });
   }
   res.json({ success: true, data: plan });
-});
+}));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Master Routes (SaaS Admin - no tenant scope)
