@@ -577,14 +577,21 @@ async function handleRegistration(e) {
     }
 
     const accountType = document.querySelector('input[name="accountType"]:checked').value;
-    
+    const ownerName   = document.getElementById('ownerName').value.trim();
+
     const data = {
         accountType,
         business: {
-            name: document.getElementById('businessName')?.value,
-            cnpj: document.getElementById('cnpj')?.value,
-            phone: document.getElementById('businessPhone')?.value,
-            email: document.getElementById('businessEmail')?.value,
+            name:  accountType === 'professional'
+                       ? ownerName
+                       : (document.getElementById('businessName')?.value || ownerName),
+            cnpj:  document.getElementById('cnpj')?.value || '',
+            phone: accountType === 'professional'
+                       ? document.getElementById('ownerPhone').value
+                       : (document.getElementById('businessPhone')?.value || ''),
+            email: accountType === 'professional'
+                       ? document.getElementById('ownerEmail').value
+                       : (document.getElementById('businessEmail')?.value || ''),
         },
         address: {
             cep: document.getElementById('cep').value,
