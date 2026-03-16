@@ -29,9 +29,9 @@ services:
       DB_PORT: 5432
       DB_NAME: ${DB_NAME:-beautyhub_db}
       DB_USER: ${DB_USER:-beautyhub_user}
-      DB_PASSWORD: ${DB_PASSWORD:-beautyhub_secret_2026}
-      JWT_SECRET: ${JWT_SECRET:-bh_jwt_secret_change_me_in_production_2026}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-bh_jwt_refresh_secret_change_me_in_production_2026}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required. Copy .env.example to .env and set a strong password}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required. Copy .env.example to .env and set a strong secret}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET is required. Copy .env.example to .env and set a strong secret}
       JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION:-1h}
       JWT_REFRESH_TOKEN_EXPIRATION: ${JWT_REFRESH_TOKEN_EXPIRATION:-7d}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
@@ -60,7 +60,7 @@ services:
     environment:
       POSTGRES_DB: ${DB_NAME:-beautyhub_db}
       POSTGRES_USER: ${DB_USER:-beautyhub_user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-beautyhub_secret_2026}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
