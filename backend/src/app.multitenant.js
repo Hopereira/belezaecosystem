@@ -216,6 +216,8 @@ if (modules.public && modules.public.routes) {
 }
 
 // Auth routes (public - no tenant required for login/register)
+// Apply brute force protection specifically to login endpoint
+app.use('/api/auth/login', bruteForceProtection.checkLoginAllowed());
 app.use('/api/auth', authRoutes);
 
 // Onboarding / Self-Signup routes (public)
