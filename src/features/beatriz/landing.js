@@ -50,7 +50,9 @@ export function render() {
 
             <!-- ── NAVEGAÇÃO ── -->
             <nav class="bx-nav">
-                <span class="bx-nav__brand">Beatriz Xavier</span>
+                <a href="#inicio" class="bx-nav__brand">
+                    <img src="/assets/logos/logo.png" alt="Beatriz Xavier" class="bx-nav__logo">
+                </a>
                 <ul class="bx-nav__links">
                     <li><a href="#inicio">Home</a></li>
                     <li><a href="#servicos">Serviços</a></li>
@@ -71,9 +73,9 @@ export function render() {
             <!-- ── HERO: SPLIT 3 COLUNAS ── -->
             <section id="inicio" class="bx-hero">
                 <div class="bx-hero__photo-wrap bx-hero__photo-wrap--left">
-                    <img src="/src/assets/images/beatriz.jpg"
+                    <img src="/assets/images/beatriz.jpg"
                          alt="Ana Beatriz Xavier"
-                         onerror="this.parentElement.style.background='#e8d5d0'">
+                         onerror="this.parentElement.style.background='#b2e4e2'">
                 </div>
 
                 <div class="bx-hero__center">
@@ -95,9 +97,9 @@ export function render() {
                 </div>
 
                 <div class="bx-hero__photo-wrap bx-hero__photo-wrap--right">
-                    <img src="/src/assets/images/beatriz 3.jpg"
+                    <img src="/assets/images/beatriz3.jpg"
                          alt="Trabalho de Ana Beatriz Xavier"
-                         onerror="this.parentElement.style.background='#dfc9c3'">
+                         onerror="this.parentElement.style.background='#a8dbd9'">
                 </div>
             </section>
 
@@ -129,7 +131,7 @@ export function render() {
             <div id="sobre" class="bx-about-section">
                 <div class="bx-about">
                     <div class="bx-about__photo">
-                        <img src="/src/assets/images/trabalho2.png"
+                        <img src="/assets/images/trabalho2.png"
                              alt="Espaço de atendimento de Ana Beatriz Xavier"
                              onerror="this.parentElement.style.display='none'">
                     </div>
@@ -171,27 +173,27 @@ export function render() {
                 <p class="bx-gallery__subtitle">Cada atendimento é único — veja um pouco do que já realizei</p>
                 <div class="bx-gallery__grid">
                     <div class="bx-gallery__item">
-                        <img src="/src/assets/images/beatriz.jpg"
+                        <img src="/assets/images/beatriz.jpg"
                              alt="Ana Beatriz Xavier" loading="lazy"
                              onerror="this.parentElement.style.display='none'">
                     </div>
                     <div class="bx-gallery__item">
-                        <img src="/src/assets/images/beatriz 3.jpg"
+                        <img src="/assets/images/beatriz3.jpg"
                              alt="Trabalho de Ana Beatriz" loading="lazy"
                              onerror="this.parentElement.style.display='none'">
                     </div>
                     <div class="bx-gallery__item">
-                        <img src="/src/assets/images/trabalho 1.png"
+                        <img src="/assets/images/trabalho1.png"
                              alt="Trabalho de Ana Beatriz" loading="lazy"
                              onerror="this.parentElement.style.display='none'">
                     </div>
                     <div class="bx-gallery__item">
-                        <img src="/src/assets/images/trabalho2.png"
+                        <img src="/assets/images/trabalho2.png"
                              alt="Trabalho de Ana Beatriz" loading="lazy"
                              onerror="this.parentElement.style.display='none'">
                     </div>
                     <div class="bx-gallery__item">
-                        <img src="/src/assets/images/trabalho3 .png"
+                        <img src="/assets/images/trabalho3.png"
                              alt="Trabalho de Ana Beatriz" loading="lazy"
                              onerror="this.parentElement.style.display='none'">
                     </div>

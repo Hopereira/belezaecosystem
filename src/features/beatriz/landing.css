@@ -4,16 +4,17 @@
    ===================================================== */
 
 :root {
-    --bx-primary:       #8B5E52;
-    --bx-primary-dark:  #6B3F34;
-    --bx-accent:        #D4AF8C;
-    --bx-bg:            #FAFAF8;
-    --bx-bg-warm:       #F5EDE6;
-    --bx-bg-section:    #F0E8E2;
-    --bx-dark:          #1C1410;
-    --bx-dark-2:        #2D1E18;
-    --bx-text:          #1a1a1a;
-    --bx-text-muted:    #7a6a65;
+    --bx-primary:       #20B2AA;
+    --bx-primary-dark:  #178f8f;
+    --bx-primary-light: #7dd8d5;
+    --bx-accent:        #e0f7f6;
+    --bx-bg:            #FAFFFE;
+    --bx-bg-warm:       #F0FAFA;
+    --bx-bg-section:    #E6F5F5;
+    --bx-dark:          #0d2626;
+    --bx-dark-2:        #163636;
+    --bx-text:          #0d1f1f;
+    --bx-text-muted:    #4a7575;
     --bx-white:         #ffffff;
     --bx-whatsapp:      #25D366;
     --bx-whatsapp-dark: #1aa857;
@@ -55,13 +56,17 @@
 }
 
 .bx-nav__brand {
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--bx-text);
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
     text-decoration: none;
+    flex-shrink: 0;
+}
+
+.bx-nav__logo {
+    height: 44px;
+    width: auto;
+    object-fit: contain;
+    display: block;
 }
 
 .bx-nav__links {
