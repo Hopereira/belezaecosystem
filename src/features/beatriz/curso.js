@@ -38,14 +38,14 @@ export function render() {
                     </span>
 
                     <h1 class="cx-hero__title">
-                        Curso de<br>
-                        <span class="cx-hero__title--accent">Extensão de Cílios</span>
+                        Cursos<br>
+                        <span class="cx-hero__title--accent">Profissionais de Beleza</span>
                     </h1>
 
                     <p class="cx-hero__desc">
-                        Em breve vou compartilhar tudo que aprendi em anos de experiência
-                        na arte das extensões de cílios. Desde a técnica até os segredos
-                        para fidelizar clientes.
+                        Em breve vou compartilhar anos de experiência em 3 modalidades:
+                        extensão de cílios, design de sobrancelhas e depilação.
+                        Técnica, prática e segredos para você se destacar.
                     </p>
 
                     <div class="cx-features">
@@ -95,6 +95,76 @@ export function render() {
                     <p class="cx-soon-label">Em breve</p>
                 </div>
             </main>
+
+            <!-- ── MODALIDADES ── -->
+            <section class="cx-modalities">
+                <span class="cx-badge" style="margin-bottom:1rem;">
+                    <i class="fas fa-list-alt"></i> Modalidades disponíveis
+                </span>
+                <h2 class="cx-modalities__title">O que você vai aprender</h2>
+                <p class="cx-modalities__sub">Cada curso com aulas práticas, certificado e suporte direto comigo</p>
+
+                <div class="cx-modalities__grid">
+
+                    <div class="cx-mod-card">
+                        <div class="cx-mod-card__icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="cx-mod-card__body">
+                            <h3>Extensão de Cílios</h3>
+                            <p>Volume, naturalidade e técnica apurada para realçar o olhar das suas clientes com os melhores materiais.</p>
+                            <ul class="cx-mod-card__topics">
+                                <li><i class="fas fa-check"></i> Fio a fio e volumes</li>
+                                <li><i class="fas fa-check"></i> Mapeamento de olhar</li>
+                                <li><i class="fas fa-check"></i> Manutenção e remoção</li>
+                                <li><i class="fas fa-check"></i> Biossegurança</li>
+                            </ul>
+                        </div>
+                        <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer" class="cx-mod-card__cta">
+                            <i class="fab fa-whatsapp"></i> Quero ser avisada
+                        </a>
+                    </div>
+
+                    <div class="cx-mod-card">
+                        <div class="cx-mod-card__icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="cx-mod-card__body">
+                            <h3>Design de Sobrancelhas</h3>
+                            <p>Sobrancelhas moldadas para harmonizar o rosto e expressar a personalidade única de cada cliente.</p>
+                            <ul class="cx-mod-card__topics">
+                                <li><i class="fas fa-check"></i> Mapeamento facial</li>
+                                <li><i class="fas fa-check"></i> Henna e coloração</li>
+                                <li><i class="fas fa-check"></i> Laminação</li>
+                                <li><i class="fas fa-check"></i> Correção de falhas</li>
+                            </ul>
+                        </div>
+                        <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer" class="cx-mod-card__cta">
+                            <i class="fab fa-whatsapp"></i> Quero ser avisada
+                        </a>
+                    </div>
+
+                    <div class="cx-mod-card">
+                        <div class="cx-mod-card__icon">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <div class="cx-mod-card__body">
+                            <h3>Depilação</h3>
+                            <p>Tratamento completo com conforto, higiene e produtos selecionados para o cuidado profissional da pele.</p>
+                            <ul class="cx-mod-card__topics">
+                                <li><i class="fas fa-check"></i> Cera quente e fria</li>
+                                <li><i class="fas fa-check"></i> Linha e pinça</li>
+                                <li><i class="fas fa-check"></i> Cuidados pré e pós</li>
+                                <li><i class="fas fa-check"></i> Atendimento feminino</li>
+                            </ul>
+                        </div>
+                        <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer" class="cx-mod-card__cta">
+                            <i class="fab fa-whatsapp"></i> Quero ser avisada
+                        </a>
+                    </div>
+
+                </div>
+            </section>
 
             <footer class="cx-footer">
                 <p>© ${new Date().getFullYear()} Ana Beatriz Xavier · Todos os direitos reservados</p>
