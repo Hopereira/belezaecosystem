@@ -18,6 +18,20 @@ export function render() {
 
     app.innerHTML = `
         <div class="landing-page">
+            <!-- Nav -->
+            <nav class="landing-nav">
+                <div class="landing-nav__brand">
+                    <i class="fas fa-spa"></i> Beauty Hub
+                </div>
+                <div class="landing-nav__links">
+                    <a href="#features">Funcionalidades</a>
+                    <a href="#pricing">Planos</a>
+                </div>
+                <a href="/login" class="landing-nav__login" onclick="event.preventDefault(); window.navigateToLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </a>
+            </nav>
+
             <!-- Hero Section -->
             <section class="hero-section">
                 <div class="hero-content">
@@ -424,6 +438,10 @@ function openRegistrationModal() {
         }
     }
 }
+
+window.navigateToLogin = function() {
+    navigateTo('/login');
+};
 
 window.closeRegistrationModal = function() {
     const modal = document.getElementById('modal-register');
