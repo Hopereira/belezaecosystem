@@ -9,7 +9,8 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Install dependencies only (for caching)
-COPY package.json package-lock.json* ./
+# NOTE: build context is repo root (fly.toml location), so use backend/ prefix
+COPY backend/package.json backend/package-lock.json* ./
 RUN npm ci --only=production && npm cache clean --force
 
 # ── Stage 2: Production ──
@@ -24,8 +25,8 @@ WORKDIR /app
 # Copy production dependencies
 COPY --from=deps /app/node_modules ./node_modules
 
-# Copy application code
-COPY --chown=nodejs:nodejs . .
+# Copy only backend application code into /app (server.js lands at /app/server.js)
+COPY --chown=nodejs:nodejs backend/ .
 
 # Remove dev files
 RUN rm -rf tests/ *.test.js .env* .git* Dockerfile*
