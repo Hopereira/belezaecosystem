@@ -3,7 +3,6 @@
  * Handles tenant registration logic
  */
 
-const bcrypt = require('bcryptjs');
 const { ValidationError } = require('../../../shared/errors');
 
 class RegistrationService {
@@ -47,9 +46,6 @@ class RegistrationService {
       if (existingUser) {
         throw new ValidationError('Este email já está cadastrado.');
       }
-
-      // Hash password
-      const hashedPassword = await bcrypt.hash(data.owner.password, 10);
 
       // Determine document type and tenant type from accountType
       const isProfessional = data.accountType === 'professional';
@@ -97,7 +93,7 @@ class RegistrationService {
         first_name: firstName,
         last_name:  lastName,
         email:      data.owner.email,
-        password:   hashedPassword,
+        password:   data.owner.password,
         phone:      data.owner.phone,
         role:       'owner',
         is_active:  true,
