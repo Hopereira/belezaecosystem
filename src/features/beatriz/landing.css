@@ -517,18 +517,11 @@
 }
 
 .bx-gallery__grid {
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto 3rem;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
-}
-
-@media (max-width: 900px) {
-    .bx-gallery__grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.875rem;
-    }
 }
 
 .bx-gallery__item {

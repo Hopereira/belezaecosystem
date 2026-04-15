@@ -206,20 +206,8 @@ export function render() {
                 <h2>Meus Trabalhos</h2>
                 <p class="bx-gallery__subtitle">Cada atendimento é único — veja um pouco do que já realizei</p>
                 <div class="bx-gallery__grid">
-                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/beatriz.jpg" data-alt="Beatriz Xavier">
-                        <img src="/assets/images/beatriz.jpg" alt="Beatriz Xavier" loading="lazy">
-                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
-                    </div>
                     <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho1.png" data-alt="Extensão de cílios">
                         <img src="/assets/images/trabalho1.png" alt="Extensão de cílios" loading="lazy">
-                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
-                    </div>
-                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho2.png" data-alt="Espaço de atendimento">
-                        <img src="/assets/images/trabalho2.png" alt="Espaço de atendimento" loading="lazy">
-                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
-                    </div>
-                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/beatriz3.jpg" data-alt="Beatriz Xavier">
-                        <img src="/assets/images/beatriz3.jpg" alt="Beatriz Xavier" loading="lazy">
                         <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
                     </div>
                     <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho3.png" data-alt="Design de sobrancelhas">
@@ -240,10 +228,6 @@ export function render() {
                     </div>
                     <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho7.jpg" data-alt="Lash Design">
                         <img src="/assets/images/trabalho7.jpg" alt="Lash Design" loading="lazy">
-                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
-                    </div>
-                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho8.jpg" data-alt="Design de sobrancelhas">
-                        <img src="/assets/images/trabalho8.jpg" alt="Design de sobrancelhas" loading="lazy">
                         <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
                     </div>
                 </div>
