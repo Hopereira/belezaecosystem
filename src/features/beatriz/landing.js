@@ -175,7 +175,7 @@ export function render() {
                         </p>
                         <p>
                             Com mais de 10 certificações em Lash Design e outras 35 na área da beleza —
-                            incluindo formação internacional 🇧🇷🇦🇷🇨🇴🇵🇷🇲🇽 — minha prioridade é o atendimento
+                            incluindo formação internacional — minha prioridade é o atendimento
                             personalizado através de protocolos que visam, acima de tudo, a saúde ocular
                             e a integridade dos fios.
                         </p>
