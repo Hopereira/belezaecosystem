@@ -62,7 +62,7 @@ jobs:
       - name: Build frontend
         run: npm run build
         env:
-          VITE_API_URL: https://api.biaxavier.com.br
+          VITE_API_URL: https://api.biaxavier.com.br/api
           VITE_APP_URL: https://app.biaxavier.com.br
 
       - name: Create Cloudflare Pages project (first deploy only)
