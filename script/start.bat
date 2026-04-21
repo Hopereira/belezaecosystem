@@ -1,12 +1,12 @@
 @echo off
 REM ============================================================================
-REM BeautyHub - Script de Inicializacao Completa
+REM BelezaEcosystem - Script de Inicializacao Completa
 REM Executa todos os comandos necessarios para iniciar o sistema
 REM ============================================================================
 
 echo.
 echo ========================================
-echo  BeautyHub - Iniciando Sistema
+echo  BelezaEcosystem - Iniciando Sistema
 echo ========================================
 echo.
 

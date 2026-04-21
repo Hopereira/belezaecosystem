@@ -1,11 +1,11 @@
 # ============================================================================
-# BeautyHub - Script para Remover Containers (PowerShell)
+# BelezaEcosystem - Script para Remover Containers (PowerShell)
 # Mantém os dados (volumes)
 # ============================================================================
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  BeautyHub - Removendo Containers" -ForegroundColor Cyan
+Write-Host "  BelezaEcosystem - Removendo Containers" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 

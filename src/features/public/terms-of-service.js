@@ -11,7 +11,7 @@ export function render() {
                 <header style="margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
                     <div>
                         <h1 style="margin:0;font-size:1.9rem;color:#0f172a;font-weight:800;letter-spacing:-0.02em;">Termos de Serviço</h1>
-                        <p style="margin:0.35rem 0 0;color:#475569;font-size:0.98rem;">Regras de uso da plataforma BeautyHub para tenants e usuários.</p>
+                        <p style="margin:0.35rem 0 0;color:#475569;font-size:0.98rem;">Regras de uso da plataforma BelezaEcosystem para tenants e usuários.</p>
                     </div>
                 </header>
 
@@ -48,7 +48,7 @@ export function render() {
 
                     <section>
                         <h2 style="font-size:1.2rem;color:#0f172a;margin:0 0 0.35rem;">7. Contato</h2>
-                        <p>Dúvidas sobre estes termos: <a href="mailto:suporte@beautyhub.com" style="color:#2563eb;font-weight:600;">suporte@beautyhub.com</a></p>
+                        <p>Dúvidas sobre estes termos: <a href="mailto:suporte@belezaecosystem.com" style="color:#2563eb;font-weight:600;">suporte@belezaecosystem.com</a></p>
                     </section>
                 </div>
 

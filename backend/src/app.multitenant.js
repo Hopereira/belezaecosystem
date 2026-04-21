@@ -1,6 +1,6 @@
 /**
  * Multi-Tenant Express Application
- * SaaS-ready Beauty Hub API
+ * SaaS-ready BelezaEcosystem API
  */
 
 const express = require('express');
@@ -69,7 +69,8 @@ app.use(cors({
       if (url.hostname.endsWith('.biaxavier.com.br') || url.hostname === 'biaxavier.com.br') {
         return callback(null, true);
       }
-      if (url.hostname.endsWith('.beauty-hub.pages.dev') || url.hostname === 'beauty-hub.pages.dev') {
+      // Legacy: allow Cloudflare Pages preview during migration
+      if (url.hostname.endsWith('.pages.dev')) {
         return callback(null, true);
       }
     } catch (_) { /* ignore invalid origins */ }

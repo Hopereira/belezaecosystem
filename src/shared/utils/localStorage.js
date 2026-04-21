@@ -1,6 +1,6 @@
 /**
  * LocalStorage Utility Module
- * Provides CRUD helpers and seed data initialization for Beauty Hub
+ * Provides CRUD helpers and seed data initialization for BelezaEcosystem
  */
 
 // ============================================
@@ -90,13 +90,41 @@ export function filterCollection(key, filterFn) {
 // ============================================
 
 export const KEYS = {
-    USERS: 'bh_users',
-    CURRENT_USER: 'bh_currentUser',
-    APPOINTMENTS: 'bh_appointments',
-    FINANCIAL: 'bh_financial',
-    CLIENTS: 'bh_clients',
-    SETTINGS: 'bh_settings',
+    USERS: 'be_users',
+    CURRENT_USER: 'be_currentUser',
+    APPOINTMENTS: 'be_appointments',
+    FINANCIAL: 'be_financial',
+    CLIENTS: 'be_clients',
+    SETTINGS: 'be_settings',
 };
+
+// ============================================
+// STORAGE MIGRATION (bh_* -> be_*)
+// ============================================
+
+export function migrateStorageKeys() {
+    const oldKeys = {
+        'bh_users': 'be_users',
+        'bh_currentUser': 'be_currentUser',
+        'bh_appointments': 'be_appointments',
+        'bh_financial': 'be_financial',
+        'bh_clients': 'be_clients',
+        'bh_settings': 'be_settings',
+        'bh_access_token': 'be_access_token',
+        'bh_refresh_token': 'be_refresh_token',
+        'bh_user': 'be_user',
+        'bh_tenant_slug': 'be_tenant_slug',
+    };
+
+    for (const [oldKey, newKey] of Object.entries(oldKeys)) {
+        const oldValue = localStorage.getItem(oldKey);
+        if (oldValue && !localStorage.getItem(newKey)) {
+            localStorage.setItem(newKey, oldValue);
+            console.log(`[localStorage migration] Moved ${oldKey} to ${newKey}`);
+        }
+        // Keep old keys for backward compatibility (do not remove)
+    }
+}
 
 // ============================================
 // SEED DATA

@@ -1,9 +1,9 @@
 # ══════════════════════════════════════════════════════════════════════════════
-# BeautyHub API — Fly.io Configuration
+# BelezaEcosystem API — Fly.io Configuration
 # Deploy: flyctl deploy --remote-only
 # ══════════════════════════════════════════════════════════════════════════════
 
-app = "beautyhub-api"
+app = "belezaecosystem-api"
 primary_region = "gru"    # São Paulo
 
 [build]

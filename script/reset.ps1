@@ -1,11 +1,11 @@
 # ============================================================================
-# BeautyHub - Script para Resetar TUDO (PowerShell)
+# BelezaEcosystem - Script para Resetar TUDO (PowerShell)
 # ⚠️ CUIDADO: Remove containers E dados (volumes)
 # ============================================================================
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Red
-Write-Host "  BeautyHub - RESETAR TUDO" -ForegroundColor Red
+Write-Host "  BelezaEcosystem - RESETAR TUDO" -ForegroundColor Red
 Write-Host "========================================" -ForegroundColor Red
 Write-Host ""
 
