@@ -1,12 +1,12 @@
 @echo off
 REM ============================================================================
-REM BeautyHub - Script para Remover Containers (CMD)
-REM Mantem os dados (volumes)
+REM BelezaEcosystem - Script para Remover Containers
+REM Mantém os dados (volumes)
 REM ============================================================================
 
 echo.
 echo ========================================
-echo  BeautyHub - Removendo Containers
+echo  BelezaEcosystem - Removendo Containers
 echo ========================================
 echo.
 

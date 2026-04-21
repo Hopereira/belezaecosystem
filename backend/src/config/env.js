@@ -21,9 +21,9 @@ function parseDbConfig() {
   return {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT, 10) || 5432,
-    name: process.env.DB_NAME || 'beautyhub_db',
-    user: process.env.DB_USER || 'beautyhub_user',
-    password: process.env.DB_PASSWORD || 'beautyhub_secret_2026',
+    name: process.env.DB_NAME || 'beleza_db',
+    user: process.env.DB_USER || 'beleza_user',
+    password: process.env.DB_PASSWORD || 'beleza_secret_2026',
     ssl: process.env.DB_SSL === 'true' || false,
   };
 }
@@ -46,8 +46,8 @@ module.exports = {
   db: parseDbConfig(),
 
   jwt: {
-    secret: process.env.JWT_SECRET || 'bh_jwt_secret_dev',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'bh_jwt_refresh_secret_dev',
+    secret: process.env.JWT_SECRET || 'be_jwt_secret_dev',
+    refreshSecret: process.env.JWT_REFRESH_SECRET || 'be_jwt_refresh_secret_dev',
     accessTokenExpiration: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '1h',
     refreshTokenExpiration: process.env.JWT_REFRESH_TOKEN_EXPIRATION || '7d',
   },

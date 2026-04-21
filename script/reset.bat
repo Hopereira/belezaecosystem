@@ -1,12 +1,12 @@
 @echo off
 REM ============================================================================
-REM BeautyHub - Script para Resetar TUDO (CMD)
+REM BelezaEcosystem - Script para Resetar TUDO (CMD)
 REM CUIDADO: Remove containers E dados (volumes)
 REM ============================================================================
 
 echo.
 echo ========================================
-echo  BeautyHub - RESETAR TUDO
+echo  BelezaEcosystem - RESETAR TUDO
 echo ========================================
 echo.
 

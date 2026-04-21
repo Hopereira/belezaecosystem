@@ -1,9 +1,9 @@
-name: Deploy — BeautyHub SaaS
+name: Deploy — BelezaEcosystem SaaS
 
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -17,7 +17,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,23 +61,15 @@ jobs:
       - name: Build frontend
         run: npm run build
         env:
-          VITE_API_URL: https://api.biaxavier.com.br/api
+          VITE_API_URL: https://api.biaxavier.com.br
           VITE_APP_URL: https://app.biaxavier.com.br
-
-      - name: Create Cloudflare Pages project (first deploy only)
-        continue-on-error: true
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages project create beauty-hub --production-branch=master
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=beauty-hub --commit-dirty=true
+          command: pages deploy dist --project-name=belezaecosystem-frontend --commit-dirty=true
 
   # ─────────────────────────────────────────────
   # JOB 3: Deploy Backend → Fly.io
@@ -96,6 +87,24 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only --config fly.toml --app beautyhub-backend
+        run: flyctl deploy --remote-only --config fly.toml --app belezaecosystem-api
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Run database migrations
+        run: |
+          flyctl ssh console \
+            --app belezaecosystem-api \
+            -C "npx sequelize-cli db:migrate --env production"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Smoke test — health check
+        run: |
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.biaxavier.com.br/api/health)
+          if [ "$STATUS" != "200" ]; then
+            echo "Health check failed: HTTP $STATUS"
+            exit 1
+          fi
+          echo "Health check passed: HTTP $STATUS"

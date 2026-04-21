@@ -1,11 +1,11 @@
 @echo off
 REM ============================================================================
-REM BeautyHub - Script para Parar o Sistema
+REM BelezaEcosystem - Script para Parar o Sistema
 REM ============================================================================
 
 echo.
 echo ========================================
-echo  BeautyHub - Parando Sistema
+echo  BelezaEcosystem - Parando Sistema
 echo ========================================
 echo.
 

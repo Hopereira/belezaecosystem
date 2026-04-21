@@ -15,12 +15,13 @@ module.exports = {
 
     // 1. Create MASTER user (no tenant)
     const masterId = uuidv4();
+    const masterEmail = process.env.MASTER_EMAIL || 'master@belezaecosystem.com';
     await queryInterface.bulkInsert('users', [{
       id: masterId,
       tenant_id: null,
       first_name: 'Master',
       last_name: 'Admin',
-      email: 'master@beautyhub.com',
+      email: masterEmail,
       password: passwordHash,
       phone: '11999999999',
       role: ROLES.MASTER,

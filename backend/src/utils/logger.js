@@ -8,7 +8,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json()
   ),
-  defaultMeta: { service: 'beautyhub-api' },
+  defaultMeta: { service: 'belezaecosystem-api' },
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(
