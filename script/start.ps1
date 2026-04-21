@@ -1,11 +1,11 @@
 # ============================================================================
-# BeautyHub - Script de Inicializacao Completa (PowerShell)
+# BelezaEcosystem - Script de Inicializacao Completa (PowerShell)
 # Executa todos os comandos necessarios para iniciar o sistema
 # ============================================================================
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  BeautyHub - Iniciando Sistema" -ForegroundColor Cyan
+Write-Host "  BelezaEcosystem - Iniciando Sistema" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 

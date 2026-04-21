@@ -11,7 +11,7 @@ export function render() {
                 <header style="margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
                     <div>
                         <h1 style="margin:0;font-size:1.9rem;color:#0f172a;font-weight:800;letter-spacing:-0.02em;">Política de Privacidade</h1>
-                        <p style="margin:0.35rem 0 0;color:#475569;font-size:0.98rem;">Entenda como coletamos, usamos e protegemos seus dados na BeautyHub.</p>
+                        <p style="margin:0.35rem 0 0;color:#475569;font-size:0.98rem;">Entenda como coletamos, usamos e protegemos seus dados na BelezaEcosystem.</p>
                     </div>
                 </header>
 
@@ -38,7 +38,7 @@ export function render() {
 
                     <section>
                         <h2 style="font-size:1.2rem;color:#0f172a;margin:0 0 0.35rem;">5. Seus Direitos</h2>
-                        <p>Você pode solicitar acesso, correção, portabilidade, restrição ou exclusão de dados. Para exercer, abra chamado ou envie email para <a href="mailto:privacidade@beautyhub.com" style="color:#2563eb;font-weight:600;">privacidade@beautyhub.com</a>.</p>
+                        <p>Você pode solicitar acesso, correção, portabilidade, restrição ou exclusão de dados. Para exercer, abra chamado ou envie email para <a href="mailto:privacidade@belezaecosystem.com" style="color:#2563eb;font-weight:600;">privacidade@belezaecosystem.com</a>.</p>
                     </section>
 
                     <section>
@@ -48,7 +48,7 @@ export function render() {
 
                     <section>
                         <h2 style="font-size:1.2rem;color:#0f172a;margin:0 0 0.35rem;">7. Contato do DPO</h2>
-                        <p>DPO: BeautyHub Segurança & Conformidade — <a href="mailto:dpo@beautyhub.com" style="color:#2563eb;font-weight:600;">dpo@beautyhub.com</a></p>
+                        <p>DPO: BelezaEcosystem Segurança & Conformidade — <a href="mailto:dpo@belezaecosystem.com" style="color:#2563eb;font-weight:600;">dpo@belezaecosystem.com</a></p>
                     </section>
                 </div>
 

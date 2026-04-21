@@ -49,9 +49,9 @@ const productionBase = process.env.DATABASE_URL
 
 const config = {
   development: {
-    username: process.env.DB_USER || 'beautyhub_user',
-    password: process.env.DB_PASSWORD || 'beautyhub_secret_2026',
-    database: process.env.DB_NAME || 'beautyhub_db',
+    username: process.env.DB_USER || 'beleza_user',
+    password: process.env.DB_PASSWORD || 'beleza_secret_2026',
+    database: process.env.DB_NAME || 'beleza_db',
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT, 10) || 5432,
     dialect: 'postgres',
@@ -59,9 +59,9 @@ const config = {
     define: sharedDefine,
   },
   test: {
-    username: process.env.DB_USER || 'beautyhub_user',
-    password: process.env.DB_PASSWORD || 'beautyhub_secret_2026',
-    database: (process.env.DB_NAME || 'beautyhub_db') + '_test',
+    username: process.env.DB_USER || 'beleza_user',
+    password: process.env.DB_PASSWORD || 'beleza_secret_2026',
+    database: (process.env.DB_NAME || 'beleza_db') + '_test',
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT, 10) || 5432,
     dialect: 'postgres',

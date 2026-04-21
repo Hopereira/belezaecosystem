@@ -15,7 +15,7 @@ export function render() {
             <main class="login-section" style="flex:1;display:flex;align-items:center;justify-content:center;background:var(--white);padding:2rem;">
                 <div class="login-box" style="width:100%;max-width:400px;">
                     <header class="logo-container" style="display:flex;align-items:center;gap:10px;margin-bottom:3rem;color:var(--primary-color);">
-                        <span class="brand-name" style="font-size:1.5rem;font-weight:700;letter-spacing:1px;">BEAUTY HUB</span>
+                        <span class="brand-name" style="font-size:1.5rem;font-weight:700;letter-spacing:1px;">BelezaEcosystem</span>
                     </header>
 
                     <form class="login-form" id="loginForm">
@@ -64,10 +64,10 @@ export function render() {
                 <div style="text-align:center;">
                     <div style="display:flex;flex-direction:column;align-items:center;gap:2rem;">
                         <div style="width:280px;height:280px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(0,0,0,0.15);">
-                            <img src="/assets/logos/logo.png" alt="Beauty Hub Logo" style="width:200px;height:auto;" onerror="this.src='/assets/logos/semfundo.png';this.onerror=function(){this.style.display='none'}">
+                            <img src="/src/assets/logos/logo.png" alt="BelezaEcosystem Logo" style="width:200px;height:auto;" onerror="this.style.display='none'">
                         </div>
                         <div style="background:white;color:var(--primary-color);padding:12px 40px;border-radius:50px;font-weight:800;font-size:1.8rem;letter-spacing:2px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
-                            BEAUTY HUB
+                            BelezaEcosystem
                         </div>
                     </div>
                 </div>

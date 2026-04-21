@@ -3,7 +3,7 @@
  * Centralized app settings and constants
  */
 
-export const APP_NAME = 'Beauty Hub';
+export const APP_NAME = 'BelezaEcosystem';
 export const APP_VERSION = '1.0.0';
 
 export const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
@@ -17,10 +17,10 @@ export const ROLES = {
 };
 
 // Auth token keys
-export const TOKEN_KEY = 'bh_access_token';
-export const REFRESH_TOKEN_KEY = 'bh_refresh_token';
-export const USER_KEY = 'bh_user';
-export const TENANT_KEY = 'bh_tenant_slug';
+export const TOKEN_KEY = 'be_access_token';
+export const REFRESH_TOKEN_KEY = 'be_refresh_token';
+export const USER_KEY = 'be_user';
+export const TENANT_KEY = 'be_tenant_slug';
 
 // Slugs that must never be resolved as tenant (mirrors backend RESERVED_SLUGS)
 const RESERVED_SLUGS = ['www', 'api', 'app', 'adm', 'admin', 'mail', 'ftp', 'smtp', 'cdn', 'static', 'assets'];

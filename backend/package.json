@@ -1,7 +1,7 @@
 {
-  "name": "beautyhub-backend",
+  "name": "belezaecosystem-backend",
   "version": "1.0.0",
-  "description": "Beauty Hub - Backend API (Node.js/Express/PostgreSQL)",
+  "description": "BelezaEcosystem - Backend API (Node.js/Express/PostgreSQL)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

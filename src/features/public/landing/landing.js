@@ -12,6 +12,69 @@ import { navigateTo } from '../../../core/router.js';
 let plans = [];
 let selectedPlan = null;
 
+// Planos estáticos como fallback quando API falhar
+const STATIC_PLANS = [
+    {
+        id: 'starter',
+        slug: 'starter',
+        name: 'Starter',
+        description: 'Ideal para profissionais autônomos começando sua jornada digital.',
+        pricing: { monthly: 49.90, yearly: 538.80 },
+        currency: 'BRL',
+        billing_interval: 'monthly',
+        trial_days: 14,
+        features: [
+            'Agendamentos online',
+            'Gestão de clientes',
+            'Notificações automáticas',
+            'Até 50 clientes',
+            '100 agendamentos/mês',
+        ],
+        limits: { users: 2, professionals: 1, clients: 50, appointments_per_month: 100 },
+        metadata: {},
+    },
+    {
+        id: 'professional',
+        slug: 'professional',
+        name: 'Professional',
+        description: 'Para estabelecimentos em crescimento com equipe pequena.',
+        pricing: { monthly: 99.90, yearly: 1078.80 },
+        currency: 'BRL',
+        billing_interval: 'monthly',
+        trial_days: 14,
+        features: [
+            'Tudo do Starter +',
+            'Controle financeiro',
+            'Gestão de profissionais',
+            'Relatórios básicos',
+            'Até 200 clientes',
+            '500 agendamentos/mês',
+        ],
+        limits: { users: 5, professionals: 3, clients: 200, appointments_per_month: 500 },
+        metadata: { popular: true },
+    },
+    {
+        id: 'business',
+        slug: 'business',
+        name: 'Business',
+        description: 'Solução completa para salões e clínicas com múltiplos profissionais.',
+        pricing: { monthly: 199.90, yearly: 2158.80 },
+        currency: 'BRL',
+        billing_interval: 'monthly',
+        trial_days: 14,
+        features: [
+            'Tudo do Professional +',
+            'API de integração',
+            'Branding personalizado',
+            'Analytics avançados',
+            'Até 1000 clientes',
+            '2000 agendamentos/mês',
+        ],
+        limits: { users: 15, professionals: 10, clients: 1000, appointments_per_month: 2000 },
+        metadata: {},
+    },
+];
+
 export function render() {
     const app = document.getElementById('app');
     if (!app) return;
@@ -132,11 +195,12 @@ async function loadPlans() {
     try {
         // Buscar planos públicos (sem autenticação)
         const res = await fetch(`${API_BASE_URL}/public/plans`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         plans = data.data || [];
     } catch (error) {
-        console.error('[Landing] Error loading plans:', error);
-        plans = [];
+        console.warn('[Landing] API plans failed, using static fallback:', error.message);
+        plans = STATIC_PLANS;
     }
 }
 

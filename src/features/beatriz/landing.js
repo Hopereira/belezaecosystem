@@ -14,7 +14,7 @@ import './landing.css';
 // ─── Contatos e redes ──────────────────────────────────────────────────────
 const WHATSAPP_NUMBER = '5524988243174';
 const WHATSAPP_URL    = `https://wa.me/${WHATSAPP_NUMBER}`;
-const INSTAGRAM_URL   = 'https://www.instagram.com/ana_trizz32iu/';
+const INSTAGRAM_URL   = 'https://www.instagram.com/beatrizxavier_lash/';
 const FACEBOOK_URL    = 'https://www.facebook.com/beatriz.depiladora/';
 const APP_URL         = 'https://app.biaxavier.com.br/';
 
@@ -44,7 +44,7 @@ export function render() {
     const app = document.getElementById('app');
     if (!app) return;
 
-    document.title = 'Ana Beatriz Xavier — Extensão de Cílios & Beleza';
+    document.title = 'Beatriz Xavier — Lash Designer | Extensão de Cílios & Sobrancelhas';
 
     app.innerHTML = `
         <div class="bx-landing">
@@ -110,11 +110,11 @@ export function render() {
                 </div>
 
                 <div class="bx-hero__center">
-                    <span class="bx-hero__pretitle">Especialista em Beleza</span>
+                    <span class="bx-hero__pretitle">Lash Designer · 20 anos de beleza</span>
                     <h1 class="bx-hero__title">Beatriz Xavier:<br>O Olhar que<br>Você Sempre Sonhou.</h1>
                     <p class="bx-hero__desc">
-                        Realce sua beleza natural com extensões de cílios personalizadas
-                        e outros serviços de embelezamento.
+                        Especialista em extensão de cílios e sobrancelhas,
+                        com foco na harmonização do olhar e saúde ocular desde 2018.
                     </p>
                     <div class="bx-hero__actions">
                         <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer"
@@ -168,20 +168,23 @@ export function render() {
                     </div>
                     <div class="bx-about__text">
                         <span class="bx-section-tag">Sobre mim</span>
-                        <h2>Transformo cuidado<br>em experiência.</h2>
+                        <h2>20 anos transformando<br>olhares com propósito.</h2>
                         <p>
-                            Entre pinças, espelhos e muita dedicação, meu espaço de atendimento revela
-                            muito mais do que técnica: revela carinho, presença e propósito em cada detalhe.
+                            Sou profissional da beleza há 20 anos e Lash Designer especialista em extensão
+                            de cílios e sobrancelhas, atuando com foco na harmonização do olhar desde 2018.
                         </p>
                         <p>
-                            Teve maquiagem, luz, câmera e um making of especial que mostrou um pouco dos
-                            bastidores do meu trabalho — daquilo que existe por trás de cada atendimento,
-                            de cada olhar valorizado e de cada mulher que sai daqui se sentindo ainda mais
-                            bonita e confiante.
+                            Com mais de 10 certificações em Lash Design e outras 35 na área da beleza —
+                            incluindo formação internacional — minha prioridade é o atendimento
+                            personalizado através de protocolos que visam, acima de tudo, a saúde ocular
+                            e a integridade dos fios.
                         </p>
                         <p>
-                            Mais do que cílios e depilação, esse espaço foi criado para realçar a beleza
-                            e fortalecer a autoestima de cada mulher que passa por aqui.
+                            Cada procedimento é único: através de uma análise detalhada do rosto, dos olhos
+                            e da personalidade de cada cliente, o look perfeito é criado respeitando as
+                            necessidades técnicas e desejos individuais. Sempre em busca de inovação, marco
+                            presença nos principais eventos do Brasil para entregar o melhor às minhas
+                            clientes e futuras alunas.
                         </p>
                         <div class="bx-about__actions">
                             <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener noreferrer"
@@ -203,24 +206,28 @@ export function render() {
                 <h2>Meus Trabalhos</h2>
                 <p class="bx-gallery__subtitle">Cada atendimento é único — veja um pouco do que já realizei</p>
                 <div class="bx-gallery__grid">
-                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/beatriz.jpg" data-alt="Ana Beatriz Xavier">
-                        <img src="/assets/images/beatriz.jpg" alt="Ana Beatriz Xavier" loading="lazy">
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho1.png" data-alt="Extensão de cílios">
+                        <img src="/assets/images/trabalho1.png" alt="Extensão de cílios" loading="lazy">
                         <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
                     </div>
-                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho1.png" data-alt="Trabalho de Ana Beatriz">
-                        <img src="/assets/images/trabalho1.png" alt="Trabalho de Ana Beatriz" loading="lazy">
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho3.png" data-alt="Design de sobrancelhas">
+                        <img src="/assets/images/trabalho3.png" alt="Design de sobrancelhas" loading="lazy">
                         <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
                     </div>
-                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho2.png" data-alt="Trabalho de Ana Beatriz">
-                        <img src="/assets/images/trabalho2.png" alt="Trabalho de Ana Beatriz" loading="lazy">
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho4.jpg" data-alt="Extensão de cílios">
+                        <img src="/assets/images/trabalho4.jpg" alt="Extensão de cílios" loading="lazy">
                         <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
                     </div>
-                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/beatriz3.jpg" data-alt="Trabalho de Ana Beatriz">
-                        <img src="/assets/images/beatriz3.jpg" alt="Trabalho de Ana Beatriz" loading="lazy">
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho5.jpg" data-alt="Lash Design">
+                        <img src="/assets/images/trabalho5.jpg" alt="Lash Design" loading="lazy">
                         <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
                     </div>
-                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho3.png" data-alt="Trabalho de Ana Beatriz">
-                        <img src="/assets/images/trabalho3.png" alt="Trabalho de Ana Beatriz" loading="lazy">
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho6.jpg" data-alt="Extensão de cílios">
+                        <img src="/assets/images/trabalho6.jpg" alt="Extensão de cílios" loading="lazy">
+                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho7.jpg" data-alt="Lash Design">
+                        <img src="/assets/images/trabalho7.jpg" alt="Lash Design" loading="lazy">
                         <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
                     </div>
                 </div>
@@ -248,7 +255,7 @@ export function render() {
                        class="bx-social-card bx-social-card--instagram">
                         <i class="fab fa-instagram bx-social-card__icon"></i>
                         <span class="bx-social-card__name">Instagram</span>
-                        <span class="bx-social-card__handle">@ana_trizz32iu</span>
+                        <span class="bx-social-card__handle">@beatrizxavier_lash</span>
                     </a>
                     <a href="${FACEBOOK_URL}" target="_blank" rel="noopener noreferrer"
                        class="bx-social-card bx-social-card--facebook">

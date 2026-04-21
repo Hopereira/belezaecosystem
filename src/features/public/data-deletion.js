@@ -11,14 +11,14 @@ export function render() {
                 <header style="margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
                     <div>
                         <h1 style="margin:0;font-size:1.9rem;color:#0f172a;font-weight:800;letter-spacing:-0.02em;">Exclusão de Dados do Usuário</h1>
-                        <p style="margin:0.35rem 0 0;color:#475569;font-size:0.98rem;">Saiba como solicitar a remoção dos seus dados na BeautyHub.</p>
+                        <p style="margin:0.35rem 0 0;color:#475569;font-size:0.98rem;">Saiba como solicitar a remoção dos seus dados na BelezaEcosystem.</p>
                     </div>
                 </header>
 
                 <div style="display:grid;gap:1.25rem;font-size:0.98rem;line-height:1.7;color:#334155;">
                     <section>
                         <h2 style="font-size:1.2rem;color:#0f172a;margin:0 0 0.35rem;">1. Como solicitar</h2>
-                        <p>Envie uma solicitação para <a href="mailto:privacidade@beautyhub.com" style="color:#2563eb;font-weight:600;">privacidade@beautyhub.com</a> informando email da conta e tenant (slug). Você receberá confirmação e um ticket de acompanhamento.</p>
+                        <p>Envie uma solicitação para <a href="mailto:privacidade@belezaecosystem.com" style="color:#2563eb;font-weight:600;">privacidade@belezaecosystem.com</a> informando email da conta e tenant (slug). Você receberá confirmação e um ticket de acompanhamento.</p>
                     </section>
 
                     <section>

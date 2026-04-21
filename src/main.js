@@ -1,9 +1,9 @@
 /**
- * Beauty Hub - Main Application Entry Point
+ * BelezaEcosystem - Main Application Entry Point
  * Initializes data, modal system, and SPA router
  */
 
-import { initializeData } from './shared/utils/localStorage.js';
+import { initializeData, migrateStorageKeys } from './shared/utils/localStorage.js';
 import { initModalSystem } from './shared/components/modal/modal.js';
 import { initRouter } from './core/router.js';
 import { recoverSession } from './core/auth.js';
@@ -21,6 +21,9 @@ document.getElementById('app').innerHTML = `
 
 // Initialize application
 async function initApp() {
+    // Migrate old storage keys (bh_* -> be_*) for compatibility
+    migrateStorageKeys();
+
     // Initialize seed data if first run
     initializeData();
 

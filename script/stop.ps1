@@ -1,10 +1,10 @@
 # ============================================================================
-# BeautyHub - Script para Parar o Sistema (PowerShell)
+# BelezaEcosystem - Script para Parar o Sistema (PowerShell)
 # ============================================================================
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  BeautyHub - Parando Sistema" -ForegroundColor Cyan
+Write-Host "  BelezaEcosystem - Parando Sistema" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
