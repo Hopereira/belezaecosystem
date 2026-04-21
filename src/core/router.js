@@ -14,6 +14,7 @@ import { showToast } from '../shared/utils/toast.js';
 
 const routes = {
     '/': { title: 'Beauty Hub', page: 'landing', auth: false },
+    '/curso': { title: 'Curso — Ana Beatriz Xavier', page: 'beatriz-curso', auth: false },
     '/privacy-policy': { title: 'Política de Privacidade - Beauty Hub', page: 'privacy-policy', auth: false },
     '/data-deletion': { title: 'Exclusão de Dados - Beauty Hub', page: 'data-deletion', auth: false },
     '/terms-of-service': { title: 'Termos de Serviço - Beauty Hub', page: 'terms-of-service', auth: false },
@@ -169,7 +170,14 @@ async function loadPageModule(page) {
     if (pageModules[page]) return pageModules[page];
 
     const moduleMap = {
-        'landing': () => import('../features/public/landing/landing.js'),
+        'landing': () => {
+            const h = window.location.hostname;
+            if (h === 'biaxavier.com.br' || h === 'www.biaxavier.com.br') {
+                return import('../features/beatriz/landing.js');
+            }
+            return import('../features/public/landing/landing.js');
+        },
+        'beatriz-curso': () => import('../features/beatriz/curso.js'),
         'privacy-policy': () => import('../features/public/privacy-policy.js'),
         'data-deletion': () => import('../features/public/data-deletion.js'),
         'terms-of-service': () => import('../features/public/terms-of-service.js'),

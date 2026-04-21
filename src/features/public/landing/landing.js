@@ -6,6 +6,8 @@
 import { api } from '../../../shared/utils/http.js';
 import { formatCurrency } from '../../../shared/utils/validation.js';
 import { showToast } from '../../../shared/utils/toast.js';
+import { API_BASE_URL, setTenantSlug } from '../../../core/config.js';
+import { navigateTo } from '../../../core/router.js';
 
 let plans = [];
 let selectedPlan = null;
@@ -16,6 +18,20 @@ export function render() {
 
     app.innerHTML = `
         <div class="landing-page">
+            <!-- Nav -->
+            <nav class="landing-nav">
+                <div class="landing-nav__brand">
+                    <i class="fas fa-spa"></i> Beauty Hub
+                </div>
+                <div class="landing-nav__links">
+                    <a href="#features">Funcionalidades</a>
+                    <a href="#pricing">Planos</a>
+                </div>
+                <a href="/login" class="landing-nav__login" onclick="event.preventDefault(); window.navigateToLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </a>
+            </nav>
+
             <!-- Hero Section -->
             <section class="hero-section">
                 <div class="hero-content">
@@ -115,7 +131,7 @@ export async function init() {
 async function loadPlans() {
     try {
         // Buscar planos públicos (sem autenticação)
-        const res = await fetch('http://localhost:5001/api/public/plans');
+        const res = await fetch(`${API_BASE_URL}/public/plans`);
         const data = await res.json();
         plans = data.data || [];
     } catch (error) {
@@ -268,19 +284,19 @@ function renderRegistrationForm() {
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Nome do Estabelecimento *</label>
-                        <input type="text" id="businessName" required placeholder="Salão Beleza Pura">
+                        <input type="text" id="businessName" placeholder="Salão Beleza Pura">
                     </div>
                     <div class="form-group">
-                        <label>CNPJ *</label>
-                        <input type="text" id="cnpj" required placeholder="00.000.000/0000-00">
+                        <label>CNPJ</label>
+                        <input type="text" id="cnpj" placeholder="00.000.000/0000-00">
                     </div>
                     <div class="form-group">
                         <label>Telefone *</label>
-                        <input type="tel" id="businessPhone" required placeholder="(11) 99999-9999">
+                        <input type="tel" id="businessPhone" placeholder="(11) 99999-9999">
                     </div>
                     <div class="form-group">
                         <label>Email do Negócio *</label>
-                        <input type="email" id="businessEmail" required placeholder="contato@salaobel ezapura.com.br">
+                        <input type="email" id="businessEmail" placeholder="contato@salaobelezapura.com.br">
                     </div>
                 </div>
             </div>
@@ -291,7 +307,16 @@ function renderRegistrationForm() {
                 <div class="form-grid">
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>CEP *</label>
-                        <input type="text" id="cep" required placeholder="00000-000">
+                        <div style="position:relative;">
+                            <input type="text" id="cep" required placeholder="00000-000"
+                                maxlength="9"
+                                style="padding-right:40px;">
+                            <span id="cepStatus" style="
+                                position:absolute;right:12px;top:50%;transform:translateY(-50%);
+                                font-size:0.85rem;display:none;
+                            "></span>
+                        </div>
+                        <small id="cepMsg" style="font-size:0.78rem;margin-top:4px;display:none;"></small>
                     </div>
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Rua *</label>
@@ -317,10 +342,33 @@ function renderRegistrationForm() {
                         <label>Estado *</label>
                         <select id="state" required>
                             <option value="">Selecione</option>
-                            <option value="SP">São Paulo</option>
-                            <option value="RJ">Rio de Janeiro</option>
-                            <option value="MG">Minas Gerais</option>
-                            <!-- Adicionar outros estados -->
+                            <option value="AC">AC – Acre</option>
+                            <option value="AL">AL – Alagoas</option>
+                            <option value="AP">AP – Amapá</option>
+                            <option value="AM">AM – Amazonas</option>
+                            <option value="BA">BA – Bahia</option>
+                            <option value="CE">CE – Ceará</option>
+                            <option value="DF">DF – Distrito Federal</option>
+                            <option value="ES">ES – Espírito Santo</option>
+                            <option value="GO">GO – Goiás</option>
+                            <option value="MA">MA – Maranhão</option>
+                            <option value="MT">MT – Mato Grosso</option>
+                            <option value="MS">MS – Mato Grosso do Sul</option>
+                            <option value="MG">MG – Minas Gerais</option>
+                            <option value="PA">PA – Pará</option>
+                            <option value="PB">PB – Paraíba</option>
+                            <option value="PR">PR – Paraná</option>
+                            <option value="PE">PE – Pernambuco</option>
+                            <option value="PI">PI – Piauí</option>
+                            <option value="RJ">RJ – Rio de Janeiro</option>
+                            <option value="RN">RN – Rio Grande do Norte</option>
+                            <option value="RS">RS – Rio Grande do Sul</option>
+                            <option value="RO">RO – Rondônia</option>
+                            <option value="RR">RR – Roraima</option>
+                            <option value="SC">SC – Santa Catarina</option>
+                            <option value="SP">SP – São Paulo</option>
+                            <option value="SE">SE – Sergipe</option>
+                            <option value="TO">TO – Tocantins</option>
                         </select>
                     </div>
                 </div>
@@ -398,15 +446,26 @@ function bindEvents() {
     // Account type change
     document.addEventListener('change', (e) => {
         if (e.target.name === 'accountType') {
-            const establishmentFields = document.getElementById('establishmentFields');
-            if (establishmentFields) {
-                establishmentFields.style.display = e.target.value === 'establishment' ? 'block' : 'none';
-            }
+            toggleEstablishmentFields(e.target.value === 'establishment');
         }
     });
 
     // Registration form submit
     document.getElementById('registrationForm')?.addEventListener('submit', handleRegistration);
+}
+
+function toggleEstablishmentFields(show) {
+    const section = document.getElementById('establishmentFields');
+    if (!section) return;
+    section.style.display = show ? 'block' : 'none';
+    const inputs = section.querySelectorAll('input[id="businessName"], input[id="businessPhone"], input[id="businessEmail"]');
+    inputs.forEach(input => {
+        if (show) {
+            input.setAttribute('required', '');
+        } else {
+            input.removeAttribute('required');
+        }
+    });
 }
 
 function openRegistrationModal() {
@@ -420,8 +479,76 @@ function openRegistrationModal() {
         if (modalBody) {
             modalBody.innerHTML = renderRegistrationForm();
         }
+
+        // Re-bind submit (form was re-rendered)
+        document.getElementById('registrationForm')?.addEventListener('submit', handleRegistration);
+
+        // Set initial required state (default: establishment checked)
+        toggleEstablishmentFields(true);
+
+        // Activate smart CEP lookup
+        initCepLookup();
     }
 }
+
+function initCepLookup() {
+    const cepInput = document.getElementById('cep');
+    if (!cepInput) return;
+
+    // Mask: 00000-000
+    cepInput.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5, 8);
+        e.target.value = v;
+
+        const digits = v.replace(/\D/g, '');
+        if (digits.length === 8) fetchCep(digits);
+    });
+}
+
+async function fetchCep(cep) {
+    const status  = document.getElementById('cepStatus');
+    const msg     = document.getElementById('cepMsg');
+    const street  = document.getElementById('street');
+    const neighborhood = document.getElementById('neighborhood');
+    const city    = document.getElementById('city');
+    const state   = document.getElementById('state');
+    const number  = document.getElementById('number');
+
+    // Loading
+    if (status) { status.style.display = 'inline'; status.textContent = '⏳'; }
+    if (msg)    { msg.style.display = 'none'; msg.textContent = ''; }
+
+    try {
+        const res  = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await res.json();
+
+        if (data.erro) {
+            if (status) { status.textContent = '❌'; }
+            if (msg)    { msg.style.display = 'block'; msg.style.color = '#e53e3e'; msg.textContent = 'CEP não encontrado. Verifique e tente novamente.'; }
+            return;
+        }
+
+        // Fill fields
+        if (street)       { street.value       = data.logradouro || ''; }
+        if (neighborhood) { neighborhood.value = data.bairro      || ''; }
+        if (city)         { city.value         = data.localidade  || ''; }
+        if (state)        { state.value        = data.uf          || ''; }
+
+        // Focus number after auto-fill
+        if (number) number.focus();
+
+        if (status) { status.textContent = '✅'; }
+        if (msg)    { msg.style.display = 'block'; msg.style.color = '#38a169'; msg.textContent = `${data.localidade} – ${data.uf}`; }
+    } catch (_) {
+        if (status) { status.textContent = '❌'; }
+        if (msg)    { msg.style.display = 'block'; msg.style.color = '#e53e3e'; msg.textContent = 'Erro ao buscar CEP. Verifique sua conexão.'; }
+    }
+}
+
+window.navigateToLogin = function() {
+    navigateTo('/login');
+};
 
 window.closeRegistrationModal = function() {
     const modal = document.getElementById('modal-register');
@@ -450,14 +577,21 @@ async function handleRegistration(e) {
     }
 
     const accountType = document.querySelector('input[name="accountType"]:checked').value;
-    
+    const ownerName   = document.getElementById('ownerName').value.trim();
+
     const data = {
         accountType,
         business: {
-            name: document.getElementById('businessName')?.value,
-            cnpj: document.getElementById('cnpj')?.value,
-            phone: document.getElementById('businessPhone')?.value,
-            email: document.getElementById('businessEmail')?.value,
+            name:  accountType === 'professional'
+                       ? ownerName
+                       : (document.getElementById('businessName')?.value || ownerName),
+            cnpj:  document.getElementById('cnpj')?.value || '',
+            phone: accountType === 'professional'
+                       ? document.getElementById('ownerPhone').value
+                       : (document.getElementById('businessPhone')?.value || ''),
+            email: accountType === 'professional'
+                       ? document.getElementById('ownerEmail').value
+                       : (document.getElementById('businessEmail')?.value || ''),
         },
         address: {
             cep: document.getElementById('cep').value,
@@ -479,7 +613,7 @@ async function handleRegistration(e) {
     };
 
     try {
-        const response = await fetch('http://localhost:5001/api/public/register', {
+        const response = await fetch(`${API_BASE_URL}/public/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -490,9 +624,11 @@ async function handleRegistration(e) {
         if (result.success) {
             showToast('Conta criada com sucesso! Redirecionando...', 'success');
             
-            // Redirecionar para login com o slug do tenant
+            if (result.data?.tenantSlug) {
+                setTenantSlug(result.data.tenantSlug);
+            }
             setTimeout(() => {
-                window.location.href = `/${result.data.tenantSlug}/login`;
+                navigateTo('/login');
             }, 2000);
         } else {
             throw new Error(result.message || 'Erro ao criar conta');
