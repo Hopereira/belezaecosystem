@@ -1,0 +1,375 @@
+/**
+ * Landing Institucional — Ana Beatriz Xavier
+ * biaxavier.com.br
+ *
+ * Página pessoal e institucional — independente do SaaS BeautyHub.
+ * Não usa autenticação, tenant resolver nem billing.
+ *
+ * Assets: adicionar fotos em src/assets/images/ quando disponíveis.
+ * Ver comentários TODO abaixo para pontos de substituição.
+ */
+
+import './landing.css';
+
+// ─── Contatos e redes ──────────────────────────────────────────────────────
+const WHATSAPP_NUMBER = '5524988243174';
+const WHATSAPP_URL    = `https://wa.me/${WHATSAPP_NUMBER}`;
+const INSTAGRAM_URL   = 'https://www.instagram.com/beatrizxavier_lash/';
+const FACEBOOK_URL    = 'https://www.facebook.com/beatriz.depiladora/';
+const APP_URL         = 'https://app.biaxavier.com.br/';
+
+// ─── Serviços ──────────────────────────────────────────────────────────────
+// TODO: confirmar lista completa de serviços com Ana Beatriz
+const SERVICES = [
+    {
+        icon: 'fa-eye',
+        title: 'Extensão de Cílios',
+        description: 'Volume e naturalidade para realçar seu olhar com técnica apurada e os melhores materiais do mercado.',
+    },
+    {
+        icon: 'fa-star',
+        title: 'Design de Sobrancelhas',
+        description: 'Sobrancelhas moldadas para harmonizar com seu rosto e expressar a sua personalidade única.',
+    },
+    {
+        icon: 'fa-spa',
+        title: 'Depilação',
+        description: 'Tratamento completo com conforto, higiene e produtos selecionados para o cuidado da sua pele.',
+    },
+];
+
+// ─── Render ────────────────────────────────────────────────────────────────
+
+export function render() {
+    const app = document.getElementById('app');
+    if (!app) return;
+
+    document.title = 'Beatriz Xavier — Lash Designer | Extensão de Cílios & Sobrancelhas';
+
+    app.innerHTML = `
+        <div class="bx-landing">
+
+            <!-- ── NAVEGAÇÃO ── -->
+            <nav class="bx-nav">
+                <a href="#inicio" class="bx-nav__brand">
+                    <img src="/assets/logos/logo.png" alt="Beatriz Xavier" class="bx-nav__logo">
+                </a>
+                <ul class="bx-nav__links">
+                    <li><a href="#inicio">Home</a></li>
+                    <li><a href="#servicos">Serviços</a></li>
+                    <li><a href="#galeria">Galeria</a></li>
+                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                    <li><a href="${APP_URL}" target="_blank" rel="noopener noreferrer">Sistema</a></li>
+                    <li><a href="/curso">Curso <span class="bx-badge bx-badge--nav">Em breve</span></a></li>
+                </ul>
+                <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer"
+                   class="bx-nav__cta">
+                    <i class="fab fa-whatsapp"></i> Agendar
+                </a>
+                <button class="bx-nav__hamburger" id="bxHamburger" aria-label="Abrir menu" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
+            </nav>
+
+            <!-- ── DRAWER MOBILE ── -->
+            <div class="bx-drawer__overlay" id="bxOverlay"></div>
+            <aside class="bx-drawer" id="bxDrawer" aria-label="Menu">
+                <div class="bx-drawer__header">
+                    <img src="/assets/logos/logo.png" alt="Beatriz Xavier" class="bx-drawer__logo">
+                    <button class="bx-drawer__close" id="bxDrawerClose" aria-label="Fechar menu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <ul class="bx-drawer__links">
+                    <li><a href="#inicio"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#servicos"><i class="fas fa-spa"></i> Serviços</a></li>
+                    <li><a href="#galeria"><i class="fas fa-images"></i> Galeria</a></li>
+                    <li><a href="#sobre"><i class="fas fa-user"></i> Sobre</a></li>
+                    <li><a href="#contato"><i class="fas fa-envelope"></i> Contato</a></li>
+                    <li class="bx-drawer__divider"></li>
+                    <li><a href="${APP_URL}" target="_blank" rel="noopener noreferrer" class="bx-drawer__highlight">
+                        <i class="fas fa-calendar-check"></i> Sistema
+                    </a></li>
+                    <li><a href="/curso" class="bx-drawer__highlight bx-drawer__highlight--curso">
+                        <i class="fas fa-graduation-cap"></i> Curso <span class="bx-badge">Em breve</span>
+                    </a></li>
+                </ul>
+                <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer"
+                   class="bx-btn bx-btn--primary bx-drawer__cta">
+                    <i class="fab fa-whatsapp"></i> Agendar pelo WhatsApp
+                </a>
+            </aside>
+
+            <!-- ── HERO: SPLIT 3 COLUNAS ── -->
+            <section id="inicio" class="bx-hero">
+                <div class="bx-hero__photo-wrap bx-hero__photo-wrap--left">
+                    <img src="/assets/images/beatriz.jpg"
+                         alt="Ana Beatriz Xavier"
+                         onerror="this.parentElement.style.background='#b2e4e2'">
+                </div>
+
+                <div class="bx-hero__center">
+                    <span class="bx-hero__pretitle">Lash Designer · 20 anos de beleza</span>
+                    <h1 class="bx-hero__title">Beatriz Xavier:<br>O Olhar que<br>Você Sempre Sonhou.</h1>
+                    <p class="bx-hero__desc">
+                        Especialista em extensão de cílios e sobrancelhas,
+                        com foco na harmonização do olhar e saúde ocular desde 2018.
+                    </p>
+                    <div class="bx-hero__actions">
+                        <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer"
+                           class="bx-btn bx-btn--primary">
+                            <i class="fab fa-whatsapp"></i> Agendar pelo WhatsApp
+                        </a>
+                        <a href="#servicos" class="bx-hero__scroll">
+                            Ver serviços <i class="fas fa-chevron-down"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bx-hero__photo-wrap bx-hero__photo-wrap--right">
+                    <img src="/assets/images/beatriz3.jpg"
+                         alt="Trabalho de Ana Beatriz Xavier"
+                         onerror="this.parentElement.style.background='#a8dbd9'">
+                </div>
+            </section>
+
+            <!-- ── SERVIÇOS ── -->
+            <section id="servicos" class="bx-services">
+                <span class="bx-section-tag">O que faço</span>
+                <h2>Meus Serviços</h2>
+                <p class="bx-services__subtitle">
+                    Cuidado personalizado para realçar a sua beleza natural
+                </p>
+                <div class="bx-services__grid">
+                    ${SERVICES.map(s => `
+                        <div class="bx-service-card">
+                            <div class="bx-service-card__icon">
+                                <i class="fas ${s.icon}"></i>
+                            </div>
+                            <h3>${s.title}</h3>
+                            <p>${s.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer"
+                   class="bx-btn bx-btn--secondary">
+                    <i class="fab fa-whatsapp"></i> Ver disponibilidade
+                </a>
+            </section>
+
+            <!-- ── SOBRE: DARK SECTION ── -->
+            <div id="sobre" class="bx-about-section">
+                <div class="bx-about">
+                    <div class="bx-about__photo">
+                        <img src="/assets/images/trabalho2.png"
+                             alt="Espaço de atendimento de Ana Beatriz Xavier"
+                             onerror="this.parentElement.style.display='none'">
+                    </div>
+                    <div class="bx-about__text">
+                        <span class="bx-section-tag">Sobre mim</span>
+                        <h2>20 anos transformando<br>olhares com propósito.</h2>
+                        <p>
+                            Sou profissional da beleza há 20 anos e Lash Designer especialista em extensão
+                            de cílios e sobrancelhas, atuando com foco na harmonização do olhar desde 2018.
+                        </p>
+                        <p>
+                            Com mais de 10 certificações em Lash Design e outras 35 na área da beleza —
+                            incluindo formação internacional — minha prioridade é o atendimento
+                            personalizado através de protocolos que visam, acima de tudo, a saúde ocular
+                            e a integridade dos fios.
+                        </p>
+                        <p>
+                            Cada procedimento é único: através de uma análise detalhada do rosto, dos olhos
+                            e da personalidade de cada cliente, o look perfeito é criado respeitando as
+                            necessidades técnicas e desejos individuais. Sempre em busca de inovação, marco
+                            presença nos principais eventos do Brasil para entregar o melhor às minhas
+                            clientes e futuras alunas.
+                        </p>
+                        <div class="bx-about__actions">
+                            <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener noreferrer"
+                               class="bx-btn bx-btn--secondary">
+                                <i class="fab fa-instagram"></i> Instagram
+                            </a>
+                            <a href="${FACEBOOK_URL}" target="_blank" rel="noopener noreferrer"
+                               class="bx-btn bx-btn--ghost">
+                                <i class="fab fa-facebook"></i> Facebook
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── GALERIA ── -->
+            <section id="galeria" class="bx-gallery">
+                <span class="bx-section-tag">Portfólio</span>
+                <h2>Meus Trabalhos</h2>
+                <p class="bx-gallery__subtitle">Cada atendimento é único — veja um pouco do que já realizei</p>
+                <div class="bx-gallery__grid">
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho1.png" data-alt="Extensão de cílios">
+                        <img src="/assets/images/trabalho1.png" alt="Extensão de cílios" loading="lazy">
+                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho3.png" data-alt="Design de sobrancelhas">
+                        <img src="/assets/images/trabalho3.png" alt="Design de sobrancelhas" loading="lazy">
+                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho4.jpg" data-alt="Extensão de cílios">
+                        <img src="/assets/images/trabalho4.jpg" alt="Extensão de cílios" loading="lazy">
+                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho5.jpg" data-alt="Lash Design">
+                        <img src="/assets/images/trabalho5.jpg" alt="Lash Design" loading="lazy">
+                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho6.jpg" data-alt="Extensão de cílios">
+                        <img src="/assets/images/trabalho6.jpg" alt="Extensão de cílios" loading="lazy">
+                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                    <div class="bx-gallery__item" role="button" tabindex="0" data-src="/assets/images/trabalho7.jpg" data-alt="Lash Design">
+                        <img src="/assets/images/trabalho7.jpg" alt="Lash Design" loading="lazy">
+                        <div class="bx-gallery__overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                </div>
+                <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener noreferrer"
+                   class="bx-btn bx-btn--secondary">
+                    <i class="fab fa-instagram"></i> Ver mais no Instagram
+                </a>
+            </section>
+
+            <!-- ── CONTATO ── -->
+            <section id="contato" class="bx-contact">
+                <span class="bx-section-tag">Fale comigo</span>
+                <h2>Me encontre aqui</h2>
+                <p class="bx-contact__sub">
+                    Agende, me siga ou entre em contato pelos canais abaixo
+                </p>
+                <div class="bx-social-grid">
+                    <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer"
+                       class="bx-social-card bx-social-card--whatsapp">
+                        <i class="fab fa-whatsapp bx-social-card__icon"></i>
+                        <span class="bx-social-card__name">WhatsApp</span>
+                        <span class="bx-social-card__handle">Agende sua visita</span>
+                    </a>
+                    <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener noreferrer"
+                       class="bx-social-card bx-social-card--instagram">
+                        <i class="fab fa-instagram bx-social-card__icon"></i>
+                        <span class="bx-social-card__name">Instagram</span>
+                        <span class="bx-social-card__handle">@beatrizxavier_lash</span>
+                    </a>
+                    <a href="${FACEBOOK_URL}" target="_blank" rel="noopener noreferrer"
+                       class="bx-social-card bx-social-card--facebook">
+                        <i class="fab fa-facebook bx-social-card__icon"></i>
+                        <span class="bx-social-card__name">Facebook</span>
+                        <span class="bx-social-card__handle">beatriz.depiladora</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ── FOOTER ── -->
+            <footer class="bx-footer">
+                <p>© ${new Date().getFullYear()} Ana Beatriz Xavier · Todos os direitos reservados</p>
+            </footer>
+
+        </div>
+
+        <!-- ── MODAL FOTO ── -->
+        <div class="bx-photo-modal" id="bxPhotoModal" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+            <div class="bx-photo-modal__backdrop" id="bxModalBackdrop"></div>
+            <div class="bx-photo-modal__box">
+                <button class="bx-photo-modal__close" id="bxModalClose" aria-label="Fechar foto">
+                    <i class="fas fa-times"></i>
+                </button>
+                <img class="bx-photo-modal__img" id="bxModalImg" src="" alt="">
+            </div>
+        </div>
+    `;
+}
+
+// ─── Init ──────────────────────────────────────────────────────────────────
+
+export function init() {
+    // ── Smooth scroll ──
+    document.querySelectorAll('.bx-landing a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', e => {
+            const targetId = anchor.getAttribute('href');
+            const target = document.querySelector(targetId);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // ── Hamburger / Drawer ──
+    const hamburger = document.getElementById('bxHamburger');
+    const drawer    = document.getElementById('bxDrawer');
+    const overlay   = document.getElementById('bxOverlay');
+    const drawerClose = document.getElementById('bxDrawerClose');
+
+    function openDrawer() {
+        drawer.classList.add('bx-drawer--open');
+        overlay.classList.add('bx-drawer__overlay--visible');
+        hamburger.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+        drawer.classList.remove('bx-drawer--open');
+        overlay.classList.remove('bx-drawer__overlay--visible');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    }
+
+    if (hamburger)   hamburger.addEventListener('click', openDrawer);
+    if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+    if (overlay)     overlay.addEventListener('click', closeDrawer);
+
+    document.querySelectorAll('.bx-drawer__links a[href^="#"]').forEach(link => {
+        link.addEventListener('click', () => { closeDrawer(); });
+    });
+
+    // ── Photo Modal ──
+    const modal         = document.getElementById('bxPhotoModal');
+    const modalImg      = document.getElementById('bxModalImg');
+    const modalClose    = document.getElementById('bxModalClose');
+    const modalBackdrop = document.getElementById('bxModalBackdrop');
+
+    function openPhotoModal(src, alt) {
+        modalImg.src = src;
+        modalImg.alt = alt || '';
+        modal.classList.add('bx-photo-modal--open');
+        document.body.style.overflow = 'hidden';
+        modalClose.focus();
+    }
+
+    function closePhotoModal() {
+        modal.classList.remove('bx-photo-modal--open');
+        document.body.style.overflow = '';
+        setTimeout(() => { if (modalImg) modalImg.src = ''; }, 300);
+    }
+
+    document.querySelectorAll('.bx-gallery__item').forEach(item => {
+        item.addEventListener('click', () => {
+            const src = item.dataset.src;
+            const alt = item.dataset.alt;
+            if (src) openPhotoModal(src, alt);
+        });
+        item.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const src = item.dataset.src;
+                const alt = item.dataset.alt;
+                if (src) openPhotoModal(src, alt);
+            }
+        });
+    });
+
+    if (modalClose)    modalClose.addEventListener('click', closePhotoModal);
+    if (modalBackdrop) modalBackdrop.addEventListener('click', closePhotoModal);
+
+    const onKeyEsc = e => { if (e.key === 'Escape') closePhotoModal(); };
+    document.addEventListener('keydown', onKeyEsc);
+
+    return () => { document.removeEventListener('keydown', onKeyEsc); };
+}

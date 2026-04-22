@@ -87,7 +87,8 @@ function createOnboardingRoutes(onboardingService, options = {}) {
       if (!email) {
         return res.status(400).json({
           success: false,
-          error: { message: 'Email is required' },
+          message: 'Email is required',
+          error: { code: 'VALIDATION_ERROR', details: null },
         });
       }
 
@@ -115,7 +116,8 @@ function createOnboardingRoutes(onboardingService, options = {}) {
       if (!document) {
         return res.status(400).json({
           success: false,
-          error: { message: 'Document is required' },
+          message: 'Document is required',
+          error: { code: 'VALIDATION_ERROR', details: null },
         });
       }
 
@@ -143,7 +145,8 @@ function createOnboardingRoutes(onboardingService, options = {}) {
       if (!slug) {
         return res.status(400).json({
           success: false,
-          error: { message: 'Slug is required' },
+          message: 'Slug is required',
+          error: { code: 'VALIDATION_ERROR', details: null },
         });
       }
 

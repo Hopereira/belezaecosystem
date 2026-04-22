@@ -15,7 +15,7 @@ class NotificationController {
         limit: parseInt(limit, 10),
         unreadOnly: unread === 'true',
       });
-      res.json({ success: true, ...result });
+      res.json({ success: true, data: result.data, meta: result.meta });
     });
   }
 
@@ -51,7 +51,7 @@ class NotificationController {
     return asyncHandler(async (req, res) => {
       const { userIds, type, title, message, metadata } = req.body;
       const notifications = await this.service.broadcast(req.tenantId, userIds, { type, title, message, metadata });
-      res.status(201).json({ success: true, count: notifications.length });
+      res.status(201).json({ success: true, data: { count: notifications.length } });
     });
   }
 }

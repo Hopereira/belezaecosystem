@@ -1,6 +1,6 @@
 # Pagar.me Integration Guide
 
-Integração completa com Pagar.me para processamento de pagamentos no BeautyHub.
+Integração completa com Pagar.me para processamento de pagamentos no BelezaEcosystem.
 
 ## Índice
 
@@ -202,7 +202,7 @@ Subscription ativada
 const pixCharge = await provider.createPixCharge({
   customerId: 'cus_xxxxx',
   amount: 9900, // R$ 99,00 em centavos
-  description: 'Assinatura BeautyHub - Plano Professional',
+  description: 'Assinatura BelezaEcosystem - Plano Professional',
   expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
   metadata: {
     tenant_id: tenantId,

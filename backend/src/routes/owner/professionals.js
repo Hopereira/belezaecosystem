@@ -55,8 +55,7 @@ router.get('/', async (req, res) => {
     const data = professionals.map(mapProfessional);
     return res.json({ success: true, data });
   } catch (error) {
-    console.error('[Professionals] List error:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return next(error);
   }
 });
 
@@ -110,8 +109,7 @@ router.post('/', authorize('owner', 'admin'), async (req, res) => {
 
     return res.status(201).json({ success: true, data: mapProfessional(full), message: 'Profissional criado com sucesso' });
   } catch (error) {
-    console.error('[Professionals] Create error:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return next(error);
   }
 });
 
@@ -167,8 +165,7 @@ router.put('/:id', authorize('owner', 'admin'), async (req, res) => {
 
     return res.json({ success: true, data: mapProfessional(full), message: 'Profissional atualizado com sucesso' });
   } catch (error) {
-    console.error('[Professionals] Update error:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return next(error);
   }
 });
 
@@ -194,8 +191,7 @@ router.delete('/:id', authorize('owner', 'admin'), async (req, res) => {
 
     return res.json({ success: true, message: 'Profissional excluído com sucesso' });
   } catch (error) {
-    console.error('[Professionals] Delete error:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return next(error);
   }
 });
 

@@ -19,7 +19,7 @@ async function start() {
 
     // Start server
     app.listen(env.port, '0.0.0.0', () => {
-      logger.info(`Beauty Hub API running on port ${env.port} [${env.nodeEnv}]`);
+      logger.info(`Beleza Ecosystem API running on port ${env.port} [${env.nodeEnv}]`);
       logger.info(`Health check: http://localhost:${env.port}/api/health`);
     });
   } catch (err) {

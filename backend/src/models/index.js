@@ -52,6 +52,15 @@ const PaymentTransaction = require('../modules/financial/paymentTransaction.mode
 const Subscription = require('../modules/billing/subscription.model')(sequelize);
 const SubscriptionPlan = require('../modules/billing/subscriptionPlan.model')(sequelize);
 
+// Phase 6 models
+const MarketingCampaign    = require('./MarketingCampaign')(sequelize);
+const MarketingAutomation  = require('./MarketingAutomation')(sequelize);
+const MiniSiteConfig       = require('./MiniSiteConfig')(sequelize);
+const HelpContactRequest   = require('./HelpContactRequest')(sequelize);
+
+// Phase 7 models
+const CommissionSetting    = require('./CommissionSetting')(sequelize);
+
 // ── Associations ──
 
 // User <-> Establishment (Admin owns establishment)
@@ -131,12 +140,36 @@ Tenant.hasMany(PaymentMethod, { foreignKey: 'tenant_id', as: 'tenantPaymentMetho
 PaymentMethod.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
 
 // ── OWNER Module Associations ──
+// Phase 6 associations
+Tenant.hasMany(MarketingCampaign,   { foreignKey: 'tenant_id', as: 'marketingCampaigns' });
+MarketingCampaign.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+Tenant.hasMany(MarketingAutomation,   { foreignKey: 'tenant_id', as: 'marketingAutomations' });
+MarketingAutomation.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+Tenant.hasOne(MiniSiteConfig,   { foreignKey: 'tenant_id', as: 'miniSiteConfig' });
+MiniSiteConfig.belongsTo(Tenant,{ foreignKey: 'tenant_id', as: 'tenant' });
+
+Tenant.hasMany(HelpContactRequest,   { foreignKey: 'tenant_id', as: 'helpContactRequests' });
+HelpContactRequest.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+// Phase 7 associations
+Tenant.hasMany(CommissionSetting,   { foreignKey: 'tenant_id', as: 'commissionSettings' });
+CommissionSetting.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+User.hasMany(CommissionSetting,   { foreignKey: 'user_id', as: 'commissionSettings' });
+CommissionSetting.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
 const allModels = {
   User, Establishment, Professional, Service, Client, Appointment,
   PaymentMethod, FinancialEntry, FinancialExit, Notification,
   Tenant, ProfessionalDetail, ProfessionalSpecialty, ProfessionalServiceCommission,
   Supplier, Product, Purchase, PurchaseItem,
-  InventoryMovement, PaymentTransaction, Subscription, SubscriptionPlan
+  InventoryMovement, PaymentTransaction, Subscription, SubscriptionPlan,
+  // Phase 6
+  MarketingCampaign, MarketingAutomation, MiniSiteConfig, HelpContactRequest,
+  // Phase 7
+  CommissionSetting,
 };
 
 // Call associate methods for OWNER models
@@ -179,4 +212,11 @@ module.exports = {
   PaymentTransaction,
   Subscription,
   SubscriptionPlan,
+  // Phase 6
+  MarketingCampaign,
+  MarketingAutomation,
+  MiniSiteConfig,
+  HelpContactRequest,
+  // Phase 7
+  CommissionSetting,
 };

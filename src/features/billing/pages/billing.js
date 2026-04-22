@@ -31,6 +31,7 @@ export async function init() {
 
 async function loadBillingData() {
     const content = getContentArea();
+    if (!content) return;
     content.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:center;min-height:300px;">
             <div class="spinner"></div>

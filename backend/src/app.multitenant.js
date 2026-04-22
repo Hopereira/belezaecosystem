@@ -20,15 +20,17 @@ const { createOnboardingRoutes } = require('./modules/tenants/onboarding.routes'
 const { initLgpdModule } = require('./modules/lgpd');
 const { initNotificationsModule } = require('./modules/notifications');
 const requireActiveSubscription = require('./shared/middleware/requireActiveSubscription');
+const swaggerUi       = require('swagger-ui-express');
+const swaggerDocument = require('./docs/swagger');
+const { correlationId, requestLogger } = require('./shared/middleware/requestLogger');
+const {
+  helpContactLimiter,
+  marketingWriteLimiter,
+  miniSitePublicLimiter,
+  aiAssistantLimiter,
+} = require('./shared/middleware/rateLimits');
 
-// Legacy routes (until fully migrated to modules)
 const authRoutes = require('./routes/auth');
-const clientRoutes = require('./routes/clients');
-const serviceRoutes = require('./routes/services');
-const professionalRoutes = require('./routes/professionals');
-const appointmentRoutes = require('./routes/appointments');
-const financialRoutes = require('./routes/financial');
-const notificationRoutes = require('./routes/notifications');
 
 const app = express();
 
@@ -66,13 +68,12 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // Allow any *.biaxavier.com.br subdomain (multi-tenant) + Cloudflare Pages
+    // Allow configured subdomains + Cloudflare Pages preview
     try {
       const url = new URL(origin);
-      if (url.hostname.endsWith('.biaxavier.com.br') || url.hostname === 'biaxavier.com.br') {
+      if (url.hostname.endsWith('.belezaecosystem.com.br') || url.hostname === 'belezaecosystem.com.br') {
         return callback(null, true);
       }
-      // Legacy: allow Cloudflare Pages preview during migration
       if (url.hostname.endsWith('.pages.dev')) {
         return callback(null, true);
       }
@@ -102,12 +103,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Logging
+// Observability — Correlation ID + Structured Request Logging
 // ─────────────────────────────────────────────────────────────────────────────
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms', {
-  stream: { write: (message) => logger.info(message.trim()) },
-  skip: (req) => req.path === '/api/health',
-}));
+app.use(correlationId);
+app.use(requestLogger);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Rate Limiting
@@ -154,7 +153,7 @@ const { sequelize } = modules;
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Beauty Hub Multi-Tenant API is running.',
+    message: 'Beleza Ecosystem Multi-Tenant API is running.',
     data: {
       version: '2.0.0',
       uptime: process.uptime(),
@@ -163,6 +162,18 @@ app.get('/api/health', (req, res) => {
     },
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// API Documentation — Swagger UI (only in non-production or when explicitly enabled)
+// ─────────────────────────────────────────────────────────────────────────────
+if (env.nodeEnv !== 'production' || process.env.ENABLE_DOCS === 'true') {
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+    customSiteTitle: 'BelezaEcosystem API Docs',
+    swaggerOptions: { persistAuthorization: true },
+  }));
+  app.get('/api/docs/json', (req, res) => res.json(swaggerDocument));
+  logger.info('[Docs] Swagger UI available at /api/docs');
+}
 
 // Schema Health Check
 app.get('/api/health/schema', async (req, res) => {
@@ -310,22 +321,6 @@ app.use('/api/users', modules.users.routes.users);
 // Profile
 app.use('/api/profile', modules.users.routes.profile);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Legacy routes (DEPRECATED - being refactored to use tenant_id)
-// ─────────────────────────────────────────────────────────────────────────────
-// ⚠️ WARNING: These routes use establishment_id instead of tenant_id
-// ⚠️ They will be migrated to modules/owner/* structure
-// ⚠️ DO NOT USE - SECURITY RISK: Multi-tenant isolation not guaranteed
-
-// const establishmentRoutes = require('./routes/establishments');
-// app.use('/api/establishments', establishmentRoutes);
-// app.use('/api/clients', clientRoutes);  // ❌ Uses establishment_id
-// app.use('/api/services', serviceRoutes);  // ❌ Uses establishment_id
-// app.use('/api/professionals', professionalRoutes);  // ❌ Uses establishment_id
-// app.use('/api/appointments', appointmentRoutes);  // ❌ Uses establishment_id
-// app.use('/api/financial', financialRoutes);  // ❌ Uses establishment_id
-// app.use('/api/notifications', notificationRoutes);  // ❌ Replaced by notifications module above
-
 // PROFESSIONAL Area Routes (tenant-scoped, PROFESSIONAL role only, Subscription enforced)
 const professionalAreaRoutes = require('./routes/professionalArea');
 app.use('/api/professional', requireActiveSubscription(), professionalAreaRoutes);
@@ -360,12 +355,45 @@ app.use('/api/payment-transactions', requireActiveSubscription(), ownerPaymentTr
 
 // NEW: Refactored routes (replacing legacy establishment_id routes)
 const ownerProfessionalsRoutes = require('./routes/owner/professionals');
+
+// Phase 6 routes
+const marketingRoutes    = require('./routes/owner/marketing');
+const aiAssistantRoutes  = require('./routes/owner/ai-assistant');
+const miniSiteRoutes     = require('./routes/owner/mini-site');
+const commissionsRoutes  = require('./routes/owner/commissions');
+const helpRoutes         = require('./routes/help');
+
 app.use('/api/services', requireActiveSubscription(), ownerServicesRoutes);
 app.use('/api/clients', requireActiveSubscription(), ownerClientsRoutes);
 app.use('/api/appointments', requireActiveSubscription(), ownerAppointmentsRoutes);
 app.use('/api/financial', requireActiveSubscription(), ownerFinancialRoutes);
 app.use('/api/professionals', requireActiveSubscription(), ownerProfessionalsRoutes);
 app.use('/api/reports', requireActiveSubscription({ allowReadOnly: true }), ownerReportsRoutes);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 6 — New module routes
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Marketing & Automations (write limiter on POST/PATCH ops)
+app.use('/api/marketing/campaigns', marketingWriteLimiter);
+app.use('/api/marketing', requireActiveSubscription(), marketingRoutes);
+
+// AI Assistant (derived data — no heavy writes, allow read-only)
+app.use('/api/ai', aiAssistantLimiter, requireActiveSubscription({ allowReadOnly: true }), aiAssistantRoutes);
+
+// Mini-site (tenant config)
+app.use('/api/mini-site', requireActiveSubscription(), miniSiteRoutes.tenant);
+
+// Commissions & Performance (mounted alongside /professionals)
+app.use('/api/professionals', requireActiveSubscription({ allowReadOnly: true }), commissionsRoutes);
+
+// Help (categories/faq public — contact has per-IP + per-email spam guard)
+app.use('/api/help/contact', helpContactLimiter);
+app.use('/api/help', helpRoutes);
+
+// Public mini-site (no auth, no tenant required — per-IP rate limited)
+app.use('/api/public/mini-site', miniSitePublicLimiter);
+app.use('/api/public', miniSiteRoutes.public);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 404 Handler

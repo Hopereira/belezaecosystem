@@ -73,19 +73,14 @@ function authorize(...allowedRoles) {
       ));
     }
 
-    const userRole = req.user.role;
-    const userRoleIndex = ROLE_HIERARCHY.indexOf(userRole);
+    const userRole = (req.user.role || '').toLowerCase();
+    const normalizedAllowed = allowedRoles.map(r => (r || '').toLowerCase());
 
-    // Check if user's role is in allowed roles
-    const hasDirectAccess = allowedRoles.includes(userRole);
+    // Exact role match only — callers must enumerate all allowed roles explicitly.
+    // MASTER uses /master/* routes and must be listed if needed on tenant routes.
+    const hasAccess = normalizedAllowed.includes(userRole);
 
-    // Check if user has higher role (hierarchy)
-    const hasHierarchyAccess = allowedRoles.some(role => {
-      const requiredIndex = ROLE_HIERARCHY.indexOf(role);
-      return userRoleIndex > requiredIndex;
-    });
-
-    if (!hasDirectAccess && !hasHierarchyAccess) {
+    if (!hasAccess) {
       logger.warn('Authorization denied', {
         userId: req.user.id,
         userRole,

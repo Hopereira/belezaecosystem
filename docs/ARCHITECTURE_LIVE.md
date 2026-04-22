@@ -1,6 +1,6 @@
-# BeautyHub SaaS — Arquitetura de Produção
+# Beleza Ecosystem SaaS — Arquitetura de Produção
 
-> Atualizado: 2026-03-17 (sessão de deploy completo) | Backend: **LIVE ✅** | Frontend: **LIVE ✅** | CI/CD: **LIVE ✅**
+> Atualizado: 2026-04-21 (Fase 9 — auditoria arquitetural, limpeza, README, decisoes-tecnicas) | Backend: **LIVE ✅** | Frontend: **LIVE ✅** | CI/CD: **LIVE ✅**
 
 ---
 
@@ -11,8 +11,8 @@
                               │
           ┌───────────────────┼───────────────────┐
           ▼                   ▼                   ▼
- biaxavier.com.br    app.biaxavier.com.br   cliente1.biaxavier.com.br
- (Landing Beatriz)   (SPA SaaS)            (Tenant Subdomain)
+ belezaecosystem.com.br    app.belezaecosystem.com.br   cliente1.belezaecosystem.com.br
+ (Landing SaaS)            (SPA)                        (Tenant Subdomain)
           │                   │                   │
           └───────────────────┼───────────────────┘
                               │
@@ -20,7 +20,7 @@
                    Serve: dist/ (Vite build)
                               │
                               ▼
-                  api.biaxavier.com.br ──► Fly.io (GRU)
+                  api.belezaecosystem.com.br ──► Fly.io (GRU)
                   Node.js/Express:5001     │
                               │            │
                               ▼            │
@@ -38,23 +38,23 @@
 
 | Domínio | Função | Hosting | Status |
 |---------|--------|---------|--------|
-| `biaxavier.com.br` | Site/Landing da Beatriz | Cloudflare Pages | ✅ Live |
-| `app.biaxavier.com.br` | SPA do SaaS (login, dashboard) | Cloudflare Pages | ✅ Live |
-| `adm.biaxavier.com.br` | Painel Master (mesma SPA, rota /master) | Cloudflare Pages | ✅ Live |
-| `api.biaxavier.com.br` | API Backend Node.js | Fly.io (beautyhub-backend) | ✅ Live |
-| `*.biaxavier.com.br` | Tenants (multi-tenant) | Cloudflare Pages wildcard | ✅ Wildcard ativo |
+| `belezaecosystem.com.br` | Landing pública do SaaS | Cloudflare Pages | ✅ Live |
+| `app.belezaecosystem.com.br` | SPA do SaaS (login, dashboard) | Cloudflare Pages | ✅ Live |
+| `adm.belezaecosystem.com.br` | Painel Master (mesma SPA, rota /master) | Cloudflare Pages | ✅ Live |
+| `api.belezaecosystem.com.br` | API Backend Node.js | Fly.io (belezaecosystem-backend) | ✅ Live |
+| `*.belezaecosystem.com.br` | Tenants (multi-tenant) | Cloudflare Pages wildcard | ✅ Wildcard ativo |
 
 ### DNS Necessários
 
 ```
-# API (Fly.io) — beautyhub-backend  ✅ CONFIGURADO
+# API (Fly.io) — belezaecosystem-backend  ✅ CONFIGURADO
 A     api   → 66.241.125.210
 AAAA  api   → 2a09:8280:1::e4:20f0:0
 
-# Frontend (Cloudflare Pages — projeto: beauty-hub)  ✅ CONFIGURADO
-CNAME app   → beauty-hub.pages.dev   (proxied)
-CNAME adm   → beauty-hub.pages.dev   (proxied)
-CNAME *     → beauty-hub.pages.dev   (proxied, wildcard para tenants)
+# Frontend (Cloudflare Pages — projeto: beleza-ecosystem)  ✅ CONFIGURADO
+CNAME app   → beleza-ecosystem.pages.dev   (proxied)
+CNAME adm   → beleza-ecosystem.pages.dev   (proxied)
+CNAME *     → beleza-ecosystem.pages.dev   (proxied, wildcard para tenants)
 ```
 
 ### Slugs Reservados (não são tenants)
@@ -68,9 +68,9 @@ www, api, app, adm, admin, mail, ftp, smtp, cdn, static, assets
 ## 3. Fluxo Multi-Tenant
 
 ```
-cliente1.biaxavier.com.br
+cliente1.belezaecosystem.com.br
   │
-  ├─ DNS *.biaxavier.com.br → Cloudflare Pages (mesma SPA)
+  ├─ DNS *.belezaecosystem.com.br → Cloudflare Pages (mesma SPA)
   ├─ Frontend config.js → getTenantSlug()
   │    hostname.split('.')[0] = "cliente1" (não é reservado) → return "cliente1"
   ├─ http.js envia Header: X-Tenant-Slug: cliente1
@@ -84,9 +84,9 @@ cliente1.biaxavier.com.br
 
 | Item | Valor |
 |------|-------|
-| App | `beautyhub-backend` |
-| URL | `https://beautyhub-backend.fly.dev` ✅ |
-| Custom | `https://api.biaxavier.com.br` ✅ |
+| App | `belezaecosystem-backend` |
+| URL | `https://belezaecosystem-backend.fly.dev` ✅ |
+| Custom | `https://api.belezaecosystem.com.br` ✅ |
 | Região | `gru` (São Paulo) |
 | Runtime | Node.js 20, Express, Sequelize 6 |
 | Porta | 5001 |
@@ -105,11 +105,11 @@ cliente1.biaxavier.com.br
 ### Secrets (Fly.io)
 
 ```
-DATABASE_URL       → postgresql://postgres:***@db.sbidpqh...:5432/postgres?sslmode=require
+DATABASE_URL       → postgresql://postgres:***@db...supabase.co:5432/postgres?sslmode=require
 NODE_ENV           → production
 JWT_SECRET         → ***
 JWT_REFRESH_SECRET → ***
-CORS_ORIGIN        → https://app.biaxavier.com.br,https://adm.biaxavier.com.br
+CORS_ORIGIN        → https://app.belezaecosystem.com.br,https://adm.belezaecosystem.com.br
 ```
 
 ---
@@ -127,7 +127,7 @@ CORS_ORIGIN        → https://app.biaxavier.com.br,https://adm.biaxavier.com.br
 ### Build de Produção
 
 ```bash
-VITE_API_URL=https://api.biaxavier.com.br npm run build
+VITE_API_URL=https://api.belezaecosystem.com.br npm run build
 ```
 
 ### Rotas SPA
@@ -170,7 +170,7 @@ lgpd_deletion_requests  ← novo (migration 035)
 
 | Role | Email | Senha | Tenant |
 |------|-------|-------|--------|
-| master | `master@beautyhub.com` | `123456` | — |
+| master | `master@belezaecosystem.com` | `123456` | — |
 | owner | `owner@belezapura.com` | `123456` | `beleza-pura` |
 | admin | `admin@belezapura.com` | `123456` | `beleza-pura` |
 | professional | `prof@belezapura.com` | `123456` | `beleza-pura` |
@@ -195,23 +195,23 @@ lgpd_deletion_requests  ← novo (migration 035)
 O `getTenantSlug()` no frontend usa `hostname.split('.').length >= 3` para detectar subdomínio. Para domínios `.com.br` (TLD de 2 partes), isso gera falso positivo:
 
 ```
-biaxavier.com.br → ["biaxavier","com","br"] → length=3 → sub="biaxavier" ❌ (falso tenant!)
-app.biaxavier.com.br → ["app","biaxavier","com","br"] → length=4 → sub="app" → reservado ✅
-cliente1.biaxavier.com.br → ["cliente1","biaxavier","com","br"] → length=4 → sub="cliente1" ✅
+belezaecosystem.com.br → ["belezaecosystem","com","br"] → length=3 → sub="belezaecosystem" ❌ (falso tenant!)
+app.belezaecosystem.com.br → ["app","belezaecosystem","com","br"] → length=4 → sub="app" → reservado ✅
+cliente1.belezaecosystem.com.br → ["cliente1","belezaecosystem","com","br"] → length=4 → sub="cliente1" ✅
 ```
 
 **Fix necessário**: Para `.com.br`, exigir `parts.length >= 4`. **Já implementado no frontend `config.js:34`** — verificar backend `tenantResolver.js`.
 
 ### 9.2 CORS para subdomínios de tenants
 
-O `CORS_ORIGIN` atual só permite `app.biaxavier.com.br` e `adm.biaxavier.com.br`. Tenants em subdomínios (`cliente1.biaxavier.com.br`) serão bloqueados.
+O `CORS_ORIGIN` atual só permite `app.belezaecosystem.com.br` e `adm.belezaecosystem.com.br`. Tenants em subdomínios (`cliente1.belezaecosystem.com.br`) serão bloqueados.
 
 **Fix**: Usar regex ou wildcard no CORS:
 
 ```javascript
 // app.multitenant.js
 origin: (origin, callback) => {
-  if (!origin || origin.endsWith('.biaxavier.com.br') || origin === 'https://biaxavier.com.br') {
+  if (!origin || origin.endsWith('.belezaecosystem.com.br') || origin === 'https://belezaecosystem.com.br') {
     callback(null, true);
   } else {
     callback(new Error('CORS blocked'));
@@ -221,18 +221,56 @@ origin: (origin, callback) => {
 
 ### 9.3 Suite de Testes Jest
 
-O job `Test` falha no CI (`continue-on-error: true`). Os testes precisam de variáveis de ambiente de banco de dados para rodar. Solução: criar banco de testes no Supabase ou mockar o Sequelize.
+✅ **Resolvido na Fase 8.** 9 suites, 133 testes passando (5 `todo` para DB real). Testes de integração usam mocks de Sequelize — sem dependência de banco real.
 
 ---
 
-## 10. Próximos Passos
+## 10. Fase 8 — Produção Ready (2026-04-21)
 
-1. **Seeds produção**: Rodar `sequelize db:seed:all` para criar master user e planos de assinatura
-2. **Testes Jest**: Corrigir suite de testes no CI (atualmente `continue-on-error`)
-3. **CORS wildcard**: Suportar subdomínios de tenants (`*.biaxavier.com.br`)
-4. **Fix subdomain backend**: Verificar `tenantResolver.js → extractSubdomain()` para `.com.br`
-5. **Senhas padrão**: Alterar credenciais `123456` dos usuários de seed
-6. **Redis**: Para tenant cache compartilhado em deploy multi-instância
-7. **Emails**: Integrar Resend para transacionais (registro, reset senha)
-8. **CSP**: Habilitar Helmet ContentSecurityPolicy com nonce para SPA
-9. **Monitoramento**: Configurar alertas UptimeRobot para `api.biaxavier.com.br/api/health`
+| Item | Entregue | Commits |
+|------|----------|---------|
+| Unit tests (4 services) | ✅ | `49fc4a9` |
+| Integration tests (auth, marketing, mini-site, help) | ✅ | `49fc4a9` |
+| OpenAPI/Swagger UI (`/api/docs`) | ✅ | `49fc4a9` |
+| Correlation-ID + response-time structurado | ✅ | `49fc4a9` |
+| Rate limits: auth, help/contact, marketing writes, AI, mini-site público | ✅ | `49fc4a9` |
+| Padronização `{success, data, message, meta}` em todos os controllers | ✅ | `ad9d41a` |
+| N+1 fix: `_getBatchSettingRates` em CommissionsService | ✅ | `ad9d41a` |
+| Frontend: `meta.total` (era `pagination.total`), 402 subscription guard | ✅ | `56da1a6` |
+| `err.message` do backend em toasts (spam guard, publish guard) | ✅ | `56da1a6` |
+| `docs/setup.md` — guia completo dev/Docker/produção | ✅ | `49fc4a9` |
+
+---
+
+## 11. Fase 9 — Auditoria Arquitetural (2026-04-21)
+
+| Item | Entregue | Commit |
+|------|----------|--------|
+| `docs/auditoria-arquitetural-final.md` — auditoria completa do repositório | ✅ | `abd15e7` |
+| `docs/decisoes-tecnicas.md` — 10 decisões arquiteturais documentadas | ✅ | `abd15e7` |
+| `README.md` — reescrito do zero (preciso, profissional) | ✅ | `abd15e7` |
+| 12 docs obsoletos removidos (SESSION_REPORT, SAAS_CHECKLIST, ENTERPRISE_ARCH, etc.) | ✅ | `abd15e7` |
+| `COMO_USAR.md`, `down.bat`, `down.ps1` removidos da raiz | ✅ | `abd15e7` |
+| `CHANGELOG.md` arquivado em `archive/` | ✅ | `abd15e7` |
+| `src/features/beatriz/` arquivado — cliente externo fora do produto | ✅ | `abd15e7` |
+| `src/features/landing/` removido — stub duplicado de `public/landing/` | ✅ | `abd15e7` |
+| `src/shared/utils/formatting.js` + `src/shared/design/tokens.js` removidos — código morto | ✅ | `abd15e7` |
+| `src/features/professional/` renomeado para `professional-area/` — conflito de nome resolvido | ✅ | `abd15e7` |
+| `scripts/` removido — `seed_plans_supabase.sql` movido para `docs/` | ✅ | `abd15e7` |
+| `backend/src/middleware/*.js` + `utils/*.js` viram aliases para `shared/` | ✅ | `abd15e7` |
+| Fix: `authorize()` normaliza roles para lowercase + exact match (sem hierarquia) | ✅ | `abd15e7` |
+| 133 testes passando após todas as mudanças | ✅ | `abd15e7` |
+
+---
+
+## 12. Próximos Passos
+
+1. **CORS wildcard**: Suportar subdomínios de tenants (`*.belezaecosystem.com.br`)
+2. **Fix subdomain backend**: Verificar `tenantResolver.js → extractSubdomain()` para `.com.br`
+3. **Senhas padrão**: Alterar credenciais `123456` dos usuários de seed
+4. **Redis**: Para tenant cache compartilhado em deploy multi-instância
+5. **Emails**: Integrar Resend para transacionais (registro, reset senha)
+6. **CSP**: Habilitar Helmet ContentSecurityPolicy com nonce para SPA
+7. **CI testes**: Adicionar `JWT_SECRET` + `NODE_ENV=test` nos secrets do CI
+8. **Migrar imports legados**: Atualizar os 21 owner routes para apontar direto a `shared/middleware/` (remover aliases)
+9. **Monitoramento**: Configurar alertas UptimeRobot para `api.belezaecosystem.com.br/api/health`

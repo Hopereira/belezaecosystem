@@ -51,6 +51,12 @@ const routes = {
     '/master/plans': { title: 'Planos - BelezaEcosystem', page: 'master-plans', auth: true, role: 'master' },
     '/master/billing': { title: 'Billing - BelezaEcosystem', page: 'master-billing', auth: true, role: 'master' },
     '/master/system': { title: 'Sistema - BelezaEcosystem', page: 'master-system', auth: true, role: 'master' },
+    // Fase 5 — novos módulos
+    '/marketing': { title: 'Marketing & Automação - BelezaEcosystem', page: 'marketing', auth: true },
+    '/ai-assistant': { title: 'Secretária IA - BelezaEcosystem', page: 'ai-assistant', auth: true },
+    '/help': { title: 'Ajuda & Suporte - BelezaEcosystem', page: 'help', auth: true },
+    '/mini-site': { title: 'Mini-site - BelezaEcosystem', page: 'mini-site', auth: true },
+    '/team-commissions': { title: 'Equipe & Comissões - BelezaEcosystem', page: 'team-commissions', auth: true },
 };
 
 // Page module loaders (lazy)
@@ -193,20 +199,26 @@ async function loadPageModule(page) {
         'professional-details': () => import('../features/professionals/pages/professional-details.js'),
         'payment-transactions': () => import('../features/financial/pages/payment-transactions.js'),
         'payment-methods': () => import('../features/financial/pages/payment-methods.js'),
-        // Professional pages
-        'professional-dashboard': () => import('../features/professional/pages/dashboard.js'),
-        'professional-appointments': () => import('../features/professional/pages/appointments.js'),
-        'professional-clients': () => import('../features/professional/pages/clients.js'),
-        'professional-earnings': () => import('../features/professional/pages/earnings.js'),
-        'professional-performance': () => import('../features/professional/pages/performance.js'),
-        'professional-profile': () => import('../features/professional/pages/profile.js'),
-        'professional-availability': () => import('../features/professional/pages/availability.js'),
+        // Professional area pages (role: PROFESSIONAL)
+        'professional-dashboard': () => import('../features/professional-area/pages/dashboard.js'),
+        'professional-appointments': () => import('../features/professional-area/pages/appointments.js'),
+        'professional-clients': () => import('../features/professional-area/pages/clients.js'),
+        'professional-earnings': () => import('../features/professional-area/pages/earnings.js'),
+        'professional-performance': () => import('../features/professional-area/pages/performance.js'),
+        'professional-profile': () => import('../features/professional-area/pages/profile.js'),
+        'professional-availability': () => import('../features/professional-area/pages/availability.js'),
         // Master pages
         'master-dashboard': () => import('../features/master/dashboard/master-dashboard.js'),
         'master-tenants': () => import('../features/master/tenants/master-tenants.js'),
         'master-plans': () => import('../features/master/plans/master-plans.js'),
         'master-billing': () => import('../features/master/billing/master-billing.js'),
         'master-system': () => import('../features/master/system/master-system.js'),
+        // Fase 5
+        'marketing': () => import('../features/marketing/pages/marketing.js'),
+        'ai-assistant': () => import('../features/ai-assistant/pages/ai-assistant.js'),
+        'help': () => import('../features/help/pages/help.js'),
+        'mini-site': () => import('../features/mini-site/pages/mini-site.js'),
+        'team-commissions': () => import('../features/professionals/pages/team-commissions.js'),
     };
 
     const loader = moduleMap[page];

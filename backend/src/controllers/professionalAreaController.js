@@ -182,11 +182,12 @@ async function getAppointments(req, res, next) {
       success: true,
       message: 'Agendamentos listados com sucesso',
       data: rows,
-      pagination: {
+      meta: {
         total: count,
         page: parseInt(page),
         limit: parseInt(limit),
         pages: Math.ceil(count / limit),
+        has_more: parseInt(page) * parseInt(limit) < count,
       },
     });
   } catch (error) {
@@ -260,11 +261,12 @@ async function getClients(req, res, next) {
       success: true,
       message: 'Clientes listados com sucesso',
       data: clients,
-      pagination: {
+      meta: {
         total,
         page: parseInt(page),
         limit: parseInt(limit),
         pages: Math.ceil(total / limit),
+        has_more: parseInt(page) * parseInt(limit) < total,
       },
     });
   } catch (error) {
@@ -346,11 +348,12 @@ async function getEarnings(req, res, next) {
         transactions,
         period: { startDate: start, endDate: end },
       },
-      pagination: {
+      meta: {
         total: parseInt(totalResult.total_appointments || 0),
         page: parseInt(page),
         limit: parseInt(limit),
         pages: Math.ceil(parseInt(totalResult.total_appointments || 0) / limit),
+        has_more: parseInt(page) * parseInt(limit) < parseInt(totalResult.total_appointments || 0),
       },
     });
   } catch (error) {

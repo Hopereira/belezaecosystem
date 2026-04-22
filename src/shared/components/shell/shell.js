@@ -51,21 +51,50 @@ export function renderShell(activePage, contentHTML = '') {
         { id: 'payment-transactions', icon: 'fas fa-exchange-alt', label: 'Transações', path: '/payment-transactions', roles: ['owner', 'admin'] },
         { id: 'payment-methods', icon: 'fas fa-wallet', label: 'Formas de Pagamento', path: '/payment-methods', roles: ['owner', 'admin'] },
         { id: 'users', icon: 'fas fa-user-shield', label: 'Usuários', path: '/users', roles: ['owner', 'admin'] },
+        // Fase 5
+        { id: 'team-commissions', icon: 'fas fa-medal', label: 'Equipe & Comissões', path: '/team-commissions', roles: ['owner', 'admin'] },
+        { id: 'marketing', icon: 'fas fa-bullhorn', label: 'Marketing', path: '/marketing', roles: ['owner', 'admin'] },
+        { id: 'ai-assistant', icon: 'fas fa-robot', label: 'Secretária IA', path: '/ai-assistant', roles: ['owner', 'admin'] },
+        { id: 'mini-site', icon: 'fas fa-globe', label: 'Mini-site', path: '/mini-site', roles: ['owner', 'admin'] },
         { id: 'billing', icon: 'fas fa-credit-card', label: 'Assinatura', path: '/billing', roles: ['master', 'owner', 'admin'] },
         { id: 'settings', icon: 'fas fa-cog', label: 'Configurações', path: '/settings', roles: ['master', 'owner'] },
         { id: 'account', icon: 'fas fa-user-circle', label: 'Minha Conta', path: '/account', roles: ['master', 'owner', 'admin', 'client'] },
+        { id: 'help', icon: 'fas fa-question-circle', label: 'Ajuda', path: '/help', roles: ['master', 'owner', 'admin', 'client'] },
         { id: 'master', icon: 'fas fa-crown', label: 'Master Admin', path: '/master', roles: ['master'] },
     ];
 
     // Filter menu items by role
     const visibleMenuItems = menuItems.filter(item => item.roles.includes(userRole));
 
-    const sidebarMenuHTML = visibleMenuItems.map(item => `
-        <a href="${item.path}" class="menu-item ${activePage === item.id ? 'active' : ''}" data-page="${item.id}">
-            <i class="${item.icon}"></i>
-            <span>${item.label}</span>
-        </a>
-    `).join('');
+    // Group menu items by section for visual hierarchy
+    const sectionGroups = userRole === 'professional' ? [
+        { label: null, ids: ['professional-dashboard', 'professional-appointments', 'professional-clients', 'professional-earnings', 'professional-performance'] },
+        { label: 'Perfil', ids: ['professional-availability', 'professional-profile'] },
+    ] : [
+        { label: null, ids: ['dashboard'] },
+        { label: 'Gestão', ids: ['appointments', 'clients', 'services', 'professionals'] },
+        { label: 'Financeiro', ids: ['financial', 'reports', 'payment-transactions', 'payment-methods'] },
+        { label: 'Estoque', ids: ['inventory', 'suppliers', 'purchases'] },
+        { label: 'Crescimento', ids: ['team-commissions', 'marketing', 'ai-assistant', 'mini-site'] },
+        { label: 'Conta', ids: ['billing', 'settings', 'account', 'users', 'professional-details'] },
+        { label: 'Suporte', ids: ['help'] },
+        { label: 'Master', ids: ['master'] },
+    ];
+
+    const menuItemMap = Object.fromEntries(visibleMenuItems.map(i => [i.id, i]));
+
+    const sidebarMenuHTML = sectionGroups.map(({ label, ids }) => {
+        const items = ids.map(id => menuItemMap[id]).filter(Boolean);
+        if (!items.length) return '';
+        const labelHTML = label ? `<div class="sidebar-section-label">${label}</div>` : '';
+        const itemsHTML = items.map(item => `
+            <a href="${item.path}" class="menu-item ${activePage === item.id ? 'active' : ''}" data-page="${item.id}">
+                <i class="${item.icon}"></i>
+                <span>${item.label}</span>
+            </a>
+        `).join('');
+        return labelHTML + itemsHTML;
+    }).join('');
 
     const avatarStyle = avatar
         ? `background-image: url('${avatar}'); background-size: cover; text-indent: -9999px;`
@@ -77,22 +106,33 @@ export function renderShell(activePage, contentHTML = '') {
     const blockBannerHTML = isBlocked ? `
         <div class="subscription-block-banner">
             <i class="fas fa-exclamation-triangle"></i>
-            <span>Sua assinatura está ${subscription?.status === 'suspended' ? 'suspensa' : 'inativa'}. 
-            Funcionalidades de criação estão bloqueadas.</span>
+            <span>Sua assinatura está ${subscription?.status === 'suspended' ? 'suspensa' : 'inativa'}. Funcionalidades de criação estão bloqueadas.</span>
             <a href="/billing" class="btn-sm btn-primary">Regularizar</a>
         </div>
     ` : '';
+
+    const tenantName = user?.tenantName || user?.tenant_name || 'Meu Salão';
+    const tenantInitial = tenantName.charAt(0).toUpperCase();
+    const subscriptionLabel = (() => {
+        const status = subscription?.status;
+        if (status === 'active') return 'Plano Ativo';
+        if (status === 'trial') return 'Período de Teste';
+        if (status === 'suspended') return 'Suspenso';
+        return 'Assinatura';
+    })();
 
     app.innerHTML = `
         <div class="dashboard-container">
             <!-- Mobile Sidebar Overlay -->
             <div class="sidebar-overlay" id="sidebarOverlay"></div>
-            
-            <!-- Sidebar -->
-            <aside class="sidebar" id="sidebar">
+
+            <!-- Sidebar Clara -->
+            <aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu principal">
                 <div class="sidebar-header">
+                    <div class="logo-icon" aria-hidden="true"><span>Be</span></div>
                     <div class="logo-text">
-                        <span style="color: var(--primary-color);">BEAUTY</span> HUB
+                        Beleza Ecosystem
+                        <small>Gestão que liberta.</small>
                     </div>
                 </div>
 
@@ -101,29 +141,42 @@ export function renderShell(activePage, contentHTML = '') {
                 </nav>
 
                 <div class="sidebar-footer">
-                    <a href="#" class="logout-link" id="btn-logout">
-                        <i class="fas fa-sign-out-alt"></i> Sair
+                    <div class="tenant-info">
+                        <div class="tenant-avatar" aria-hidden="true">${tenantInitial}</div>
+                        <div>
+                            <div class="tenant-name">${tenantName}</div>
+                            <div class="tenant-plan">${subscriptionLabel}</div>
+                        </div>
+                    </div>
+                    <a href="#" class="logout-link" id="btn-logout" aria-label="Sair da conta">
+                        <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                        <span>Sair</span>
                     </a>
                 </div>
             </aside>
 
             <!-- Main Content -->
             <main class="main-content">
-                <header class="top-bar">
-                    <div style="display:flex;align-items:center;gap:1rem;">
-                        <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Abrir menu">
-                            <i class="fas fa-bars"></i>
+                <header class="top-bar" role="banner">
+                    <div class="top-bar__left">
+                        <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Abrir menu" aria-expanded="false">
+                            <i class="fas fa-bars" aria-hidden="true"></i>
                         </button>
                         <div class="greeting">
                             Olá, <span class="user-name">${userName}</span>
                         </div>
                     </div>
-                    <div class="user-profile" id="userProfileBtn">
-                        <div class="avatar" style="${avatarStyle}">${avatarInitial}</div>
-                        <div class="profile-dropdown" id="profileDropdown">
-                            <a href="/account"><i class="far fa-user"></i> Minha conta</a>
-                            <a href="/billing"><i class="fas fa-credit-card"></i> Assinatura</a>
-                            <a href="#" id="dropdown-logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                    <div class="top-bar__right">
+                        <button class="top-bar__icon-btn" title="Notificações" aria-label="Notificações">
+                            <i class="fas fa-bell" aria-hidden="true"></i>
+                        </button>
+                        <div class="user-profile" id="userProfileBtn" aria-haspopup="true">
+                            <div class="avatar" style="${avatarStyle}" aria-label="Perfil de ${userName}">${avatarInitial}</div>
+                            <div class="profile-dropdown" id="profileDropdown" role="menu">
+                                <a href="/account" role="menuitem"><i class="far fa-user" aria-hidden="true"></i> Minha conta</a>
+                                <a href="/billing" role="menuitem"><i class="fas fa-credit-card" aria-hidden="true"></i> Assinatura</a>
+                                <a href="#" id="dropdown-logout" role="menuitem"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Sair</a>
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -179,13 +232,15 @@ function bindShellEvents() {
     };
 
     const toggleMobileMenu = () => {
-        sidebar?.classList.toggle('open');
+        const isOpen = sidebar?.classList.toggle('open');
         overlay?.classList.toggle('show');
+        if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', String(!!isOpen));
     };
 
     const closeMobileMenu = () => {
         sidebar?.classList.remove('open');
         overlay?.classList.remove('show');
+        if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'false');
     };
 
     bindClickAndTouch(mobileMenuBtn, toggleMobileMenu);

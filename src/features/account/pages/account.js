@@ -197,7 +197,7 @@ function renderTab(tab) {
                         <i class="fas fa-pencil-alt" id="btnEditPhone" style="color:#ccc;cursor:pointer;transition:color 0.2s;"></i>
                     </div>
                 </div>
-                <a href="#" id="btnDeleteAccount" style="display:block;margin-top:2rem;color:#20B2AA;font-weight:500;font-size:0.9rem;">Deletar minha conta</a>
+                <a href="#" id="btnDeleteAccount" style="display:block;margin-top:2rem;color:var(--color-brown-deep);font-weight:500;font-size:0.9rem;">Deletar minha conta</a>
             `;
             document.getElementById('btnEditEmail')?.addEventListener('click', () => openModal('email'));
             document.getElementById('btnEditPassword')?.addEventListener('click', () => openModal('password'));
