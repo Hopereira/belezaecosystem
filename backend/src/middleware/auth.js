@@ -1,52 +1,5 @@
-const { verifyAccessToken } = require('../utils/jwt');
-const logger = require('../utils/logger');
-
-function authenticate(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      success: false,
-      message: 'Token de acesso não fornecido.',
-      error: { code: 'AUTH_TOKEN_MISSING', details: null },
-    });
-  }
-
-  const token = authHeader.split(' ')[1];
-  try {
-    const decoded = verifyAccessToken(token);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    logger.warn('Invalid or expired token', { error: err.message });
-    return res.status(401).json({
-      success: false,
-      message: 'Token inválido ou expirado.',
-      error: { code: 'AUTH_TOKEN_INVALID', details: null },
-    });
-  }
-}
-
-function authorize(...roles) {
-  return (req, res, next) => {
-    const userRole = (req.user?.role || '').toLowerCase();
-    
-    // Flatten roles array in case it's passed as an array
-    const flatRoles = roles.flat();
-    
-    // Convert all roles to lowercase strings
-    const allowedRoles = flatRoles
-      .filter(r => r && typeof r === 'string')
-      .map(r => r.toLowerCase());
-    
-    if (!req.user || !allowedRoles.includes(userRole)) {
-      return res.status(403).json({
-        success: false,
-        message: 'Acesso negado. Permissão insuficiente.',
-        error: { code: 'AUTH_FORBIDDEN', details: null },
-      });
-    }
-    next();
-  };
-}
-
-module.exports = { authenticate, authorize };
+/**
+ * @deprecated Use '../shared/middleware/auth' directly.
+ * This file is a compatibility alias kept for the owner route wrappers.
+ */
+module.exports = require('../shared/middleware/auth');

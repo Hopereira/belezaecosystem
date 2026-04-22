@@ -1,6 +1,6 @@
 # Componentes e Utilitários — Guia de Uso
 
-Este documento descreve todos os componentes JavaScript, utilitários e módulos de página do Beauty Hub SPA.
+Este documento descreve todos os componentes JavaScript, utilitários e módulos de página do Beleza Ecosystem SPA.
 
 ---
 
@@ -477,7 +477,7 @@ export function init() {
 
 ```javascript
 // Em routes:
-'/novapagina': { title: 'Nova Página - Beauty Hub', page: 'novapagina', auth: true },
+'/novapagina': { title: 'Nova Página - Beleza Ecosystem', page: 'novapagina', auth: true },
 
 // Em moduleMap dentro de loadPageModule():
 'novapagina': () => import('../features/novapagina/pages/novapagina.js'),

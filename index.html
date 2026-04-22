@@ -5,22 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
-    <title>BelezaEcosystem - Gestão Completa de Serviços</title>
+    <title>Beleza Ecosystem — Gestão que liberta.</title>
 
     <!-- Design System & Styles -->
     <link rel="stylesheet" href="/src/shared/styles/main.css">
     <link rel="stylesheet" href="/src/shared/styles/components.css">
+    <link rel="stylesheet" href="/src/shared/styles/modules.css">
     <link rel="stylesheet" href="/src/shared/styles/billing.css">
     <link rel="stylesheet" href="/src/features/dashboard/styles/dashboard.css">
     <link rel="stylesheet" href="/src/features/auth/styles/auth.css">
     <link rel="stylesheet" href="/src/features/master/shared/master.css">
     <link rel="stylesheet" href="/src/features/public/landing/landing.css">
-    <link rel="stylesheet" href="/src/features/beatriz/landing.css">
+    <link rel="stylesheet" href="/src/features/billing/styles/onboarding.css">
 
-    <!-- Fonts & Icons -->
+    <!-- Fonts: Manrope (UI/interface) + Cormorant Garamond (títulos) + DM Sans (textos longos) — Canva oficial -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Chart.js -->
@@ -39,17 +41,13 @@
             width: 40px;
             height: 40px;
             border: 4px solid #e0e0e0;
-            border-top-color: #20B2AA;
+            border-top-color: #603322;
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Hide brand-section on mobile (auth pages) */
-        @media (max-width: 992px) {
-            .brand-section { display: none !important; }
-            .login-section { flex: 1 !important; }
-        }
+        /* Auth responsive já gerenciado em auth.css */
     </style>
 </head>
 

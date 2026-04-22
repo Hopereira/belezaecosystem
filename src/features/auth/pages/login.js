@@ -1,5 +1,7 @@
 /**
- * Login Page Module
+ * Login Page — Beleza Ecosystem
+ * Identidade visual fiel ao Manual de Marca (Canva)
+ * Referência: docs/brand-system.md · docs/product-language.md
  */
 
 import { handleLogin } from '../../../core/auth.js';
@@ -11,67 +13,83 @@ import { validateForm, validateRequired, validateEmail } from '../../../shared/u
 export function render() {
     const app = document.getElementById('app');
     app.innerHTML = `
-        <div class="container" style="display:flex;width:100%;height:100vh;">
-            <main class="login-section" style="flex:1;display:flex;align-items:center;justify-content:center;background:var(--white);padding:2rem;">
-                <div class="login-box" style="width:100%;max-width:400px;">
-                    <header class="logo-container" style="display:flex;align-items:center;gap:10px;margin-bottom:3rem;color:var(--primary-color);">
-                        <span class="brand-name" style="font-size:1.5rem;font-weight:700;letter-spacing:1px;">BelezaEcosystem</span>
-                    </header>
+        <div class="auth-layout">
 
-                    <form class="login-form" id="loginForm">
-                        <h1 style="font-size:2rem;font-weight:700;margin-bottom:2rem;color:var(--text-dark);">Entrar</h1>
+            <!-- ── Painel Esquerdo — Formulário ── -->
+            <main class="auth-form-panel">
+                <div class="auth-form-wrap">
 
-                        <div class="input-group" style="margin-bottom:1.5rem;">
-                            <label for="email" style="display:block;margin-bottom:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-dark);">Email</label>
-                            <input type="email" id="email" name="email" placeholder="seu@email.com" required
-                                style="width:100%;padding:12px 16px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);font-size:0.95rem;transition:border-color 0.3s,box-shadow 0.3s;">
+                    <a class="auth-brand" href="/" aria-label="Beleza Ecosystem">
+                        <span class="auth-brand__mark">Be</span>
+                        <span class="auth-brand__name">Beleza Ecosystem</span>
+                    </a>
+
+                    <div class="auth-form-header">
+                        <h1 class="auth-form-title">Entrar</h1>
+                        <p class="auth-form-sub">Bem-vindo de volta. Continue de onde parou.</p>
+                    </div>
+
+                    <form id="loginForm" novalidate>
+
+                        <div class="auth-field">
+                            <label class="auth-label" for="email">Email</label>
+                            <input class="auth-input" type="email" id="email" name="email"
+                                placeholder="seu@email.com" autocomplete="email" required>
                         </div>
 
-                        <div class="input-group" style="margin-bottom:1.5rem;">
-                            <label for="password" style="display:block;margin-bottom:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-dark);">Senha</label>
-                            <div style="position:relative;">
-                                <input type="password" id="password" name="password" required
-                                    style="width:100%;padding:12px 16px;padding-right:44px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);font-size:0.95rem;transition:border-color 0.3s,box-shadow 0.3s;">
-                                <button type="button" id="togglePassword" aria-label="Mostrar senha"
-                                    style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:4px;">
+                        <div class="auth-field">
+                            <label class="auth-label" for="password">Senha</label>
+                            <div class="auth-input-wrap">
+                                <input class="auth-input" type="password" id="password" name="password"
+                                    autocomplete="current-password" required>
+                                <button type="button" class="auth-toggle-pw" id="togglePassword" aria-label="Mostrar senha">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;font-size:0.85rem;">
-                            <label style="display:flex;align-items:center;cursor:pointer;font-weight:500;">
-                                <input type="checkbox" checked style="margin-right:8px;">
-                                Lembrar acesso
+                        <div class="auth-row">
+                            <label class="auth-remember">
+                                <input type="checkbox" checked>
+                                <span>Lembrar acesso</span>
                             </label>
-                            <a href="#" style="color:var(--text-dark);text-decoration:none;font-weight:500;">Esqueceu sua senha?</a>
+                            <a href="#" class="auth-forgot">Esqueceu a senha?</a>
                         </div>
 
-                        <button type="submit" class="btn-primary" style="
-                            width:100%;padding:14px;background:var(--primary-color);color:white;border:none;
-                            border-radius:50px;font-size:0.9rem;font-weight:600;cursor:pointer;
-                            transition:background 0.3s,transform 0.2s;margin-bottom:1.5rem;text-transform:uppercase;
-                        ">Entrar</button>
+                        <button type="submit" class="auth-btn auth-btn--primary" id="loginSubmit">
+                            Entrar
+                        </button>
 
-                        <p style="text-align:center;font-size:0.9rem;color:var(--text-muted);">
-                            Não tem uma conta? <a href="/register" style="color:var(--text-dark);font-weight:700;text-decoration:none;">Cadastre-se</a>
+                        <p class="auth-alt">
+                            Não tem conta?
+                            <a href="/register">
+                                Criar conta grátis
+                            </a>
                         </p>
+
                     </form>
                 </div>
             </main>
 
-            <aside class="brand-section" style="flex:1.2;background:var(--primary-color);display:flex;align-items:center;justify-content:center;">
-                <div style="text-align:center;">
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:2rem;">
-                        <div style="width:280px;height:280px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(0,0,0,0.15);">
-                            <img src="/src/assets/logos/logo.png" alt="BelezaEcosystem Logo" style="width:200px;height:auto;" onerror="this.style.display='none'">
-                        </div>
-                        <div style="background:white;color:var(--primary-color);padding:12px 40px;border-radius:50px;font-weight:800;font-size:1.8rem;letter-spacing:2px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
-                            BelezaEcosystem
-                        </div>
+            <!-- ── Painel Direito — Brand ── -->
+            <aside class="auth-brand-panel" aria-hidden="true">
+                <div class="auth-brand-panel__inner">
+                    <div class="auth-brand-panel__logo">
+                        <span>Be</span>
+                    </div>
+                    <h2 class="auth-brand-panel__title">Gestão que liberta.</h2>
+                    <p class="auth-brand-panel__sub">
+                        O sistema nervoso digital<br>do seu negócio de beleza.
+                    </p>
+                    <div class="auth-brand-panel__pills">
+                        <span>Agendamento</span>
+                        <span>Finanças</span>
+                        <span>Marketing</span>
+                        <span>IA 24h</span>
                     </div>
                 </div>
             </aside>
+
         </div>
     `;
 }
@@ -103,7 +121,7 @@ export function init() {
         // Disable button and show loading
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Entrando...';
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Entrando...';
         }
 
         try {

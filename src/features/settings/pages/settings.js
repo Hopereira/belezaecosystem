@@ -156,8 +156,8 @@ function renderContent() {
                         <div class="modal-field">
                             <label class="modal-label">Cor Primária</label>
                             <div style="display:flex;gap:0.5rem;align-items:center;">
-                                <input type="color" id="brandingPrimary" value="${branding.primaryColor || '#20B2AA'}" style="width:50px;height:36px;border:none;cursor:pointer;">
-                                <input type="text" class="modal-input" id="brandingPrimaryText" value="${branding.primaryColor || '#20B2AA'}" style="flex:1;">
+                                <input type="color" id="brandingPrimary" value="${branding.primaryColor || '#603322'}" style="width:50px;height:36px;border:none;cursor:pointer;">
+                                <input type="text" class="modal-input" id="brandingPrimaryText" value="${branding.primaryColor || '#603322'}" style="flex:1;">
                             </div>
                         </div>
                         <div class="modal-field">

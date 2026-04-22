@@ -1,5 +1,7 @@
 /**
- * Register Page Module
+ * Register Page — Beleza Ecosystem
+ * Identidade visual fiel ao Manual de Marca (Canva)
+ * Referência: docs/brand-system.md · docs/product-language.md
  */
 
 import { handleRegister } from '../../../core/auth.js';
@@ -11,129 +13,156 @@ let currentRole = '';
 export function render() {
     const app = document.getElementById('app');
     app.innerHTML = `
-        <div class="container" style="display:flex;width:100%;height:100vh;">
-            <main class="login-section" style="flex:1;display:flex;align-items:center;justify-content:center;background:var(--white);padding:2rem;overflow-y:auto;">
-                <div class="login-box" style="width:100%;max-width:650px;">
-                    <header class="logo-container" style="display:flex;align-items:center;gap:10px;margin-bottom:3rem;color:var(--primary-color);">
-                        <span class="brand-name" style="font-size:1.5rem;font-weight:700;letter-spacing:1px;">BelezaEcosystem|Como você deseja usar o BelezaEcosystem?</span>
-                    </header>
+        <div class="auth-layout">
 
+            <!-- ── Painel Esquerdo — Formulário ── -->
+            <main class="auth-form-panel">
+                <div class="auth-form-wrap">
+
+                    <a class="auth-brand" href="/" aria-label="Beleza Ecosystem">
+                        <span class="auth-brand__mark">Be</span>
+                        <span class="auth-brand__name">Beleza Ecosystem</span>
+                    </a>
+
+                    <!-- Passo 1: Seleção de perfil -->
                     <div id="roleSelectionStep">
-                        <h1 style="font-size:2rem;font-weight:700;margin-bottom:0.5rem;color:var(--text-dark);">Selecione seu Perfil</h1>
-                        <p style="color:var(--text-muted);margin-bottom:2rem;">BelezaEcosystem|Como você deseja usar o BelezaEcosystem?</p>
-
-                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2rem;" id="roleCards">
-                            <div class="role-card" data-role="estabelecimento" style="background:white;border:2px solid #e0e0e0;border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.3s;">
-                                <i class="fas fa-store" style="font-size:2rem;color:var(--primary-color);margin-bottom:1rem;display:block;"></i>
-                                <h3 style="font-size:1rem;margin:0;color:var(--text-dark);">Estabelecimento</h3>
-                                <p style="font-size:0.8rem;color:var(--text-muted);margin-top:5px;">Dono de Salão</p>
-                            </div>
-                            <div class="role-card" data-role="profissional" style="background:white;border:2px solid #e0e0e0;border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.3s;">
-                                <i class="fas fa-cut" style="font-size:2rem;color:var(--primary-color);margin-bottom:1rem;display:block;"></i>
-                                <h3 style="font-size:1rem;margin:0;color:var(--text-dark);">Profissional</h3>
-                                <p style="font-size:0.8rem;color:var(--text-muted);margin-top:5px;">Especialista</p>
-                            </div>
-                            <div class="role-card" data-role="cliente" style="background:white;border:2px solid #e0e0e0;border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.3s;">
-                                <i class="fas fa-user" style="font-size:2rem;color:var(--primary-color);margin-bottom:1rem;display:block;"></i>
-                                <h3 style="font-size:1rem;margin:0;color:var(--text-dark);">Cliente</h3>
-                                <p style="font-size:0.8rem;color:var(--text-muted);margin-top:5px;">Para Agendar</p>
-                            </div>
+                        <div class="auth-form-header">
+                            <h1 class="auth-form-title">Criar conta</h1>
+                            <p class="auth-form-sub">Como você deseja usar o Beleza Ecosystem?</p>
                         </div>
 
-                        <p style="text-align:center;font-size:0.9rem;color:var(--text-muted);">
-                            Já tem uma conta? <a href="/login" style="color:var(--text-dark);font-weight:700;text-decoration:none;">Fazer Login</a>
+                        <div class="auth-role-cards" id="roleCards">
+                            <button class="auth-role-card" data-role="estabelecimento" type="button">
+                                <span class="auth-role-card__icon"><i class="fas fa-store"></i></span>
+                                <div class="auth-role-card__body">
+                                    <p class="auth-role-card__name">Estabelecimento</p>
+                                    <p class="auth-role-card__desc">Dono de salão ou clínica de estética</p>
+                                </div>
+                            </button>
+                            <button class="auth-role-card" data-role="profissional" type="button">
+                                <span class="auth-role-card__icon"><i class="fas fa-cut"></i></span>
+                                <div class="auth-role-card__body">
+                                    <p class="auth-role-card__name">Profissional</p>
+                                    <p class="auth-role-card__desc">Especialista autônomo ou freelancer</p>
+                                </div>
+                            </button>
+                            <button class="auth-role-card" data-role="cliente" type="button">
+                                <span class="auth-role-card__icon"><i class="fas fa-user"></i></span>
+                                <div class="auth-role-card__body">
+                                    <p class="auth-role-card__name">Cliente</p>
+                                    <p class="auth-role-card__desc">Quero agendar serviços com facilidade</p>
+                                </div>
+                            </button>
+                        </div>
+
+                        <p class="auth-alt">
+                            Já tem conta?
+                            <a href="/login">
+                                Entrar
+                            </a>
                         </p>
                     </div>
 
-                    <form id="registerForm" style="display:none;">
-                        <h1 id="formTitle" style="font-size:2rem;font-weight:700;margin-bottom:0.5rem;color:var(--text-dark);">Cadastro</h1>
-                        <a href="#" id="backToRoles" style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;display:block;">&larr; Voltar para seleção</a>
-
-                        <div class="input-group" style="margin-bottom:1.5rem;">
-                            <label for="reg-name" style="display:block;margin-bottom:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-dark);">Nome Completo</label>
-                            <input type="text" id="reg-name" name="name" required
-                                style="width:100%;padding:12px 16px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);font-size:0.95rem;">
+                    <!-- Passo 2: Formulário de cadastro -->
+                    <form id="registerForm" novalidate style="display:none;">
+                        <div class="auth-form-header">
+                            <button type="button" id="backToRoles" class="auth-back-btn">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </button>
+                            <h1 class="auth-form-title" id="formTitle">Cadastro</h1>
+                            <p class="auth-form-sub" id="formSubtitle">Preencha seus dados para começar.</p>
                         </div>
 
-                        <div class="input-group" style="margin-bottom:1.5rem;">
-                            <label for="reg-email" style="display:block;margin-bottom:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-dark);">Email</label>
-                            <input type="email" id="reg-email" name="email" required
-                                style="width:100%;padding:12px 16px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);font-size:0.95rem;">
+                        <div class="auth-field">
+                            <label class="auth-label" for="reg-name">Nome completo</label>
+                            <input class="auth-input" type="text" id="reg-name" name="name"
+                                autocomplete="name" required>
+                        </div>
+
+                        <div class="auth-field">
+                            <label class="auth-label" for="reg-email">Email</label>
+                            <input class="auth-input" type="email" id="reg-email" name="email"
+                                autocomplete="email" required>
                         </div>
 
                         <div id="estabelecimentoFields" style="display:none;">
-                            <div class="input-group" style="margin-bottom:1.5rem;">
-                                <label for="salonName" style="display:block;margin-bottom:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-dark);">Nome do Salão</label>
-                                <input type="text" id="salonName" placeholder="Ex: Studio Bella"
-                                    style="width:100%;padding:12px 16px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);font-size:0.95rem;">
+                            <div class="auth-field">
+                                <label class="auth-label" for="salonName">Nome do salão</label>
+                                <input class="auth-input" type="text" id="salonName"
+                                    placeholder="Ex: Studio Bella">
                             </div>
-                            <div class="input-group" style="margin-bottom:1.5rem;">
-                                <label for="cnpj" style="display:block;margin-bottom:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-dark);">CNPJ (Opcional)</label>
-                                <input type="text" id="cnpj"
-                                    style="width:100%;padding:12px 16px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);font-size:0.95rem;">
+                            <div class="auth-field">
+                                <label class="auth-label" for="cnpj">CNPJ <span class="auth-label--opt">(opcional)</span></label>
+                                <input class="auth-input" type="text" id="cnpj"
+                                    placeholder="00.000.000/0001-00">
                             </div>
                         </div>
 
                         <div id="profissionalFields" style="display:none;">
-                            <div class="input-group" style="margin-bottom:1.5rem;">
-                                <label for="specialty" style="display:block;margin-bottom:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-dark);">Especialidade</label>
-                                <input type="text" id="specialty" placeholder="Ex: Cabelo, Manicure, Maquiagem"
-                                    style="width:100%;padding:12px 16px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);font-size:0.95rem;">
+                            <div class="auth-field">
+                                <label class="auth-label" for="specialty">Especialidade</label>
+                                <input class="auth-input" type="text" id="specialty"
+                                    placeholder="Ex: Cabelo, Manicure, Maquiagem">
                             </div>
                         </div>
 
-                        <div class="input-group" style="margin-bottom:1.5rem;">
-                            <label for="reg-password" style="display:block;margin-bottom:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-dark);">Senha</label>
-                            <div style="position:relative;">
-                                <input type="password" id="reg-password" name="password" required
-                                    style="width:100%;padding:12px 16px;padding-right:44px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);font-size:0.95rem;">
-                                <button type="button" class="toggle-pw-btn" data-target="reg-password" aria-label="Mostrar senha"
-                                    style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:4px;">
+                        <div class="auth-field">
+                            <label class="auth-label" for="reg-password">Senha</label>
+                            <div class="auth-input-wrap">
+                                <input class="auth-input" type="password" id="reg-password" name="password"
+                                    autocomplete="new-password" required>
+                                <button type="button" class="auth-toggle-pw toggle-pw-btn"
+                                    data-target="reg-password" aria-label="Mostrar senha">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <div class="input-group" style="margin-bottom:1.5rem;">
-                            <label for="reg-confirm" style="display:block;margin-bottom:0.5rem;font-size:0.85rem;font-weight:600;color:var(--text-dark);">Confirmar Senha</label>
-                            <div style="position:relative;">
-                                <input type="password" id="reg-confirm" name="confirmPassword" required
-                                    style="width:100%;padding:12px 16px;padding-right:44px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);font-size:0.95rem;">
-                                <button type="button" class="toggle-pw-btn" data-target="reg-confirm" aria-label="Mostrar senha"
-                                    style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:4px;">
+                        <div class="auth-field">
+                            <label class="auth-label" for="reg-confirm">Confirmar senha</label>
+                            <div class="auth-input-wrap">
+                                <input class="auth-input" type="password" id="reg-confirm" name="confirmPassword"
+                                    autocomplete="new-password" required>
+                                <button type="button" class="auth-toggle-pw toggle-pw-btn"
+                                    data-target="reg-confirm" aria-label="Mostrar senha">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <button type="submit" style="
-                            width:100%;padding:14px;background:var(--primary-color);color:white;border:none;
-                            border-radius:50px;font-size:0.9rem;font-weight:600;cursor:pointer;
-                            transition:background 0.3s,transform 0.2s;margin-bottom:1.5rem;text-transform:uppercase;
-                        ">Criar Conta</button>
+                        <button type="submit" class="auth-btn auth-btn--primary" id="registerSubmit">
+                            Criar conta
+                        </button>
 
-                        <p style="text-align:center;font-size:0.9rem;color:var(--text-muted);">
-                            Já tem uma conta? <a href="/login" style="color:var(--text-dark);font-weight:700;text-decoration:none;">Fazer Login</a>
+                        <p class="auth-alt">
+                            Já tem conta?
+                            <a href="/login">
+                                Entrar
+                            </a>
                         </p>
                     </form>
+
                 </div>
             </main>
 
-            <aside class="brand-section" style="flex:1.2;background:var(--primary-color);display:flex;align-items:center;justify-content:center;">
-                <div style="text-align:center;">
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:2rem;">
-                        <div style="width:280px;height:280px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(0,0,0,0.15);">
-                            <img src="/src/assets/logos/logo.png" alt="BelezaEcosystem|Como você deseja usar o BelezaEcosystem? Logo" style="width:200px;height:auto;" onerror="this.style.display='none'">
-                        </div>
-                        <div style="background:white;color:var(--primary-color);padding:12px 40px;border-radius:50px;font-weight:800;font-size:1.8rem;letter-spacing:2px;">
-                            BelezaEcosystem|Como você deseja usar o BelezaEcosystem?
-                        </div>
-                        <div id="dynamicRoleText" style="color:white;font-weight:500;letter-spacing:1px;">
-                            PLATAFORMA DE GESTÃO
-                        </div>
+            <!-- ── Painel Direito — Brand ── -->
+            <aside class="auth-brand-panel" aria-hidden="true">
+                <div class="auth-brand-panel__inner">
+                    <div class="auth-brand-panel__logo">
+                        <span>Be</span>
+                    </div>
+                    <h2 class="auth-brand-panel__title">Seja parte.<br>Seja Beleza.</h2>
+                    <p class="auth-brand-panel__dynamic" id="dynamicRoleText">
+                        Tecnologia com alma.<br>Sofisticação acessível.
+                    </p>
+                    <div class="auth-brand-panel__pills">
+                        <span>14 dias grátis</span>
+                        <span>Sem cartão</span>
+                        <span>Cancele quando quiser</span>
                     </div>
                 </div>
             </aside>
+
         </div>
     `;
 }
@@ -192,19 +221,23 @@ function selectRole(role) {
     document.getElementById('profissionalFields').style.display = 'none';
 
     const title = document.getElementById('formTitle');
+    const subtitle = document.getElementById('formSubtitle');
     const sideText = document.getElementById('dynamicRoleText');
 
     if (role === 'estabelecimento') {
         document.getElementById('estabelecimentoFields').style.display = 'block';
-        title.innerText = 'Cadastro de Estabelecimento';
-        if (sideText) sideText.innerText = 'GESTÃO PARA SEU SALÃO';
+        if (title) title.innerText = 'Seu estabelecimento';
+        if (subtitle) subtitle.innerText = 'Configure o seu salão ou clínica no Beleza Ecosystem.';
+        if (sideText) sideText.innerHTML = 'Gestão completa<br>para o seu salão.';
     } else if (role === 'profissional') {
         document.getElementById('profissionalFields').style.display = 'block';
-        title.innerText = 'Cadastro de Profissional';
-        if (sideText) sideText.innerText = 'ÁREA DO PROFISSIONAL';
+        if (title) title.innerText = 'Seu perfil profissional';
+        if (subtitle) subtitle.innerText = 'Gerencie sua agenda e clientes com inteligência.';
+        if (sideText) sideText.innerHTML = 'Agenda inteligente<br>para especialistas.';
     } else if (role === 'cliente') {
-        title.innerText = 'Cadastro de Cliente';
-        if (sideText) sideText.innerText = 'AGENDAMENTO ONLINE';
+        if (title) title.innerText = 'Sua conta de cliente';
+        if (subtitle) subtitle.innerText = 'Agende serviços nos melhores salões com facilidade.';
+        if (sideText) sideText.innerHTML = 'Agendamento online<br>rápido e seguro.';
     }
 }
 
@@ -212,12 +245,20 @@ function goBack() {
     document.getElementById('roleSelectionStep').style.display = 'block';
     document.getElementById('registerForm').style.display = 'none';
     const sideText = document.getElementById('dynamicRoleText');
-    if (sideText) sideText.innerText = 'PLATAFORMA DE GESTÃO';
+    if (sideText) sideText.innerHTML = 'Tecnologia com alma.<br>Sofisticação acessível.';
     currentRole = '';
 }
 
-function handleSubmit(e) {
+async function handleSubmit(e) {
     e.preventDefault();
+
+    const submitBtn = document.getElementById('registerSubmit');
+    const originalText = submitBtn?.textContent || 'Criar conta';
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Criando conta...';
+    }
 
     const data = {
         name: document.getElementById('reg-name').value.trim(),
@@ -230,12 +271,20 @@ function handleSubmit(e) {
         specialty: document.getElementById('specialty')?.value.trim() || '',
     };
 
-    const result = handleRegister(data);
-
-    if (result.success) {
-        showToast('Conta criada com sucesso! Faça login.', 'success');
-        navigateTo('/login');
-    } else {
-        showToast(result.message, 'error');
+    try {
+        const result = await handleRegister(data);
+        if (result.success) {
+            showToast('Conta criada com sucesso! Faça login.', 'success');
+            navigateTo('/login');
+        } else {
+            showToast(result.message, 'error');
+        }
+    } catch (err) {
+        showToast(err.message || 'Erro ao criar conta.', 'error');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
     }
 }

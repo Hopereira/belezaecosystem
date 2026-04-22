@@ -1,14 +1,19 @@
 {
-    "name": "beauty-hub",
+    "name": "beleza-ecosystem",
     "private": true,
-    "version": "0.0.0",
+    "version": "2.1.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "test:e2e": "playwright test",
+        "test:e2e:ui": "playwright test --ui",
+        "test:e2e:headed": "playwright test --headed",
+        "test:e2e:report": "playwright show-report e2e/reports"
     },
     "devDependencies": {
+        "@playwright/test": "^1.52.0",
         "vite": "^5.0.0"
     }
 }

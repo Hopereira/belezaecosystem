@@ -194,7 +194,13 @@ export async function request(endpoint, options = {}) {
         const errorMessage = data.message || `Erro ${response.status}`;
         const errorCode = data.error?.code || 'UNKNOWN_ERROR';
 
-        // Handle subscription errors (403 with specific codes)
+        // Handle subscription errors — backend returns 402 (Payment Required)
+        if (response.status === 402) {
+            emitHttpEvent('subscriptionInactive', { code: errorCode, message: errorMessage });
+            throw new SubscriptionError(errorMessage, errorCode);
+        }
+
+        // Also handle legacy 403 with subscription-specific codes (belt-and-suspenders)
         if (response.status === 403) {
             if (['SUBSCRIPTION_INACTIVE', 'SUBSCRIPTION_EXPIRED', 'TENANT_SUSPENDED'].includes(errorCode)) {
                 emitHttpEvent('subscriptionInactive', { code: errorCode, message: errorMessage });

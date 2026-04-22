@@ -607,12 +607,12 @@
 }
 
 .master-container .btn-primary {
-    background: #20B2AA;
-    color: #fff;
+    background: var(--color-brown-deep);
+    color: var(--color-cream-gold);
 }
 
 .master-container .btn-primary:hover {
-    background: #1a9a93;
+    background: var(--color-brown-night);
 }
 
 .master-container .btn-secondary {

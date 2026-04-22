@@ -1,0 +1,154 @@
+/* ── Cancel Page ──────────────────────────────────────────────────────────── */
+
+.cancel-page {
+    min-height: 100vh;
+    background: #FDFAF4;
+    display: flex;
+    flex-direction: column;
+}
+
+.cancel-header {
+    background: #fff;
+    border-bottom: 1px solid #EDE8E0;
+    padding: 1rem 1.5rem;
+}
+
+.cancel-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #603322;
+}
+
+.cancel-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.cancel-card {
+    background: #fff;
+    border: 1px solid #EDE8E0;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(96, 51, 34, 0.06);
+}
+
+/* Icons */
+.cancel-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 2rem;
+}
+
+.cancel-icon--warn {
+    background: rgba(255, 193, 7, 0.15);
+    color: #f39c12;
+}
+
+.cancel-icon--success {
+    background: rgba(39, 174, 96, 0.12);
+    color: #27ae60;
+}
+
+.cancel-icon--error {
+    background: rgba(231, 76, 60, 0.10);
+    color: #e74c3c;
+}
+
+.cancel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: #2C1810;
+    margin: 0 0 0.75rem;
+}
+
+.cancel-text {
+    font-size: 0.9rem;
+    color: #8B7B72;
+    line-height: 1.6;
+    margin: 0 0 1.75rem;
+}
+
+/* Buttons */
+.cancel-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cancel-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.72rem 1.4rem;
+    border-radius: 10px;
+    font-size: 0.87rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.cancel-btn--danger {
+    background: #e74c3c;
+    color: #fff;
+}
+
+.cancel-btn--danger:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+}
+
+.cancel-btn--ghost {
+    background: #fff;
+    color: #603322;
+    border: 1.5px solid #EDE8E0;
+}
+
+.cancel-btn--ghost:hover {
+    border-color: #603322;
+}
+
+.cancel-btn--primary {
+    background: #603322;
+    color: #fff;
+}
+
+.cancel-btn--primary:hover {
+    background: #4a2418;
+}
+
+/* Loading */
+.cancel-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    color: #8B7B72;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+    .cancel-card { padding: 1.75rem 1.25rem; }
+    .cancel-actions { flex-direction: column; }
+    .cancel-btn { justify-content: center; }
+}

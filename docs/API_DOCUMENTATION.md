@@ -1,4 +1,4 @@
-# BeautyHub API Documentation
+# BelezaEcosystem API Documentation
 
 > **Versão:** 2.0.0  
 > **Base URL:** `/api`  
@@ -123,7 +123,7 @@ MASTER > OWNER > ADMIN > PROFESSIONAL > CLIENT
 ```json
 {
   "success": true,
-  "message": "Beauty Hub Multi-Tenant API is running.",
+  "message": "Beleza Ecosystem Multi-Tenant API is running.",
   "data": {
     "version": "2.0.0",
     "uptime": 12345.67,

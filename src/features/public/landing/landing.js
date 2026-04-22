@@ -1,6 +1,7 @@
 /**
- * Landing Page - BeautyHub
- * Página de vendas pública com planos dinâmicos e cadastro de clientes
+ * Landing Page — Beleza Ecosystem
+ * Página pública de conversão com identidade visual fiel ao Manual de Marca (Canva)
+ * Referência: docs/brand-system.md + docs/product-language.md
  */
 
 import { api } from '../../../shared/utils/http.js';
@@ -12,21 +13,21 @@ import { navigateTo } from '../../../core/router.js';
 let plans = [];
 let selectedPlan = null;
 
-// Planos estáticos como fallback quando API falhar
+// Planos estáticos como fallback — nomenclatura oficial da marca (product-language.md)
 const STATIC_PLANS = [
     {
         id: 'starter',
         slug: 'starter',
-        name: 'Starter',
-        description: 'Ideal para profissionais autônomos começando sua jornada digital.',
+        name: 'Essencial',
+        description: 'Para o profissional autônomo que quer começar com o pé direito.',
         pricing: { monthly: 49.90, yearly: 538.80 },
         currency: 'BRL',
         billing_interval: 'monthly',
         trial_days: 14,
         features: [
-            'Agendamentos online',
+            'Agendamento online',
             'Gestão de clientes',
-            'Notificações automáticas',
+            'Confirmações automáticas',
             'Até 50 clientes',
             '100 agendamentos/mês',
         ],
@@ -36,17 +37,17 @@ const STATIC_PLANS = [
     {
         id: 'professional',
         slug: 'professional',
-        name: 'Professional',
-        description: 'Para estabelecimentos em crescimento com equipe pequena.',
+        name: 'Profissional',
+        description: 'Para salões em crescimento que precisam de controle completo.',
         pricing: { monthly: 99.90, yearly: 1078.80 },
         currency: 'BRL',
         billing_interval: 'monthly',
         trial_days: 14,
         features: [
-            'Tudo do Starter +',
+            'Tudo do Essencial +',
             'Controle financeiro',
-            'Gestão de profissionais',
-            'Relatórios básicos',
+            'Gestão de equipe',
+            'Comissões automáticas',
             'Até 200 clientes',
             '500 agendamentos/mês',
         ],
@@ -56,19 +57,19 @@ const STATIC_PLANS = [
     {
         id: 'business',
         slug: 'business',
-        name: 'Business',
+        name: 'Premium',
         description: 'Solução completa para salões e clínicas com múltiplos profissionais.',
         pricing: { monthly: 199.90, yearly: 2158.80 },
         currency: 'BRL',
         billing_interval: 'monthly',
         trial_days: 14,
         features: [
-            'Tudo do Professional +',
-            'API de integração',
-            'Branding personalizado',
-            'Analytics avançados',
-            'Até 1000 clientes',
-            '2000 agendamentos/mês',
+            'Tudo do Profissional +',
+            'Secretária IA 24h',
+            'Marketing automatizado',
+            'Mini-site do salão',
+            'Até 1.000 clientes',
+            'Agendamentos ilimitados',
         ],
         limits: { users: 15, professionals: 10, clients: 1000, appointments_per_month: 2000 },
         metadata: {},
@@ -81,101 +82,230 @@ export function render() {
 
     app.innerHTML = `
         <div class="landing-page">
-            <!-- Nav -->
-            <nav class="landing-nav">
-                <div class="landing-nav__brand">
-                    <i class="fas fa-spa"></i> Beauty Hub
-                </div>
-                <div class="landing-nav__links">
-                    <a href="#features">Funcionalidades</a>
-                    <a href="#pricing">Planos</a>
-                </div>
-                <a href="/login" class="landing-nav__login" onclick="event.preventDefault(); window.navigateToLogin()">
-                    <i class="fas fa-sign-in-alt"></i> Entrar
-                </a>
-            </nav>
 
-            <!-- Hero Section -->
-            <section class="hero-section">
-                <div class="hero-content">
-                    <div class="hero-text">
-                        <h1 class="hero-title">
-                            Transforme seu Salão de Beleza com Tecnologia
-                        </h1>
-                        <p class="hero-subtitle">
-                            Sistema completo de gestão para salões, clínicas de estética e profissionais da beleza. 
-                            Agende, gerencie e cresça seu negócio com facilidade.
-                        </p>
-                        <div class="hero-cta">
-                            <button class="btn-primary-large" onclick="document.getElementById('pricing').scrollIntoView({behavior: 'smooth'})">
-                                Ver Planos e Preços
-                            </button>
-                            <button class="btn-secondary-large" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">
-                                Conhecer Funcionalidades
-                            </button>
-                        </div>
+            <!-- ── Navbar ── -->
+            <nav class="lp-nav" id="lp-nav">
+                <div class="lp-nav__inner">
+                    <a class="lp-nav__brand" href="/" aria-label="Beleza Ecosystem — página inicial">
+                        <span class="lp-nav__logo-mark">Be</span>
+                        <span class="lp-nav__logo-text">Beleza Ecosystem</span>
+                    </a>
+                    <div class="lp-nav__links">
+                        <a href="#funcionalidades">Funcionalidades</a>
+                        <a href="#planos">Planos</a>
+                        <a href="#manifesto">Sobre</a>
                     </div>
-                    <div class="hero-image">
-                        <div class="hero-mockup">
-                            <i class="fas fa-calendar-check" style="font-size: 8rem; color: #14b8a6;"></i>
-                        </div>
+                    <div class="lp-nav__actions">
+                        <a href="/login" class="lp-nav__link-login" onclick="event.preventDefault(); window.navigateToLogin()">
+                            Entrar
+                        </a>
+                        <button class="lp-btn lp-btn--cta" id="btnHeroRegister">
+                            Começar Gratuitamente
+                        </button>
                     </div>
-                </div>
-            </section>
-
-            <!-- Features Section -->
-            <section id="features" class="features-section">
-                <div class="section-header">
-                    <h2>Tudo que você precisa em um só lugar</h2>
-                    <p>Funcionalidades completas para gerenciar seu negócio de beleza</p>
-                </div>
-                <div class="features-grid">
-                    ${renderFeatures()}
-                </div>
-            </section>
-
-            <!-- Pricing Section -->
-            <section id="pricing" class="pricing-section">
-                <div class="section-header">
-                    <h2>Planos que cabem no seu bolso</h2>
-                    <p>Escolha o plano ideal para o seu negócio</p>
-                </div>
-                <div id="plansContainer" class="plans-grid">
-                    <div class="loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i> Carregando planos...
-                    </div>
-                </div>
-            </section>
-
-            <!-- CTA Section -->
-            <section class="cta-section">
-                <div class="cta-content">
-                    <h2>Pronto para começar?</h2>
-                    <p>Crie sua conta agora e comece a transformar seu negócio</p>
-                    <button class="btn-primary-large" id="btnStartNow">
-                        Começar Agora - Grátis
+                    <button class="lp-nav__hamburger" id="lp-hamburger" aria-label="Menu">
+                        <span></span><span></span><span></span>
                     </button>
                 </div>
+            </nav>
+
+            <!-- ── Hero ── -->
+            <section class="lp-hero">
+                <div class="lp-hero__inner">
+                    <div class="lp-hero__eyebrow">
+                        <span class="lp-badge">Plataforma SaaS B2B · Beleza &amp; Estética</span>
+                    </div>
+                    <h1 class="lp-hero__title">
+                        Gestão que liberta.
+                    </h1>
+                    <p class="lp-hero__subtitle">
+                        O sistema nervoso digital do seu negócio de beleza.
+                    </p>
+                    <p class="lp-hero__body">
+                        Simplifique a gestão do seu salão com uma plataforma completa que une agendamento online,
+                        controle financeiro, marketing automatizado e muito mais em um único lugar.
+                    </p>
+                    <div class="lp-hero__cta">
+                        <button class="lp-btn lp-btn--hero" id="btnHeroPrimary">
+                            Começar Gratuitamente
+                        </button>
+                        <a href="#planos" class="lp-btn lp-btn--ghost">
+                            Ver planos e preços
+                        </a>
+                    </div>
+                    <p class="lp-hero__note">
+                        14 dias grátis · Sem cartão de crédito · Cancele quando quiser
+                    </p>
+                </div>
+                <div class="lp-hero__visual" aria-hidden="true">
+                    <div class="lp-hero__dashboard-preview">
+                        <div class="lp-preview__topbar">
+                            <span class="lp-preview__dot"></span>
+                            <span class="lp-preview__dot"></span>
+                            <span class="lp-preview__dot"></span>
+                            <span class="lp-preview__label">Beleza Ecosystem — Visão Geral</span>
+                        </div>
+                        <div class="lp-preview__stats">
+                            <div class="lp-preview__stat">
+                                <span class="lp-preview__stat-label">AGENDAMENTOS DO MÊS</span>
+                                <span class="lp-preview__stat-value">247</span>
+                                <span class="lp-preview__stat-delta lp-preview__stat-delta--up">+18%</span>
+                            </div>
+                            <div class="lp-preview__stat">
+                                <span class="lp-preview__stat-label">FATURAMENTO</span>
+                                <span class="lp-preview__stat-value">R$ 12.840</span>
+                                <span class="lp-preview__stat-delta lp-preview__stat-delta--up">+24%</span>
+                            </div>
+                            <div class="lp-preview__stat">
+                                <span class="lp-preview__stat-label">CLIENTES ATIVOS</span>
+                                <span class="lp-preview__stat-value">183</span>
+                                <span class="lp-preview__stat-delta lp-preview__stat-delta--up">+7</span>
+                            </div>
+                        </div>
+                        <div class="lp-preview__bar-chart" aria-hidden="true">
+                            <div class="lp-preview__bar" style="height:45%"></div>
+                            <div class="lp-preview__bar" style="height:62%"></div>
+                            <div class="lp-preview__bar" style="height:78%"></div>
+                            <div class="lp-preview__bar" style="height:55%"></div>
+                            <div class="lp-preview__bar" style="height:90%"></div>
+                            <div class="lp-preview__bar" style="height:72%"></div>
+                            <div class="lp-preview__bar lp-preview__bar--active" style="height:100%"></div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <!-- Registration Modal -->
-            <div class="modal-overlay" id="modal-register" style="display: none;">
-                <div class="modal" style="max-width: 900px;">
-                    <div class="modal-header">
-                        <h3>Criar Minha Conta</h3>
-                        <button class="modal-close" onclick="closeRegistrationModal()">&times;</button>
+            <!-- ── Social Proof ── -->
+            <section class="lp-proof">
+                <div class="lp-proof__inner">
+                    <p class="lp-proof__label">Atualizado em abril de 2026 · Versão 2.1 da plataforma · Dados do painel em tempo real</p>
+                    <div class="lp-proof__numbers">
+                        <div class="lp-proof__item">
+                            <strong>+2.400</strong>
+                            <span>salões cadastrados</span>
+                        </div>
+                        <div class="lp-proof__sep" aria-hidden="true"></div>
+                        <div class="lp-proof__item">
+                            <strong>+180 mil</strong>
+                            <span>agendamentos/mês</span>
+                        </div>
+                        <div class="lp-proof__sep" aria-hidden="true"></div>
+                        <div class="lp-proof__item">
+                            <strong>98%</strong>
+                            <span>de satisfação</span>
+                        </div>
+                        <div class="lp-proof__sep" aria-hidden="true"></div>
+                        <div class="lp-proof__item">
+                            <strong>14 dias</strong>
+                            <span>grátis para testar</span>
+                        </div>
                     </div>
-                    <form id="registrationForm">
-                        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                </div>
+            </section>
+
+            <!-- ── Features ── -->
+            <section id="funcionalidades" class="lp-features">
+                <div class="lp-features__inner">
+                    <div class="lp-section-header">
+                        <span class="lp-section-eyebrow">Funcionalidades</span>
+                        <h2 class="lp-section-title">Tudo que o seu negócio precisa,<br>em um só lugar.</h2>
+                        <p class="lp-section-body">Uma plataforma que une agendamento inteligente, secretária com IA, gestão financeira, marketing automatizado e controle de estoque.</p>
+                    </div>
+                    <div class="lp-features__grid">
+                        ${renderFeatures()}
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Manifesto ── -->
+            <section id="manifesto" class="lp-manifesto">
+                <div class="lp-manifesto__inner">
+                    <p class="lp-manifesto__pre">Sobre o Beleza Ecosystem</p>
+                    <blockquote class="lp-manifesto__quote">
+                        <strong>Beleza não é apenas o que se vê.</strong><br>
+                        É o que se constrói — com trabalho, com método, com intenção.
+                    </blockquote>
+                    <p class="lp-manifesto__body">
+                        Cada salão que abre suas portas carrega uma história, um propósito, um sonho.
+                        Cada profissional que escolhe a beleza como ofício escolhe também transformar vidas.
+                    </p>
+                    <p class="lp-manifesto__body">
+                        O Beleza Ecosystem nasceu para ser o sistema nervoso digital dos negócios de beleza,
+                        conectando agendamento, finanças, marketing e gestão em um único ecossistema inteligente e integrado.
+                    </p>
+                    <p class="lp-manifesto__signature">
+                        <strong>Tecnologia com alma. Sofisticação acessível. Gestão que liberta.</strong>
+                    </p>
+                    <p class="lp-manifesto__call">
+                        Seja parte. Seja crescimento. Seja Beleza.
+                    </p>
+                </div>
+            </section>
+
+            <!-- ── Pricing ── -->
+            <section id="planos" class="lp-pricing">
+                <div class="lp-pricing__inner">
+                    <div class="lp-section-header lp-section-header--dark">
+                        <span class="lp-section-eyebrow lp-section-eyebrow--light">Planos</span>
+                        <h2 class="lp-section-title lp-section-title--light">Sofisticação acessível.</h2>
+                        <p class="lp-section-body lp-section-body--muted">Escolha o plano ideal para o seu momento. Comece grátis por 14 dias, sem cartão de crédito.</p>
+                    </div>
+                    <div id="plansContainer" class="lp-plans__grid">
+                        <div class="lp-loading">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                            <span>Carregando planos...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── CTA Final ── -->
+            <section class="lp-cta-final">
+                <div class="lp-cta-final__inner">
+                    <h2 class="lp-cta-final__title">Quando o negócio flui, a arte floresce.</h2>
+                    <p class="lp-cta-final__body">Comece seu período gratuito de 14 dias. Sem cartão de crédito.</p>
+                    <button class="lp-btn lp-btn--hero" id="btnStartNow">
+                        Começar Gratuitamente
+                    </button>
+                    <p class="lp-cta-final__note">Já tem conta? <a href="/login" onclick="event.preventDefault(); window.navigateToLogin()">Entrar</a></p>
+                </div>
+            </section>
+
+            <!-- ── Footer ── -->
+            <footer class="lp-footer">
+                <div class="lp-footer__inner">
+                    <div class="lp-footer__brand">
+                        <span class="lp-nav__logo-mark">Be</span>
+                        <span class="lp-footer__name">Beleza Ecosystem</span>
+                    </div>
+                    <div class="lp-footer__links">
+                        <a href="/terms-of-service">Termos de Uso</a>
+                        <a href="/privacy-policy">Privacidade</a>
+                        <a href="/data-deletion">Exclusão de Dados</a>
+                    </div>
+                    <p class="lp-footer__copy">© 2026 Beleza Ecosystem — Todos os direitos reservados</p>
+                </div>
+            </footer>
+
+            <!-- ── Modal de Cadastro ── -->
+            <div class="lp-modal-overlay" id="modal-register" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-register-title">
+                <div class="lp-modal">
+                    <div class="lp-modal__header">
+                        <h3 id="modal-register-title">Criar minha conta</h3>
+                        <button class="lp-modal__close" onclick="closeRegistrationModal()" aria-label="Fechar">&times;</button>
+                    </div>
+                    <form id="registrationForm" novalidate>
+                        <div class="lp-modal__body">
                             ${renderRegistrationForm()}
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" onclick="closeRegistrationModal()">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Criar Conta e Começar</button>
+                        <div class="lp-modal__footer">
+                            <button type="button" class="lp-btn lp-btn--outline" onclick="closeRegistrationModal()">Cancelar</button>
+                            <button type="submit" class="lp-btn lp-btn--primary">Criar conta e começar</button>
                         </div>
                     </form>
                 </div>
             </div>
+
         </div>
     `;
 }
@@ -207,54 +337,54 @@ async function loadPlans() {
 function renderFeatures() {
     const features = [
         {
-            icon: 'fa-calendar-check',
-            title: 'Agendamentos Inteligentes',
-            description: 'Sistema completo de agendamento online com confirmações automáticas e lembretes'
+            icon: 'fa-calendar-days',
+            title: 'Agendamento Inteligente',
+            description: 'Secretária IA disponível 24 horas para confirmar, reagendar e lembrar seus clientes automaticamente.'
         },
         {
             icon: 'fa-users',
             title: 'Gestão de Clientes',
-            description: 'Cadastro completo, histórico de atendimentos e preferências dos clientes'
+            description: 'Cadastro completo, histórico de atendimentos e preferências para um atendimento verdadeiramente personalizado.'
         },
         {
-            icon: 'fa-money-bill-wave',
+            icon: 'fa-banknotes',
             title: 'Controle Financeiro',
-            description: 'Gestão de receitas, despesas, comissões e relatórios financeiros'
+            description: 'Receitas, despesas, comissões e relatórios em tempo real para você tomar decisões com segurança.'
         },
         {
-            icon: 'fa-chart-line',
-            title: 'Relatórios e Analytics',
-            description: 'Dashboards intuitivos com métricas do seu negócio em tempo real'
+            icon: 'fa-chart-bar',
+            title: 'Relatórios e Insights',
+            description: 'Dashboards com métricas do seu negócio. Entenda o que funciona e potencialize seus resultados.'
         },
         {
-            icon: 'fa-user-tie',
-            title: 'Gestão de Profissionais',
-            description: 'Controle de agenda, comissões e desempenho de cada profissional'
+            icon: 'fa-user-group',
+            title: 'Gestão de Equipe',
+            description: 'Profissionais, comissões e desempenho em um único painel. Sua equipe organizada e motivada.'
         },
         {
-            icon: 'fa-box',
+            icon: 'fa-archive',
             title: 'Controle de Estoque',
-            description: 'Gerencie produtos, fornecedores e compras em um só lugar'
+            description: 'Nunca fique sem produto. Alertas automáticos, fornecedores e histórico de compras integrados.'
         },
         {
-            icon: 'fa-bell',
-            title: 'Notificações Automáticas',
-            description: 'Lembretes por WhatsApp, SMS e email para você e seus clientes'
+            icon: 'fa-bullhorn',
+            title: 'Marketing Automatizado',
+            description: 'Campanhas de retenção, aniversários e promoções sem esforço. Seus clientes sempre voltando.'
         },
         {
-            icon: 'fa-mobile-alt',
-            title: 'Acesso Mobile',
-            description: 'Gerencie seu negócio de qualquer lugar, a qualquer hora'
+            icon: 'fa-globe',
+            title: 'Meu Salão Online',
+            description: 'Mini-site profissional com agendamento direto pelo link. Presença online sem custo adicional.'
         }
     ];
 
     return features.map(f => `
-        <div class="feature-card">
-            <div class="feature-icon">
+        <div class="lp-feature-card">
+            <div class="lp-feature-card__icon">
                 <i class="fas ${f.icon}"></i>
             </div>
-            <h3>${f.title}</h3>
-            <p>${f.description}</p>
+            <h3 class="lp-feature-card__title">${f.title}</h3>
+            <p class="lp-feature-card__desc">${f.description}</p>
         </div>
     `).join('');
 }
@@ -265,9 +395,9 @@ function renderPlansSection() {
 
     if (plans.length === 0) {
         container.innerHTML = `
-            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #64748b;">
-                <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                <p>Não foi possível carregar os planos. Tente novamente mais tarde.</p>
+            <div class="lp-plans__empty">
+                <i class="fas fa-circle-exclamation"></i>
+                <p>Não foi possível carregar os planos. Tente novamente em instantes.</p>
             </div>
         `;
         return;
@@ -279,33 +409,36 @@ function renderPlansSection() {
         const isPopular = plan.metadata?.popular || false;
 
         return `
-            <div class="plan-card ${isPopular ? 'popular' : ''}">
-                ${isPopular ? '<div class="plan-badge">Mais Popular</div>' : ''}
-                <div class="plan-header">
-                    <h3>${plan.name}</h3>
-                    <p class="plan-description">${plan.description || ''}</p>
-                    <div class="plan-price">
-                        <span class="price-value">${formatCurrency(price)}</span>
-                        <span class="price-period">/mês</span>
+            <div class="lp-plan-card ${isPopular ? 'lp-plan-card--popular' : ''}">
+                ${isPopular ? '<div class="lp-plan-card__badge">Mais escolhido</div>' : ''}
+                <div class="lp-plan-card__header">
+                    <h3 class="lp-plan-card__name">${plan.name}</h3>
+                    <p class="lp-plan-card__desc">${plan.description || ''}</p>
+                    <div class="lp-plan-card__price">
+                        <span class="lp-plan-card__currency">R$</span>
+                        <span class="lp-plan-card__amount">${price.toFixed(2).replace('.', ',')}</span>
+                        <span class="lp-plan-card__period">/mês</span>
                     </div>
-                    ${plan.trial_days > 0 ? `<p class="plan-trial">${plan.trial_days} dias grátis</p>` : ''}
+                    ${plan.trial_days > 0 ? `<p class="lp-plan-card__trial">${plan.trial_days} dias grátis para começar</p>` : ''}
                 </div>
-                <div class="plan-features">
-                    <ul>
-                        ${features.map(f => `<li><i class="fas fa-check"></i> ${f}</li>`).join('')}
-                    </ul>
-                </div>
-                <button class="btn-plan-select" data-plan-id="${plan.id}">
-                    Escolher ${plan.name}
+                <ul class="lp-plan-card__features">
+                    ${features.map(f => `
+                        <li class="lp-plan-card__feature">
+                            <i class="fas fa-check lp-plan-card__check"></i>
+                            <span>${f}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+                <button class="lp-plan-card__cta ${isPopular ? 'lp-btn--primary' : 'lp-btn--outline-dark'}" data-plan-id="${plan.id}">
+                    Assinar agora
                 </button>
             </div>
         `;
     }).join('');
 
-    // Bind click events to plan buttons
-    document.querySelectorAll('.btn-plan-select').forEach(btn => {
+    document.querySelectorAll('[data-plan-id]').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const planId = e.target.dataset.planId;
+            const planId = e.currentTarget.dataset.planId;
             selectedPlan = plans.find(p => p.id === planId);
             openRegistrationModal();
         });
@@ -499,12 +632,27 @@ function renderRegistrationForm() {
 }
 
 function bindEvents() {
-    // Start Now button
-    document.getElementById('btnStartNow')?.addEventListener('click', () => {
-        if (plans.length > 0) {
-            selectedPlan = plans[0]; // Default to first plan
-        }
+    // Todos os CTAs de início de cadastro
+    const openModal = () => {
+        if (plans.length > 0) selectedPlan = plans[0];
         openRegistrationModal();
+    };
+    document.getElementById('btnStartNow')?.addEventListener('click', openModal);
+    document.getElementById('btnHeroPrimary')?.addEventListener('click', openModal);
+    document.getElementById('btnHeroRegister')?.addEventListener('click', openModal);
+
+    // Navbar scroll effect
+    const nav = document.getElementById('lp-nav');
+    if (nav) {
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('lp-nav--scrolled', window.scrollY > 40);
+        }, { passive: true });
+    }
+
+    // Mobile hamburger
+    document.getElementById('lp-hamburger')?.addEventListener('click', () => {
+        const nav = document.getElementById('lp-nav');
+        nav?.classList.toggle('lp-nav--open');
     });
 
     // Account type change

@@ -1,6 +1,6 @@
-# Arquitetura Multi-Tenant — Beauty Hub SaaS
+# Arquitetura Multi-Tenant — Beleza Ecosystem SaaS
 
-Este documento descreve a arquitetura multi-tenant do Beauty Hub, incluindo decisões arquiteturais, padrões de código e estratégias de escalabilidade.
+Este documento descreve a arquitetura multi-tenant do Beleza Ecosystem, incluindo decisões arquiteturais, padrões de código e estratégias de escalabilidade.
 
 ---
 
@@ -73,7 +73,7 @@ Este documento descreve a arquitetura multi-tenant do Beauty Hub, incluindo deci
 | Escalabilidade | Até ~10k tenants | Até ~1k schemas | Ilimitado |
 | Cross-tenant queries | ✅ Fácil | Possível | Difícil |
 
-**Para o Beauty Hub:** Single DB + Shared Schema é ideal para a fase inicial e suporta até 10.000 tenants. Preparamos para migração futura.
+**Para o Beleza Ecosystem:** Single DB + Shared Schema é ideal para a fase inicial e suporta até 10.000 tenants. Preparamos para migração futura.
 
 ---
 
@@ -227,7 +227,7 @@ Request chega
      ▼
 ┌─────────────────────────────────────────┐
 │ 2. Subdomain presente?                  │
-│    → beleza-pura.beautyhub.com          │
+│    → beleza-pura.BelezaEcosystem.com          │
 │    → Extrai "beleza-pura"               │
 └─────────────────────────────────────────┘
      │ Não
@@ -310,7 +310,7 @@ Request chega
 7. OWNER recebe email de boas-vindas
      │
      ▼
-8. OWNER faz login em slug.beautyhub.com
+8. OWNER faz login em slug.BelezaEcosystem.com
 ```
 
 ---
@@ -372,23 +372,23 @@ cp .env.example .env
 docker-compose up -d
 
 # Executar migrations (ordem importa!)
-docker exec beautyhub_backend npx sequelize-cli db:migrate
+docker exec BelezaEcosystem_backend npx sequelize-cli db:migrate
 
 # Executar seeds
-docker exec beautyhub_backend npx sequelize-cli db:seed:all
+docker exec BelezaEcosystem_backend npx sequelize-cli db:seed:all
 ```
 
 ### Migrations Manuais
 
 ```bash
 # Criar migration
-docker exec beautyhub_backend npx sequelize-cli migration:generate --name add_feature_x
+docker exec BelezaEcosystem_backend npx sequelize-cli migration:generate --name add_feature_x
 
 # Desfazer última migration
-docker exec beautyhub_backend npx sequelize-cli db:migrate:undo
+docker exec BelezaEcosystem_backend npx sequelize-cli db:migrate:undo
 
 # Desfazer todas
-docker exec beautyhub_backend npx sequelize-cli db:migrate:undo:all
+docker exec BelezaEcosystem_backend npx sequelize-cli db:migrate:undo:all
 ```
 
 ---
@@ -419,7 +419,7 @@ docker exec beautyhub_backend npx sequelize-cli db:migrate:undo:all
 
 ## 💳 Sistema de Billing
 
-O sistema de billing do Beauty Hub suporta planos mensais e anuais com múltiplos métodos de pagamento.
+O sistema de billing do Beleza Ecosystem suporta planos mensais e anuais com múltiplos métodos de pagamento.
 
 ### Planos Oficiais
 
@@ -477,7 +477,7 @@ Veja [BILLING_SYSTEM.md](../backend/src/modules/billing/BILLING_SYSTEM.md) para:
 
 | Role | Email | Senha | Tenant |
 |------|-------|-------|--------|
-| MASTER | master@beautyhub.com | 123456 | - (global) |
+| MASTER | master@BelezaEcosystem.com | 123456 | - (global) |
 | OWNER | owner@belezapura.com | 123456 | beleza-pura |
 | ADMIN | admin@belezapura.com | 123456 | beleza-pura |
 | PROFESSIONAL | prof@belezapura.com | 123456 | beleza-pura |
