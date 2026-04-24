@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { User, Establishment, Professional, sequelize } = require('../models');
+const { User, Establishment, Professional, Tenant, sequelize } = require('../models');
 const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
 
@@ -89,14 +89,20 @@ async function login(req, res, next) {
       });
     }
 
-    const payload = { 
-      id: user.id, 
-      email: user.email, 
+    const payload = {
+      id: user.id,
+      email: user.email,
       role: user.role,
       tenantId: user.tenant_id || null
     };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
+
+    // Fetch tenant if user has one
+    let tenant = null;
+    if (user.tenant_id) {
+      tenant = await Tenant.findByPk(user.tenant_id);
+    }
 
     logger.info(`User logged in: ${user.email} (${user.role})`);
 
@@ -105,6 +111,7 @@ async function login(req, res, next) {
       message: 'Login realizado com sucesso.',
       data: {
         user: user.toSafeJSON(),
+        tenant: tenant ? { id: tenant.id, slug: tenant.slug, name: tenant.name } : null,
         accessToken,
         refreshToken,
       },

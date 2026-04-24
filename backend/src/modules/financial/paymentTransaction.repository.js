@@ -3,7 +3,7 @@
  */
 
 const BaseRepository = require('../../shared/database/BaseRepository');
-const { Op } = require('sequelize');
+const { Op, fn, col, literal } = require('sequelize');
 
 class PaymentTransactionRepository extends BaseRepository {
   constructor(models) {
@@ -94,11 +94,11 @@ class PaymentTransactionRepository extends BaseRepository {
     const stats = await this.model.findAll({
       where,
       attributes: [
-        [this.models.Sequelize.fn('COUNT', this.models.Sequelize.col('id')), 'total_transactions'],
-        [this.models.Sequelize.fn('SUM', this.models.Sequelize.col('total_amount')), 'total_revenue'],
-        [this.models.Sequelize.fn('SUM', this.models.Sequelize.col('salon_amount')), 'salon_revenue'],
-        [this.models.Sequelize.fn('SUM', this.models.Sequelize.col('professional_amount')), 'professional_commission'],
-        [this.models.Sequelize.fn('SUM', this.models.Sequelize.col('gateway_fee')), 'total_fees'],
+        [fn('COUNT', col('id')), 'total_transactions'],
+        [fn('SUM', col('total_amount')), 'total_revenue'],
+        [fn('SUM', col('salon_amount')), 'salon_revenue'],
+        [fn('SUM', col('professional_amount')), 'professional_commission'],
+        [fn('SUM', col('gateway_fee')), 'total_fees'],
       ],
       raw: true,
     });
@@ -131,9 +131,9 @@ class PaymentTransactionRepository extends BaseRepository {
       where,
       attributes: [
         'professional_id',
-        [this.models.Sequelize.fn('COUNT', this.models.Sequelize.col('PaymentTransaction.id')), 'total_services'],
-        [this.models.Sequelize.fn('SUM', this.models.Sequelize.col('total_amount')), 'total_revenue'],
-        [this.models.Sequelize.fn('SUM', this.models.Sequelize.col('professional_amount')), 'total_commission'],
+        [fn('COUNT', col('PaymentTransaction.id')), 'total_services'],
+        [fn('SUM', col('total_amount')), 'total_revenue'],
+        [fn('SUM', col('professional_amount')), 'total_commission'],
       ],
       include: [
         {
@@ -172,8 +172,8 @@ class PaymentTransactionRepository extends BaseRepository {
       where,
       attributes: [
         'service_id',
-        [this.models.Sequelize.fn('COUNT', this.models.Sequelize.col('PaymentTransaction.id')), 'total_count'],
-        [this.models.Sequelize.fn('SUM', this.models.Sequelize.col('total_amount')), 'total_revenue'],
+        [fn('COUNT', col('PaymentTransaction.id')), 'total_count'],
+        [fn('SUM', col('total_amount')), 'total_revenue'],
       ],
       include: [
         {
@@ -183,7 +183,7 @@ class PaymentTransactionRepository extends BaseRepository {
         },
       ],
       group: ['service_id', 'service.id'],
-      order: [[this.models.Sequelize.literal('total_count'), 'DESC']],
+      order: [[literal('total_count'), 'DESC']],
       limit,
       raw: false,
     });
