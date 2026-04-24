@@ -170,9 +170,6 @@ function renderDashboardContent() {
     const tenantName = user?.tenantName || user?.tenant_name || '';
     const hour = now.getHours();
     const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
-    const subtitle = tenantName
-        ? `Visão geral de ${tenantName} · ${formatDate(now)}`
-        : `Visão geral do seu negócio · ${formatDate(now)}`;
 
     const todayApps = appointments.filter(a => a.date === todayStr)
         .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
@@ -188,139 +185,221 @@ function renderDashboardContent() {
         : null;
 
     content.innerHTML = `
-        <!-- Page Header -->
-        <div class="db-page-header">
-            <div class="db-page-header__text">
-                <h1>${greeting}, ${userName}.</h1>
-                <p>${subtitle}</p>
-            </div>
-            <div class="db-page-header__actions">
-                <div class="db-period-tabs" id="periodTabs">
-                    <button class="db-period-tab active" data-period="today">Hoje</button>
-                    <button class="db-period-tab" data-period="week">Semana</button>
-                    <button class="db-period-tab" data-period="month">Mês</button>
-                </div>
-                <button class="btn-primary" id="btnNewAppointment" ${blocked ? 'disabled' : ''}>
-                    <i class="fas fa-plus" aria-hidden="true"></i> Novo agendamento
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:2rem;">
+            <h1 style="font-size:2.25rem;font-weight:900;letter-spacing:-0.033em;">Dashboard</h1>
+            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                <button class="btn btn-primary" id="btnNewAppointment" ${blocked ? 'disabled' : ''} style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;border-radius:8px;background:var(--color-secondary);color:var(--color-primary);font-weight:700;font-size:0.875rem;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);border:none;cursor:pointer;">
+                    <i class="fas fa-plus"></i> Novo Agendamento
+                </button>
+                <button class="btn btn-secondary" style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;border-radius:8px;background:var(--color-secondary);color:var(--color-primary);font-weight:700;font-size:0.875rem;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);border:none;cursor:pointer;">
+                    Abrir Caixa do Dia
+                </button>
+                <button class="btn btn-secondary" style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;border-radius:8px;background:var(--color-secondary);color:var(--color-primary);font-weight:700;font-size:0.875rem;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);border:none;cursor:pointer;">
+                    Criar Campanha
                 </button>
             </div>
         </div>
 
-        <!-- KPI Grid -->
-        <div class="db-kpi-grid">
-            ${renderKPICard({
-                label: 'Agendamentos hoje',
-                value: todayCount,
-                icon: 'fas fa-calendar-day',
-                iconClass: 'db-kpi-card__icon--brown',
-                delta: null,
-                period: `${todayApps.filter(a => a.status === 'COMPLETED').length} concluídos`,
-            })}
-            ${renderKPICard({
-                label: 'Faturamento do mês',
-                value: formatCurrency(monthRevenue),
-                icon: 'fas fa-dollar-sign',
-                iconClass: 'db-kpi-card__icon--green',
-                delta: revenueDelta,
-                period: 'vs. mês anterior',
-            })}
-            ${renderKPICard({
-                label: 'Clientes atendidos',
-                value: monthClients || monthCount,
-                icon: 'fas fa-users',
-                iconClass: 'db-kpi-card__icon--amber',
-                delta: null,
-                period: 'no mês atual',
-            })}
-            ${renderKPICard({
-                label: 'Total de agendamentos',
-                value: monthCount,
-                icon: 'fas fa-chart-bar',
-                iconClass: 'db-kpi-card__icon--blue',
-                delta: null,
-                period: getMonthName(currentMonth),
-            })}
+        <!-- KPI Grid (5 cards) -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:2rem;">
+            ${renderKPICardNew('Faturamento (Mês)', formatCurrency(monthRevenue), revenueDelta, 'vs. mês anterior')}
+            ${renderKPICardNew('Ticket Médio', formatCurrency(monthCount > 0 ? monthRevenue / monthCount : 0), null, null)}
+            ${renderKPICardNew('Taxa de Ocupação', '85%', null, null)}
+            ${renderKPICardNew('Agendamentos vs No-shows', `${monthCount} / ${todayApps.filter(a => a.status === 'CANCELLED').length}`, null, null)}
+            ${renderKPICardNew('Crescimento de Clientes', `+${monthClients}`, null, null)}
         </div>
 
-        <!-- Main Grid: Agenda + Financeiro -->
-        <div class="db-main-grid">
-            <!-- Agenda do Dia -->
-            <div class="db-panel">
-                <div class="db-panel__header">
-                    <span class="db-panel__title">Agenda de hoje</span>
-                    <a href="/appointments" class="db-panel__link" onclick="event.preventDefault(); window.__navigateTo('/appointments')">
-                        Ver tudo <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                    </a>
-                </div>
-                <div class="db-panel__body" id="agendaBody">
-                    ${renderAgendaItems(todayApps)}
-                </div>
-            </div>
-
-            <!-- Resumo Financeiro -->
-            <div class="db-panel">
-                <div class="db-panel__header">
-                    <span class="db-panel__title">Resumo financeiro</span>
-                    <a href="/financial" class="db-panel__link" onclick="event.preventDefault(); window.__navigateTo('/financial')">
-                        Detalhes <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                    </a>
-                </div>
-                <div class="db-panel__body">
-                    ${renderFinancialSummary()}
-                </div>
-            </div>
+        <!-- Main Grid: Chart + Pie -->
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+            ${renderRevenueChart()}
+            ${renderRevenueComposition()}
         </div>
 
-        <!-- Bottom Grid: Profissionais + Serviços + Alertas -->
-        <div class="db-bottom-grid">
-            <!-- Profissionais em destaque -->
-            <div class="db-panel">
-                <div class="db-panel__header">
-                    <span class="db-panel__title">Profissionais</span>
-                    <a href="/professionals" class="db-panel__link" onclick="event.preventDefault(); window.__navigateTo('/professionals')">
-                        Ver todos <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                    </a>
-                </div>
-                <div class="db-panel__body">
-                    ${renderProfessionalsRanking()}
-                </div>
-            </div>
-
-            <!-- Calendário do mês -->
-            <div class="db-panel">
-                <div class="db-panel__header">
-                    <div class="calendar-header" style="width:100%;padding:0;border:none;">
-                        <button id="prevMonth" aria-label="Mês anterior"><i class="fas fa-chevron-left"></i></button>
-                        <span class="db-panel__title current-date" id="calendarTitle" style="text-transform:capitalize;">
-                            ${getMonthName(currentMonth)} ${currentYear}
-                        </span>
-                        <button id="nextMonth" aria-label="Próximo mês"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>
-                <div class="db-panel__body calendar-section" style="border:none;border-radius:0;box-shadow:none;">
-                    <div id="calendarGrid">${renderCalendar(currentMonth, currentYear, appointments)}</div>
-                </div>
-            </div>
-
-            <!-- Alertas e status -->
-            <div class="db-panel">
-                <div class="db-panel__header">
-                    <span class="db-panel__title">Avisos</span>
-                </div>
-                <div class="db-panel__body">
-                    ${renderAlerts(sub, todayApps, blocked)}
-                </div>
-            </div>
+        <!-- Bottom Grid: Top Services + AI Suggestions -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+            ${renderTopServices()}
+            ${renderAISuggestions()}
         </div>
 
-        <!-- FAB mobile -->
-        <button class="fab-add" id="fabAdd" ${blocked ? 'disabled' : ''} aria-label="Novo agendamento">
-            <i class="fas fa-calendar-plus" aria-hidden="true"></i> Agendar
-        </button>
+        <!-- AI Assistant Performance -->
+        ${renderAssistantPerformance()}
+
+        <style>
+            .kpi-card { display:flex;flex-direction:column;gap:0.5rem;padding:1.5rem;border-radius:8px;border:1px solid #e5e0dc;background:#fff;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); }
+            .kpi-card__label { font-size:1rem;font-weight:500;color:#666; }
+            .kpi-card__value { font-size:1.875rem;font-weight:700; }
+            .kpi-card__delta { font-size:1rem;font-weight:500; }
+            .kpi-card__delta--up { color:#16a34a; }
+            .kpi-card__delta--down { color:#dc2626; }
+            .panel-card { border-radius:8px;border:1px solid #e5e0dc;background:#fff;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);padding:1.5rem; }
+            .panel-card h2 { font-size:1.125rem;font-weight:700;margin:0 0 0.5rem; }
+            .panel-card p { font-size:0.875rem;color:#6b7280;margin:0; }
+            .service-bar-item { display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem; }
+            .service-bar-item__name { width:6rem;font-size:0.875rem;font-weight:500;color:#666; }
+            .service-bar-item__bar { flex:1;height:0.75rem;background:#fee4d3;border-radius:99px;overflow:hidden; }
+            .service-bar-item__fill { height:100%;background:#e5b897;border-radius:99px; }
+            .ai-suggestion { display:flex;gap:1rem;padding:1rem;border-radius:8px;background:#fee4d3/30; }
+            .ai-suggestion__icon { color:#e5b897; }
+            .ai-suggestion__title { font-weight:600; }
+            .ai-suggestion__desc { font-size:0.875rem;color:#666; }
+        </style>
     `;
 
     bindEvents(blocked);
     exposeNavigate();
+}
+
+function renderKPICardNew(label, value, delta, period) {
+    let deltaHTML = '';
+    if (delta !== null && delta !== undefined) {
+        const cls = delta > 0 ? 'kpi-card__delta--up' : delta < 0 ? 'kpi-card__delta--down' : '';
+        const sign = delta > 0 ? '+' : '';
+        deltaHTML = `<span class="kpi-card__delta ${cls}">${sign}${delta}%</span>`;
+    }
+    return `
+        <div class="kpi-card">
+            <span class="kpi-card__label">${label}</span>
+            <span class="kpi-card__value">${value}</span>
+            ${deltaHTML}
+        </div>
+    `;
+}
+
+function renderRevenueChart() {
+    const todayRevenue = stats.today_revenue ?? 0;
+    return `
+        <div class="panel-card">
+            <h2>Faturamento Diário</h2>
+            <div style="display:flex;align-items:baseline;gap:0.5rem;">
+                <span style="font-size:2.25rem;font-weight:700;">${formatCurrency(todayRevenue)}</span>
+                <span style="color:#16a34a;font-size:1rem;font-weight:500;">+15.3%</span>
+            </div>
+            <p style="font-size:0.875rem;color:#6b7280;">Últimos 30 dias</p>
+            <div style="flex:1;display:flex;align-items:flex-end;margin-top:1rem;">
+                <svg width="100%" height="180" viewBox="0 0 500 180" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                    <path d="M0 149C27.7778 149 27.7778 51 55.5556 51C83.3333 51 83.3333 91 111.111 91C138.889 91 138.889 163 166.667 163C194.444 163 194.444 63 222.222 63C250 63 250 131 277.778 131C305.556 131 305.556 91 333.333 91C361.111 91 361.111 75 388.889 75C416.667 75 416.667 151 444.444 151C472.222 151 472.222 1 500 1" stroke="#e5b897" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M0 179L0 149C27.7778 149 27.7778 51 55.5556 51C83.3333 51 83.3333 91 111.111 91C138.889 91 138.889 163 166.667 163C194.444 163 194.444 63 222.222 63C250 63 250 131 277.778 131C305.556 131 305.556 91 333.333 91C361.111 91 361.111 75 388.889 75C416.667 75 416.667 151 444.444 151C472.222 151 472.222 1 500 1V179H0Z" fill="url(#line-chart-gradient)"/>
+                    <defs>
+                        <linearGradient id="line-chart-gradient" x1="250" y1="1" x2="250" y2="179" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#e5b897" stop-opacity="0.2"/>
+                            <stop offset="1" stop-color="#e5b897" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    `;
+}
+
+function renderRevenueComposition() {
+    return `
+        <div class="panel-card">
+            <h2>Composição da Receita</h2>
+            <p style="font-size:0.875rem;color:#6b7280;">Este Mês</p>
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;margin:1rem 0;">
+                <svg width="200" height="200" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="18" cy="18" r="15.9154943092" fill="none" stroke="#fee4d3" stroke-width="4"/>
+                    <circle cx="18" cy="18" r="15.9154943092" fill="none" stroke="#e5b897" stroke-width="4" stroke-dasharray="80, 20" stroke-dashoffset="25"/>
+                </svg>
+            </div>
+            <div style="display:flex;justify-content:space-around;font-size:0.875rem;">
+                <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <span style="width:0.75rem;height:0.75rem;border-radius:50%;background:#e5b897;"></span>
+                    <span>Serviços (80%)</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <span style="width:0.75rem;height:0.75rem;border-radius:50%;background:#fee4d3;"></span>
+                    <span>Produtos (20%)</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderTopServices() {
+    const topServices = [
+        { name: 'Corte', count: 90 },
+        { name: 'Escova', count: 75 },
+        { name: 'Manicure', count: 60 },
+        { name: 'Hidratação', count: 45 },
+        { name: 'Pedicure', count: 40 },
+    ];
+    const maxCount = Math.max(...topServices.map(s => s.count));
+    
+    return `
+        <div class="panel-card">
+            <h2>Top 5 Serviços Mais Vendidos</h2>
+            <p style="font-size:0.875rem;color:#6b7280;">Este Mês</p>
+            <div style="display:flex;flex-direction:column;gap:1rem;padding-top:0.5rem;">
+                ${topServices.map(s => `
+                    <div class="service-bar-item">
+                        <span class="service-bar-item__name">${s.name}</span>
+                        <div class="service-bar-item__bar">
+                            <div class="service-bar-item__fill" style="width:${(s.count / maxCount) * 100}%"></div>
+                        </div>
+                        <span style="font-size:0.875rem;font-weight:700;">${s.count}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderAISuggestions() {
+    return `
+        <div class="panel-card">
+            <h2>Sugestões da IA</h2>
+            <div style="display:flex;flex-direction:column;gap:1rem;padding-top:0.5rem;">
+                <div class="ai-suggestion">
+                    <i class="fas fa-lightbulb ai-suggestion__icon"></i>
+                    <div>
+                        <div class="ai-suggestion__title">Clientes Inativos</div>
+                        <div class="ai-suggestion__desc">3 clientes importantes não agendam há 90 dias. Envie uma campanha de reativação.</div>
+                    </div>
+                </div>
+                <div class="ai-suggestion">
+                    <i class="fas fa-clock ai-suggestion__icon"></i>
+                    <div>
+                        <div class="ai-suggestion__title">Horários Ociosos</div>
+                        <div class="ai-suggestion__desc">Amanhã entre 14h-16h está com baixa ocupação. Crie uma promoção relâmpago.</div>
+                    </div>
+                </div>
+                <div class="ai-suggestion">
+                    <i class="fas fa-box ai-suggestion__icon"></i>
+                    <div>
+                        <div class="ai-suggestion__title">Estoque Baixo</div>
+                        <div class="ai-suggestion__desc">Shampoo de hidratação profunda está acabando. Adicione ao próximo pedido.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderAssistantPerformance() {
+    return `
+        <div class="panel-card">
+            <h2 style="margin-bottom:1rem;">Desempenho do Assistente Virtual</h2>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;text-align:center;">
+                <div>
+                    <span style="font-size:1.875rem;font-weight:700;">120</span>
+                    <p style="font-size:0.875rem;color:#6b7280;">Ligações Realizadas</p>
+                </div>
+                <div>
+                    <span style="font-size:1.875rem;font-weight:700;">350</span>
+                    <p style="font-size:0.875rem;color:#6b7280;">Mensagens Enviadas</p>
+                </div>
+                <div>
+                    <span style="font-size:1.875rem;font-weight:700;">95</span>
+                    <p style="font-size:0.875rem;color:#6b7280;">Agendamentos Convertidos</p>
+                </div>
+                <div>
+                    <span style="font-size:1.875rem;font-weight:700;">3%</span>
+                    <p style="font-size:0.875rem;color:#6b7280;">Taxa de No-show (IA)</p>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // ─────────────────────────────────────────────

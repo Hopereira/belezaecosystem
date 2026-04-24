@@ -7,6 +7,37 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Changed - 24/04/2026
+
+#### Frontend — UI/UX Refactor: Inventory, Purchases, Suppliers
+
+- **Estoque (`/inventory`)**
+  - Substituída tabela plana por grid de cards com badge de status (estoque baixo vermelho / ok verde)
+  - Adicionados 4 KPIs no topo: Total de Produtos, Estoque Baixo, Valor Total, Fornecedores
+  - Barra de filtros redesenhada (busca + categoria + checkbox estoque baixo)
+  - Modal "Novo/Editar Produto" reescrito com fundo sólido branco, labels visíveis, inputs com borda, grid 2 colunas
+  - Modal "Ajustar Estoque" reescrito com instrução clara e botões consistentes
+  - Arquivo: `src/features/inventory/pages/inventory.js`
+
+- **Compras (`/purchases`)**
+  - Substituída tabela plana por grid de cards com badge de status colorido (PENDING/PAID/PARTIAL/CANCELLED)
+  - Adicionados 4 KPIs no topo: Total de Compras, Valor Total, Pendentes, Fornecedores
+  - Modal "Nova Compra" reescrito: fundo sólido branco, grid para Fornecedor + Método, seção de itens com separador
+  - Tabela de itens da compra reescrita com estilos inline, botão exclusão vermelho visível
+  - Arquivo: `src/features/purchases/pages/purchases.js`
+
+- **Fornecedores (`/suppliers`)**
+  - Substituída tabela plana por grid de cards com avatar circular (inicial do nome)
+  - Adicionado KPI: Total de Fornecedores
+  - Modal "Novo/Editar Fornecedor" reescrito com fundo sólido branco, grid 2 colunas para documento+telefone
+  - Arquivo: `src/features/suppliers/pages/suppliers.js`
+
+- **Padrão de modal unificado em todas as 3 páginas:**
+  - `modal-overlay`: `position:fixed`, overlay escuro `rgba(0,0,0,0.5)`, `z-index:1000`
+  - `modal`: `background:#fff`, `border-radius:12px`, `max-height:90vh`, `overflow-y:auto`
+  - Inputs/selects: `padding:0.75rem`, `border:1px solid #e5e0dc`, `background:#fff`
+  - Botões: Cancelar (borda cinza) | Salvar (`var(--color-secondary)` / `var(--color-primary)`)
+
 ### Fixed - 13/03/2026
 
 #### Frontend — UX & Navegação

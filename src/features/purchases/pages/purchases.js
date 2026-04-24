@@ -58,123 +58,148 @@ async function loadData() {
 function renderContent() {
     const content = getContentArea();
     
+    const totalPurchases = purchases.length;
+    const totalValue = purchases.reduce((sum, p) => sum + (p.total_amount || 0), 0);
+    const pendingCount = purchases.filter(p => p.payment_status === 'PENDING').length;
+    
     content.innerHTML = `
-        <div class="page-header">
-            <div>
-                <h1>Compras</h1>
-                <p>Registre compras e atualize o estoque automaticamente</p>
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:2rem;">
+            <h1 style="font-size:2.25rem;font-weight:900;letter-spacing:-0.033em;">Compras</h1>
+            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                <button class="btn btn-primary" id="btnAddPurchase" style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;border-radius:8px;background:var(--color-secondary);color:var(--color-primary);font-weight:700;font-size:0.875rem;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);border:none;cursor:pointer;">
+                    <i class="fas fa-plus"></i> Nova Compra
+                </button>
+                <button class="btn btn-secondary" id="btnExportCSV" style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;border-radius:8px;background:#fff;border:1px solid #e5e0dc;font-weight:700;font-size:0.875rem;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);cursor:pointer;">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
             </div>
-            <button class="btn btn-primary" id="btnAddPurchase">
-                <i class="fas fa-plus"></i> Nova Compra
+        </div>
+
+        <!-- KPI Cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:2rem;">
+            <div class="kpi-card">
+                <span class="kpi-card__label">Total de Compras</span>
+                <span class="kpi-card__value">${totalPurchases}</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-card__label">Valor Total</span>
+                <span class="kpi-card__value">${formatCurrency(totalValue)}</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-card__label">Pendentes</span>
+                <span class="kpi-card__value" style="color:${pendingCount > 0 ? '#f59e0b' : ''}">${pendingCount}</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-card__label">Fornecedores</span>
+                <span class="kpi-card__value">${suppliers.length}</span>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.5rem;padding:1rem;border-radius:8px;border:1px solid #e5e0dc;background:#fff;">
+            <select id="filterSupplier" style="padding:0.5rem 0.75rem;border:1px solid #e5e0dc;border-radius:6px;font-size:0.875rem;">
+                <option value="">Todos fornecedores</option>
+                ${suppliers.map(s => `<option value="${s.id}" ${filters.supplier_id === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+            </select>
+            <select id="filterStatus" style="padding:0.5rem 0.75rem;border:1px solid #e5e0dc;border-radius:6px;font-size:0.875rem;">
+                <option value="">Todos status</option>
+                <option value="PENDING" ${filters.payment_status === 'PENDING' ? 'selected' : ''}>Pendente</option>
+                <option value="PAID" ${filters.payment_status === 'PAID' ? 'selected' : ''}>Pago</option>
+                <option value="PARTIAL" ${filters.payment_status === 'PARTIAL' ? 'selected' : ''}>Parcial</option>
+                <option value="CANCELLED" ${filters.payment_status === 'CANCELLED' ? 'selected' : ''}>Cancelado</option>
+            </select>
+            <button class="btn btn-secondary" id="btnApplyFilters" style="padding:0.5rem 1rem;border-radius:6px;background:var(--color-secondary);color:var(--color-primary);font-weight:600;font-size:0.875rem;border:none;cursor:pointer;">
+                Filtrar
             </button>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="filters">
-                    <select id="filterSupplier">
-                        <option value="">Todos fornecedores</option>
-                        ${suppliers.map(s => `<option value="${s.id}" ${filters.supplier_id === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
-                    </select>
-                    <select id="filterStatus">
-                        <option value="">Todos status</option>
-                        <option value="PENDING" ${filters.payment_status === 'PENDING' ? 'selected' : ''}>Pendente</option>
-                        <option value="PAID" ${filters.payment_status === 'PAID' ? 'selected' : ''}>Pago</option>
-                        <option value="PARTIAL" ${filters.payment_status === 'PARTIAL' ? 'selected' : ''}>Parcial</option>
-                        <option value="CANCELLED" ${filters.payment_status === 'CANCELLED' ? 'selected' : ''}>Cancelado</option>
-                    </select>
-                    <button class="btn btn-secondary" id="btnApplyFilters">
-                        <i class="fas fa-search"></i> Filtrar
-                    </button>
-                    <button class="btn btn-secondary" id="btnExportCSV">
-                        <i class="fas fa-download"></i> Exportar
-                    </button>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Fornecedor</th>
-                            <th>Itens</th>
-                            <th>Total</th>
-                            <th>Pagamento</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${renderTableRows()}
-                    </tbody>
-                </table>
-            </div>
+        <!-- Purchase Cards Grid -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1.5rem;">
+            ${renderPurchaseCards()}
         </div>
 
         ${renderPurchaseModal()}
+
+        <style>
+            .kpi-card { display:flex;flex-direction:column;gap:0.5rem;padding:1.5rem;border-radius:8px;border:1px solid #e5e0dc;background:#fff;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); }
+            .kpi-card__label { font-size:1rem;font-weight:500;color:#666; }
+            .kpi-card__value { font-size:1.875rem;font-weight:700; }
+            .purchase-card { border-radius:8px;border:1px solid #e5e0dc;background:#fff;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);padding:1.5rem;display:flex;flex-direction:column;gap:1rem; }
+            .purchase-card__header { display:flex;justify-content:space-between;align-items:flex-start; }
+            .purchase-card__supplier { font-weight:700;font-size:1rem; }
+            .purchase-card__date { font-size:0.875rem;color:#666; }
+            .purchase-card__status { padding:0.25rem 0.5rem;border-radius:4px;font-size:0.75rem;font-weight:600; }
+            .purchase-card__status--PENDING { background:#fef3c7;color:#d97706; }
+            .purchase-card__status--PAID { background:#dcfce7;color:#16a34a; }
+            .purchase-card__status--PARTIAL { background:#dbeafe;color:#2563eb; }
+            .purchase-card__status--CANCELLED { background:#fee2e2;color:#dc2626; }
+            .purchase-card__total { font-size:1.5rem;font-weight:700; }
+            .purchase-card__items { font-size:0.875rem;color:#666; }
+            .purchase-card__payment { font-size:0.875rem;color:#666; }
+            .purchase-card__actions { display:flex;gap:0.5rem;margin-top:auto; }
+            .purchase-card__btn { flex:1;padding:0.5rem;border-radius:6px;border:1px solid #e5e0dc;background:#fff;font-size:0.875rem;font-weight:600;cursor:pointer; }
+            .purchase-card__btn--primary { background:var(--color-secondary);color:var(--color-primary);border:none; }
+            .purchase-card__btn--danger { color:#dc2626; }
+        </style>
     `;
 
     bindEvents();
 }
 
-function renderTableRows() {
+function renderPurchaseCards() {
     if (purchases.length === 0) {
-        return '<tr><td colspan="7" style="text-align:center;padding:2rem;">Nenhuma compra encontrada</td></tr>';
+        return '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#666;"><i class="fas fa-shopping-cart" style="font-size:3rem;margin-bottom:1rem;"></i><h3>Nenhuma compra encontrada</h3><p>Registre sua primeira compra para começar</p></div>';
     }
 
     return purchases.map(purchase => {
-        const statusClass = {
-            PENDING: 'badge-warning',
-            PAID: 'badge-success',
-            PARTIAL: 'badge-info',
-            CANCELLED: 'badge-danger',
-        }[purchase.payment_status] || 'badge-secondary';
-
+        const statusClass = `purchase-card__status--${purchase.payment_status}`;
+        
         return `
-            <tr>
-                <td>${formatDate(purchase.purchase_date)}</td>
-                <td><strong>${purchase.supplier?.name || '-'}</strong></td>
-                <td>${purchase.items?.length || 0} itens</td>
-                <td>${formatCurrency(purchase.total_amount)}</td>
-                <td>${purchase.payment_method}</td>
-                <td><span class="badge ${statusClass}">${purchase.payment_status}</span></td>
-                <td>
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-secondary btn-view" data-id="${purchase.id}" title="Ver detalhes">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger btn-delete" data-id="${purchase.id}" title="Excluir">
-                            <i class="fas fa-trash"></i>
-                        </button>
+            <div class="purchase-card">
+                <div class="purchase-card__header">
+                    <div>
+                        <div class="purchase-card__supplier">${purchase.supplier?.name || 'Fornecedor não informado'}</div>
+                        <div class="purchase-card__date">${formatDate(purchase.purchase_date)}</div>
                     </div>
-                </td>
-            </tr>
+                    <span class="purchase-card__status ${statusClass}">${purchase.payment_status}</span>
+                </div>
+                <div class="purchase-card__total">${formatCurrency(purchase.total_amount)}</div>
+                <div class="purchase-card__items">${purchase.items?.length || 0} itens</div>
+                <div class="purchase-card__payment">Pagamento: ${purchase.payment_method}</div>
+                <div class="purchase-card__actions">
+                    <button class="purchase-card__btn purchase-card__btn--primary btn-view" data-id="${purchase.id}">
+                        <i class="fas fa-eye"></i> Ver
+                    </button>
+                    <button class="purchase-card__btn purchase-card__btn--danger btn-delete" data-id="${purchase.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
         `;
     }).join('');
 }
 
 function renderPurchaseModal() {
     return `
-        <div class="modal-overlay" id="modal-purchase">
-            <div class="modal" style="max-width: 800px;">
-                <div class="modal-header">
-                    <h3>Nova Compra</h3>
-                    <button class="modal-close" data-modal="purchase">&times;</button>
+        <div class="modal-overlay" id="modal-purchase" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000;">
+            <div class="modal" style="background:#fff;border-radius:12px;box-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);max-width:800px;width:90%;max-height:90vh;overflow-y:auto;">
+                <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;padding:1.5rem;border-bottom:1px solid #e5e0dc;">
+                    <h3 style="font-size:1.25rem;font-weight:700;margin:0;">Nova Compra</h3>
+                    <button class="modal-close" data-modal="purchase" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#666;">&times;</button>
                 </div>
                 <form id="purchaseForm">
-                    <div class="modal-body">
-                        <div class="form-row">
+                    <div class="modal-body" style="padding:1.5rem;">
+                        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
                             <div class="form-group">
-                                <label>Fornecedor *</label>
-                                <select id="purchaseSupplier" required>
+                                <label style="display:block;font-weight:600;font-size:0.875rem;margin-bottom:0.5rem;color:#333;">Fornecedor *</label>
+                                <select id="purchaseSupplier" required style="width:100%;padding:0.75rem;border:1px solid #e5e0dc;border-radius:6px;font-size:0.875rem;background:#fff;">
                                     <option value="">Selecione</option>
                                     ${suppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Método de Pagamento *</label>
-                                <select id="purchasePaymentMethod" required>
+                                <label style="display:block;font-weight:600;font-size:0.875rem;margin-bottom:0.5rem;color:#333;">Método de Pagamento *</label>
+                                <select id="purchasePaymentMethod" required style="width:100%;padding:0.75rem;border:1px solid #e5e0dc;border-radius:6px;font-size:0.875rem;background:#fff;">
                                     <option value="DINHEIRO">Dinheiro</option>
                                     <option value="DEBITO">Débito</option>
                                     <option value="CREDITO">Crédito</option>
@@ -186,32 +211,32 @@ function renderPurchaseModal() {
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Observações</label>
-                            <textarea id="purchaseNotes" rows="2"></textarea>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block;font-weight:600;font-size:0.875rem;margin-bottom:0.5rem;color:#333;">Observações</label>
+                            <textarea id="purchaseNotes" rows="2" style="width:100%;padding:0.75rem;border:1px solid #e5e0dc;border-radius:6px;font-size:0.875rem;background:#fff;resize:vertical;"></textarea>
                         </div>
 
-                        <hr>
-                        <h4>Itens da Compra</h4>
+                        <hr style="border:none;border-top:1px solid #e5e0dc;margin:1.5rem 0;">
+                        <h4 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">Itens da Compra</h4>
                         
-                        <div class="form-row">
-                            <div class="form-group" style="flex: 2;">
-                                <label>Produto</label>
-                                <select id="itemProduct">
+                        <div class="form-row" style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:0.75rem;margin-bottom:1rem;align-items:end;">
+                            <div class="form-group">
+                                <label style="display:block;font-weight:600;font-size:0.875rem;margin-bottom:0.5rem;color:#333;">Produto</label>
+                                <select id="itemProduct" style="width:100%;padding:0.75rem;border:1px solid #e5e0dc;border-radius:6px;font-size:0.875rem;background:#fff;">
                                     <option value="">Selecione</option>
                                     ${products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Quantidade</label>
-                                <input type="number" id="itemQuantity" min="1" value="1">
+                                <label style="display:block;font-weight:600;font-size:0.875rem;margin-bottom:0.5rem;color:#333;">Quantidade</label>
+                                <input type="number" id="itemQuantity" min="1" value="1" style="width:100%;padding:0.75rem;border:1px solid #e5e0dc;border-radius:6px;font-size:0.875rem;background:#fff;">
                             </div>
                             <div class="form-group">
-                                <label>Custo Unitário</label>
-                                <input type="number" id="itemCost" step="0.01" min="0">
+                                <label style="display:block;font-weight:600;font-size:0.875rem;margin-bottom:0.5rem;color:#333;">Custo Unitário</label>
+                                <input type="number" id="itemCost" step="0.01" min="0" style="width:100%;padding:0.75rem;border:1px solid #e5e0dc;border-radius:6px;font-size:0.875rem;background:#fff;">
                             </div>
-                            <div class="form-group" style="align-self: flex-end;">
-                                <button type="button" class="btn btn-secondary" id="btnAddItem">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary" id="btnAddItem" style="padding:0.75rem 1rem;border-radius:6px;background:var(--color-secondary);color:var(--color-primary);font-weight:600;font-size:0.875rem;border:none;cursor:pointer;">
                                     <i class="fas fa-plus"></i> Adicionar
                                 </button>
                             </div>
@@ -221,13 +246,13 @@ function renderPurchaseModal() {
                             <!-- Items will be rendered here -->
                         </div>
 
-                        <div style="margin-top: 1rem; text-align: right;">
-                            <strong>Total: <span id="purchaseTotal">R$ 0,00</span></strong>
+                        <div style="margin-top: 1rem; text-align: right; padding:1rem;background:#fee4d3/30;border-radius:6px;">
+                            <strong style="font-size:1.125rem;">Total: <span id="purchaseTotal" style="font-size:1.25rem;">R$ 0,00</span></strong>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-modal="purchase">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Salvar Compra</button>
+                    <div class="modal-footer" style="display:flex;gap:0.75rem;justify-content:flex-end;padding:1.5rem;border-top:1px solid #e5e0dc;">
+                        <button type="button" class="btn btn-secondary" data-modal="purchase" style="padding:0.75rem 1.5rem;border-radius:6px;border:1px solid #e5e0dc;background:#fff;font-weight:600;font-size:0.875rem;cursor:pointer;">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="padding:0.75rem 1.5rem;border-radius:6px;background:var(--color-secondary);color:var(--color-primary);font-weight:700;font-size:0.875rem;border:none;cursor:pointer;">Salvar Compra</button>
                     </div>
                 </form>
             </div>
@@ -301,7 +326,7 @@ function updateItemsList() {
     if (!container) return;
 
     if (purchaseItems.length === 0) {
-        container.innerHTML = '<p style="text-align:center;color:#999;">Nenhum item adicionado</p>';
+        container.innerHTML = '<p style="text-align:center;color:#666;padding:1rem;background:#f9fafb;border-radius:6px;">Nenhum item adicionado</p>';
         document.getElementById('purchaseTotal').textContent = 'R$ 0,00';
         return;
     }
@@ -309,25 +334,25 @@ function updateItemsList() {
     const total = purchaseItems.reduce((sum, item) => sum + item.total_cost, 0);
 
     container.innerHTML = `
-        <table class="table">
+        <table style="width:100%;border-collapse:collapse;">
             <thead>
-                <tr>
-                    <th>Produto</th>
-                    <th>Qtd</th>
-                    <th>Custo Unit.</th>
-                    <th>Total</th>
-                    <th></th>
+                <tr style="border-bottom:1px solid #e5e0dc;">
+                    <th style="padding:0.75rem;text-align:left;font-size:0.875rem;font-weight:600;color:#333;">Produto</th>
+                    <th style="padding:0.75rem;text-align:center;font-size:0.875rem;font-weight:600;color:#333;">Qtd</th>
+                    <th style="padding:0.75rem;text-align:right;font-size:0.875rem;font-weight:600;color:#333;">Custo Unit.</th>
+                    <th style="padding:0.75rem;text-align:right;font-size:0.875rem;font-weight:600;color:#333;">Total</th>
+                    <th style="padding:0.75rem;text-align:center;font-size:0.875rem;font-weight:600;color:#333;"></th>
                 </tr>
             </thead>
             <tbody>
                 ${purchaseItems.map((item, index) => `
-                    <tr>
-                        <td>${item.product_name}</td>
-                        <td>${item.quantity}</td>
-                        <td>${formatCurrency(item.unit_cost)}</td>
-                        <td>${formatCurrency(item.total_cost)}</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="window.removeItem(${index})">
+                    <tr style="border-bottom:1px solid #e5e0dc/50;">
+                        <td style="padding:0.75rem;font-size:0.875rem;color:#333;">${item.product_name}</td>
+                        <td style="padding:0.75rem;text-align:center;font-size:0.875rem;color:#333;">${item.quantity}</td>
+                        <td style="padding:0.75rem;text-align:right;font-size:0.875rem;color:#333;">${formatCurrency(item.unit_cost)}</td>
+                        <td style="padding:0.75rem;text-align:right;font-size:0.875rem;font-weight:600;color:#333;">${formatCurrency(item.total_cost)}</td>
+                        <td style="padding:0.75rem;text-align:center;">
+                            <button type="button" onclick="window.removeItem(${index})" style="padding:0.5rem;border-radius:6px;border:1px solid #fee2e2;background:#fee2e2;color:#dc2626;font-size:0.75rem;font-weight:600;cursor:pointer;">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
